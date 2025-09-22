@@ -1,0 +1,160 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model for authentication and profile management
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  image     String?
+  role      UserRole @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  festivals Festival[]
+  events    Event[]
+  media     Media[]
+  posts     Post[]
+
+  @@map("users")
+}
+
+// Festival model - main entity
+model Festival {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  startDate   DateTime
+  endDate     DateTime
+  location    String
+  website     String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  createdBy String
+  creator   User     @relation(fields: [createdBy], references: [id])
+  events    Event[]
+  media     Media[]
+  posts     Post[]
+
+  @@map("festivals")
+}
+
+// Event model - individual events within festivals
+model Event {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  startTime   DateTime
+  endTime     DateTime?
+  location    String?
+  eventType   EventType @default(PERFORMANCE)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  festivalId String
+  festival   Festival @relation(fields: [festivalId], references: [id], onDelete: Cascade)
+  createdBy  String
+  creator    User     @relation(fields: [createdBy], references: [id])
+  media      Media[]
+
+  @@map("events")
+}
+
+// Media model for images and videos
+model Media {
+  id          String    @id @default(cuid())
+  filename    String
+  originalUrl String
+  thumbnailUrl String?
+  mediaType   MediaType
+  fileSize    Int
+  dimensions  String? // JSON string with width/height
+  altText     String?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  uploadedBy String
+  uploader   User      @relation(fields: [uploadedBy], references: [id])
+  festivalId String?
+  festival   Festival? @relation(fields: [festivalId], references: [id], onDelete: Cascade)
+  eventId    String?
+  event      Event?    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  postId     String?
+  post       Post?     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@map("media")
+}
+
+// Post model for social media content
+model Post {
+  id          String     @id @default(cuid())
+  content     String
+  platform    Platform
+  publishedAt DateTime?
+  status      PostStatus @default(DRAFT)
+  scheduledAt DateTime?
+  externalId  String? // ID from social media platform
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  // Relations
+  authorId   String
+  author     User      @relation(fields: [authorId], references: [id])
+  festivalId String?
+  festival   Festival? @relation(fields: [festivalId], references: [id], onDelete: Cascade)
+  media      Media[]
+
+  @@map("posts")
+}
+
+// Enums
+enum UserRole {
+  USER
+  ADMIN
+  MODERATOR
+}
+
+enum EventType {
+  PERFORMANCE
+  WORKSHOP
+  CONFERENCE
+  EXHIBITION
+  NETWORKING
+  OTHER
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
+enum Platform {
+  FACEBOOK
+  INSTAGRAM
+  TWITTER
+  LINKEDIN
+}
+
+enum PostStatus {
+  DRAFT
+  SCHEDULED
+  PUBLISHED
+  FAILED
+}
