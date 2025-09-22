@@ -25,7 +25,21 @@ La arquitectura se basará en proyectos separados: un repositorio para la aplica
 - Como administrador, quiero un panel de control para gestionar concursos, categorías, usuarios y jurados.
 - Como administrador, quiero poder monitorear el progreso de las evaluaciones y anunciar a los ganadores.
 - Como administrador, quiero acceder a métricas y estadísticas detalladas de la plataforma.
-- Como administrador, quiero gestionar el contenido de la página estática.
+- Como administrador, quiero moderar comentarios reportados y gestionar la comunidad.
+
+### d. Rol: Administrador de Contenido (CONTENT_ADMIN)
+- Como administrador de contenido, quiero gestionar el contenido de la página estática a través del mini CMS.
+- Como administrador de contenido, quiero crear y publicar posts en el blog de la comunidad.
+- Como administrador de contenido, quiero gestionar categorías y etiquetas del blog.
+- Como administrador de contenido, quiero acceder a estadísticas del blog y newsletter.
+- Como administrador de contenido, quiero moderar comentarios del blog.
+- Como administrador de contenido, quiero gestionar suscriptores del newsletter.
+
+### e. Rol: Usuario Registrado (funcionalidades adicionales del blog)
+- Como usuario registrado, quiero leer posts del blog y dejar comentarios.
+- Como usuario registrado, quiero dar likes a posts que me gusten.
+- Como usuario registrado, quiero suscribirme al newsletter para recibir actualizaciones.
+- Como usuario registrado, quiero reportar comentarios inapropiados.
 
 ## 3. Stack Tecnológico (Últimas Versiones)
 
@@ -192,7 +206,7 @@ CREATE TABLE "fotos" (
 );
 ```
 
-### Tabla: jurado_asignaciones
+### Tabla: jurados
 Define qué jurados están asignados a evaluar qué categorías específicas.
 
 | Campo | Tipo | Descripción |
@@ -202,7 +216,7 @@ Define qué jurados están asignados a evaluar qué categorías específicas.
 | `categoria_id` | INTEGER | Referencia a la categoría que debe evaluar |
 
 ```sql
-CREATE TABLE "jurado_asignaciones" (
+CREATE TABLE "jurados" (
   "id" SERIAL NOT NULL PRIMARY KEY,
   "usuario_id" TEXT NOT NULL,
   "categoria_id" INTEGER NOT NULL,
@@ -319,35 +333,251 @@ CREATE TABLE "notificaciones" (
 );
 ```
 
-### Tabla: contenido_estatico
-Gestiona el contenido de la página estática informativa a través de un mini CMS integrado.
+### Tabla: contenido (Tabla principal normalizada)
+Tabla principal que contiene la información básica de todo el contenido.
 
 | Campo | Tipo | Descripción |
 |-------|------|-------------|
 | `id` | SERIAL PRIMARY KEY | Identificador único del contenido |
-| `seccion` | TEXT UNIQUE | Identificador de la sección: 'hero', 'about', 'features', 'testimonials', 'gallery_featured' |
-| `titulo` | TEXT | Título de la sección editable desde el CMS |
-| `contenido` | TEXT | Contenido en formato markdown con editor WYSIWYG |
-| `imagen_url` | TEXT | URL de imagen asociada subida a través del CMS |
-| `activo` | BOOLEAN | Indica si la sección está activa y visible en la página |
-| `orden` | INTEGER | Orden de visualización de las secciones |
-| `metadatos` | JSONB | Metadatos adicionales (SEO, configuraciones específicas) |
-| `updated_by` | TEXT | Usuario que realizó la última actualización (CONTENT_ADMIN) |
-| `updated_at` | TIMESTAMP | Fecha de última actualización del contenido |
+| `tipo` | TEXT | Tipo de contenido: 'pagina_estatica', 'blog_post', 'seccion_cms' |
+| `slug` | TEXT UNIQUE | URL amigable única (generada automáticamente o personalizada) |
+| `titulo` | TEXT | Título principal del contenido |
+| `contenido` | TEXT | Contenido principal en formato markdown/HTML |
+| `resumen` | TEXT | Resumen corto para listados (opcional) |
+| `imagen_destacada` | TEXT | URL de imagen principal almacenada en Immich (opcional) |
+| `autor_id` | TEXT | Referencia al usuario que creó el contenido |
+| `estado` | TEXT | Estado: 'borrador', 'publicado', 'archivado', 'programado' |
+| `fecha_publicacion` | TIMESTAMP | Fecha de publicación (actual o programada) |
+| `created_at` | TIMESTAMP | Fecha de creación |
+| `updated_at` | TIMESTAMP | Fecha de última actualización |
+| `updated_by` | TEXT | Usuario que realizó la última actualización |
 
 ```sql
-CREATE TABLE "contenido_estatico" (
+CREATE TABLE "contenido" (
   "id" SERIAL NOT NULL PRIMARY KEY,
-  "seccion" TEXT NOT NULL UNIQUE,
-  "titulo" TEXT,
+  "tipo" TEXT NOT NULL,
+  "slug" TEXT NOT NULL UNIQUE,
+  "titulo" TEXT NOT NULL,
   "contenido" TEXT,
-  "imagen_url" TEXT,
+  "resumen" TEXT,
+  "imagen_destacada" TEXT,
+  "autor_id" TEXT NOT NULL,
+  "estado" TEXT NOT NULL DEFAULT 'borrador',
+  "fecha_publicacion" TIMESTAMP(3),
+  "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updated_by" TEXT,
+  FOREIGN KEY ("autor_id") REFERENCES "usuarios"("id") ON DELETE CASCADE,
+  FOREIGN KEY ("updated_by") REFERENCES "usuarios"("id")
+);
+```
+
+### Tabla: contenido_configuracion
+Configuración específica por tipo de contenido y configuraciones adicionales.
+
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| `contenido_id` | INTEGER PRIMARY KEY | Referencia al contenido |
+| `activo` | BOOLEAN | Indica si el contenido está activo y visible |
+| `orden` | INTEGER | Orden de visualización (para secciones de página) |
+| `permite_comentarios` | BOOLEAN | Indica si permite comentarios |
+| `destacado` | BOOLEAN | Indica si el contenido está destacado |
+| `configuracion_adicional` | JSONB | Configuraciones específicas por tipo de contenido |
+
+```sql
+CREATE TABLE "contenido_configuracion" (
+  "contenido_id" INTEGER NOT NULL PRIMARY KEY,
   "activo" BOOLEAN DEFAULT TRUE,
   "orden" INTEGER DEFAULT 0,
-  "metadatos" JSONB,
-  "updated_by" TEXT,
-  "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY ("updated_by") REFERENCES "usuarios"("id")
+  "permite_comentarios" BOOLEAN DEFAULT FALSE,
+  "destacado" BOOLEAN DEFAULT FALSE,
+  "configuracion_adicional" JSONB,
+  FOREIGN KEY ("contenido_id") REFERENCES "contenido"("id") ON DELETE CASCADE
+);
+```
+
+### Tabla: contenido_seo
+Información SEO separada para mantener la tabla principal limpia.
+
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| `contenido_id` | INTEGER PRIMARY KEY | Referencia al contenido |
+| `seo_titulo` | TEXT | Título optimizado para SEO |
+| `seo_descripcion` | TEXT | Descripción optimizada para SEO |
+| `seo_keywords` | TEXT[] | Palabras clave para SEO |
+| `meta_tags` | JSONB | Meta tags adicionales |
+| `structured_data` | JSONB | Datos estructurados para motores de búsqueda |
+
+```sql
+CREATE TABLE "contenido_seo" (
+  "contenido_id" INTEGER NOT NULL PRIMARY KEY,
+  "seo_titulo" TEXT,
+  "seo_descripcion" TEXT,
+  "seo_keywords" TEXT[],
+  "meta_tags" JSONB,
+  "structured_data" JSONB,
+  FOREIGN KEY ("contenido_id") REFERENCES "contenido"("id") ON DELETE CASCADE
+);
+```
+
+### Tabla: contenido_metricas
+Métricas y estadísticas separadas para mejor rendimiento.
+
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| `contenido_id` | INTEGER PRIMARY KEY | Referencia al contenido |
+| `vistas` | INTEGER | Contador de visualizaciones |
+| `likes` | INTEGER | Contador de likes |
+| `comentarios_count` | INTEGER | Contador de comentarios (calculado) |
+| `shares` | INTEGER | Contador de compartidos |
+| `ultima_vista` | TIMESTAMP | Fecha de última visualización |
+| `primera_publicacion` | TIMESTAMP | Fecha de primera publicación |
+
+```sql
+CREATE TABLE "contenido_metricas" (
+  "contenido_id" INTEGER NOT NULL PRIMARY KEY,
+  "vistas" INTEGER DEFAULT 0,
+  "likes" INTEGER DEFAULT 0,
+  "comentarios_count" INTEGER DEFAULT 0,
+  "shares" INTEGER DEFAULT 0,
+  "ultima_vista" TIMESTAMP(3),
+  "primera_publicacion" TIMESTAMP(3),
+  FOREIGN KEY ("contenido_id") REFERENCES "contenido"("id") ON DELETE CASCADE
+);
+```
+
+### Tabla: contenido_taxonomia
+Categorización y etiquetado separado para mejor organización.
+
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| `contenido_id` | INTEGER | Referencia al contenido |
+| `categoria` | TEXT | Categoría del contenido |
+| `etiqueta` | TEXT | Etiqueta individual |
+| `tipo_taxonomia` | TEXT | Tipo: 'categoria' o 'etiqueta' |
+
+```sql
+CREATE TABLE "contenido_taxonomia" (
+  "id" SERIAL NOT NULL PRIMARY KEY,
+  "contenido_id" INTEGER NOT NULL,
+  "categoria" TEXT,
+  "etiqueta" TEXT,
+  "tipo_taxonomia" TEXT NOT NULL,
+  FOREIGN KEY ("contenido_id") REFERENCES "contenido"("id") ON DELETE CASCADE
+);
+```
+
+
+
+### Tabla: contenido_comentarios
+Sistema unificado de comentarios para cualquier tipo de contenido (blog posts, fotografías).
+
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| `id` | SERIAL PRIMARY KEY | Identificador único del comentario |
+| `contenido_id` | INTEGER | Referencia al contenido comentado (contenido_dinamico o fotos) |
+| `tipo_contenido` | TEXT | Tipo de contenido: 'blog_post', 'foto', 'pagina_estatica' |
+| `usuario_id` | TEXT | Referencia al usuario que escribió el comentario |
+| `contenido` | TEXT | Texto del comentario (máximo 1000 caracteres) |
+| `aprobado` | BOOLEAN | Indica si el comentario ha sido aprobado por moderadores |
+| `reportado` | BOOLEAN | Indica si el comentario ha sido reportado |
+| `parent_id` | INTEGER | Referencia al comentario padre para respuestas anidadas |
+| `fecha_comentario` | TIMESTAMP | Fecha y hora del comentario |
+
+```sql
+CREATE TABLE "contenido_comentarios" (
+  "id" SERIAL NOT NULL PRIMARY KEY,
+  "contenido_id" INTEGER NOT NULL,
+  "tipo_contenido" TEXT NOT NULL,
+  "usuario_id" TEXT NOT NULL,
+  "contenido" TEXT NOT NULL,
+  "aprobado" BOOLEAN DEFAULT FALSE,
+  "reportado" BOOLEAN DEFAULT FALSE,
+  "parent_id" INTEGER,
+  "fecha_comentario" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY ("usuario_id") REFERENCES "usuarios"("id") ON DELETE CASCADE,
+  FOREIGN KEY ("parent_id") REFERENCES "contenido_comentarios"("id") ON DELETE CASCADE
+);
+```
+
+### Tabla: contenido_likes
+Sistema unificado de likes para cualquier tipo de contenido.
+
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| `id` | SERIAL PRIMARY KEY | Identificador único del like |
+| `contenido_id` | INTEGER | Referencia al contenido que recibió el like |
+| `tipo_contenido` | TEXT | Tipo de contenido: 'blog_post', 'foto' |
+| `usuario_id` | TEXT | Referencia al usuario que dio el like |
+| `fecha_like` | TIMESTAMP | Fecha y hora del like |
+
+```sql
+CREATE TABLE "contenido_likes" (
+  "id" SERIAL NOT NULL PRIMARY KEY,
+  "contenido_id" INTEGER NOT NULL,
+  "tipo_contenido" TEXT NOT NULL,
+  "usuario_id" TEXT NOT NULL,
+  "fecha_like" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY ("usuario_id") REFERENCES "usuarios"("id") ON DELETE CASCADE,
+  UNIQUE("contenido_id", "tipo_contenido", "usuario_id")
+);
+```
+
+### Tabla: newsletter_suscriptores
+Gestiona las suscripciones al newsletter semanal del blog.
+
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| `id` | SERIAL PRIMARY KEY | Identificador único del suscriptor |
+| `email` | TEXT UNIQUE | Dirección de email del suscriptor |
+| `activo` | BOOLEAN | Indica si la suscripción está activa |
+| `fecha_suscripcion` | TIMESTAMP | Fecha de suscripción inicial |
+| `fecha_confirmacion` | TIMESTAMP | Fecha de confirmación del email |
+| `token_confirmacion` | TEXT | Token único para confirmar la suscripción |
+
+```sql
+CREATE TABLE "newsletter_suscriptores" (
+  "id" SERIAL NOT NULL PRIMARY KEY,
+  "email" TEXT NOT NULL UNIQUE,
+  "activo" BOOLEAN DEFAULT TRUE,
+  "fecha_suscripcion" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "fecha_confirmacion" TIMESTAMP(3),
+  "token_confirmacion" TEXT
+);
+```
+
+### Tabla: contenido_reportes
+Sistema unificado de reportes para cualquier tipo de contenido o comentario.
+
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| `id` | SERIAL PRIMARY KEY | Identificador único del reporte |
+| `elemento_id` | INTEGER | Referencia al elemento reportado (comentario, contenido, foto) |
+| `tipo_elemento` | TEXT | Tipo de elemento: 'comentario', 'blog_post', 'foto' |
+| `usuario_id` | TEXT | Referencia al usuario que hizo el reporte |
+| `razon` | TEXT | Razón del reporte (spam, contenido inapropiado, etc.) |
+| `descripcion` | TEXT | Descripción adicional del reporte |
+| `fecha_reporte` | TIMESTAMP | Fecha y hora del reporte |
+| `resuelto` | BOOLEAN | Indica si el reporte ha sido revisado y resuelto |
+| `resuelto_por` | TEXT | Usuario que resolvió el reporte |
+| `fecha_resolucion` | TIMESTAMP | Fecha de resolución del reporte |
+| `accion_tomada` | TEXT | Acción tomada: 'aprobado', 'eliminado', 'editado', 'sin_accion' |
+
+```sql
+CREATE TABLE "contenido_reportes" (
+  "id" SERIAL NOT NULL PRIMARY KEY,
+  "elemento_id" INTEGER NOT NULL,
+  "tipo_elemento" TEXT NOT NULL,
+  "usuario_id" TEXT NOT NULL,
+  "razon" TEXT NOT NULL,
+  "descripcion" TEXT,
+  "fecha_reporte" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "resuelto" BOOLEAN DEFAULT FALSE,
+  "resuelto_por" TEXT,
+  "fecha_resolucion" TIMESTAMP(3),
+  "accion_tomada" TEXT,
+  FOREIGN KEY ("usuario_id") REFERENCES "usuarios"("id") ON DELETE CASCADE,
+  FOREIGN KEY ("resuelto_por") REFERENCES "usuarios"("id")
 );
 ```
 
@@ -403,11 +633,38 @@ La API será consumida tanto por la aplicación web como por la futura aplicaci�
 - GET /api/galeria/publica
 - GET /api/galeria/foto/:id
 
-**Mini CMS:**
-- GET /api/cms/contenido (protegido, rol CONTENT_ADMIN)
-- PUT /api/cms/contenido/:seccion (protegido, rol CONTENT_ADMIN)
-- POST /api/cms/upload-imagen (protegido, rol CONTENT_ADMIN)
-- GET /api/cms/preview/:seccion (protegido, rol CONTENT_ADMIN)
+**Sistema CMS Dinámico:**
+- GET /api/contenido - Obtener contenido con filtros (tipo, categoría, estado)
+- GET /api/contenido/:slug - Obtener contenido específico por slug
+- POST /api/contenido (protegido, rol CONTENT_ADMIN) - Crear nuevo contenido
+- PUT /api/contenido/:id (protegido, rol CONTENT_ADMIN) - Actualizar contenido
+- DELETE /api/contenido/:id (protegido, rol CONTENT_ADMIN) - Eliminar contenido
+- POST /api/contenido/:id/publish (protegido, rol CONTENT_ADMIN) - Publicar contenido
+- GET /api/contenido/preview/:id (protegido, rol CONTENT_ADMIN) - Preview de contenido
+
+**Gestión de Contenido:**
+- GET /api/contenido/categorias - Obtener categorías disponibles por tipo
+- GET /api/contenido/etiquetas - Obtener etiquetas con autocompletado
+- POST /api/contenido/upload-imagen (protegido, rol CONTENT_ADMIN) - Subir imagen
+- GET /api/contenido/plantillas/:tipo - Obtener plantillas por tipo de contenido
+
+**Interacciones Unificadas:**
+- POST /api/contenido/:id/like (protegido) - Dar/quitar like a contenido
+- GET /api/contenido/:id/comentarios - Obtener comentarios de contenido
+- POST /api/contenido/:id/comentarios (protegido) - Agregar comentario
+- POST /api/comentarios/:id/report (protegido) - Reportar comentario
+- PUT /api/comentarios/:id/moderate (protegido, rol ADMIN) - Moderar comentario
+
+**Newsletter:**
+- POST /api/newsletter/subscribe - Suscribirse al newsletter
+- GET /api/newsletter/confirm/:token - Confirmar suscripción
+- POST /api/newsletter/unsubscribe - Cancelar suscripción
+- POST /api/newsletter/send-digest (protegido, rol CONTENT_ADMIN) - Enviar digest manual
+
+**Analytics Unificado:**
+- GET /api/contenido/stats (protegido, rol CONTENT_ADMIN) - Estadísticas generales
+- GET /api/contenido/:id/analytics (protegido, rol CONTENT_ADMIN) - Analytics específico
+- GET /api/contenido/trending - Contenido trending por tipo
 
 ## 7. Consideraciones Adicionales
 
@@ -433,3 +690,22 @@ La API será consumida tanto por la aplicación web como por la futura aplicaci�
 - Manejo de errores y reintentos automáticos
 - Aprovechamiento de metadatos EXIF para funcionalidades avanzadas
 - Gestión inteligente de almacenamiento y optimización de imágenes
+
+### Sistema CMS Normalizado:
+- **Esquema Normalizado**: Separación de responsabilidades en tablas especializadas
+- **Mejor Rendimiento**: Consultas más eficientes y carga selectiva de datos
+- **Mantenimiento Simplificado**: Cada tabla tiene una responsabilidad específica
+- **Escalabilidad**: Fácil agregar nuevos campos sin afectar consultas existentes
+- **Flexibilidad**: Taxonomía dinámica sin restricciones de esquema fijo
+- Editor WYSIWYG con auto-guardado para prevenir pérdida de contenido
+- Generación automática de slugs únicos para SEO
+- Sistema de moderación de comentarios con aprobación manual
+- Newsletter automático con digest semanal de contenido destacado
+- Analytics integrado para métricas de engagement y rendimiento
+- SEO automático con meta tags y structured data para mejor indexación
+
+### Moderación y Comunidad:
+- Sistema de reportes para contenido inapropiado
+- Herramientas de moderación para administradores
+- Notificaciones automáticas para nuevos comentarios y interacciones
+- Límites de rate limiting específicos para comentarios y likes

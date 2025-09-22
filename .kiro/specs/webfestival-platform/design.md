@@ -2,7 +2,7 @@
 
 ## Visión General
 
-WebFestival es una plataforma web completa de concursos de fotografía con arquitectura API-first, construida con Next.js 14+, TypeScript 5+ y PostgreSQL 16+. La plataforma implementa una separación clara entre el almacenamiento de metadatos (PostgreSQL) y el almacenamiento de archivos (Immich), garantizando escalabilidad, rendimiento óptimo y funcionalidades sociales avanzadas con gestión inteligente de metadatos fotográficos.
+WebFestival es una plataforma web completa de concursos de fotografía con arquitectura API-first, construida con Next.js 14+, TypeScript 5+ y PostgreSQL 16+. La plataforma gestiona cuatro tipos de usuarios: participantes (fotógrafos), jurados, administradores y administradores de contenido (CONTENT_ADMIN). Implementa una separación clara entre el almacenamiento de metadatos (PostgreSQL) y el almacenamiento de archivos (servidor Immich independiente), garantizando escalabilidad, rendimiento óptimo y funcionalidades sociales avanzadas con gestión inteligente de metadatos fotográficos. Incluye una página estática informativa con mini CMS integrado para gestión de contenido.
 
 ## Arquitectura
 
@@ -11,8 +11,8 @@ WebFestival es una plataforma web completa de concursos de fotografía con arqui
 ```mermaid
 graph TB
     subgraph "Clientes"
-        WEB[Next.js Frontend]
-        STATIC[Página Estática<br/>Landing Page]
+        WEB[Next.js Frontend<br/>Aplicación Principal]
+        STATIC[Página Estática<br/>Landing Page + Mini CMS]
         MOBILE[React Native App<br/>Futuro]
     end
     
@@ -21,11 +21,13 @@ graph TB
         AUTH[NextAuth.js / Clerk]
         NOTIF[Sistema de Notificaciones]
         SOCIAL[Integración Redes Sociales]
+        CMS[Sistema CMS + Blog]
+        NEWSLETTER[Servicio Newsletter]
     end
     
     subgraph "Almacenamiento"
-        DB[(PostgreSQL)]
-        IMMICH[Immich Server<br/>Almacenamiento de Imágenes<br/>y Gestión de Metadatos]
+        DB[(PostgreSQL<br/>Metadatos y Usuarios)]
+        IMMICH[Servidor Immich Independiente<br/>Almacenamiento de Imágenes<br/>Gestión de Metadatos EXIF<br/>Optimización Automática]
         CACHE[Redis Cache<br/>Opcional]
     end
     
@@ -45,8 +47,11 @@ graph TB
     API --> AUTH
     API --> NOTIF
     API --> SOCIAL
+    API --> CMS
+    CMS --> NEWSLETTER
     
     NOTIF --> EMAIL
+    NEWSLETTER --> EMAIL
     SOCIAL --> FACEBOOK
     SOCIAL --> INSTAGRAM
     SOCIAL --> TWITTER
@@ -81,6 +86,7 @@ interface User {
   picture_url?: string;
   bio?: string;
   createdAt: Date;
+  updatedAt: Date;
 }
 
 interface AuthContext {
@@ -113,10 +119,10 @@ interface Concurso {
 }
 
 interface ConfiguracionConcurso {
-  max_envios_por_participante: number;
-  tamaño_max_archivo: number; // en MB
-  dimensiones_max: { width: number; height: number };
-  formatos_permitidos: string[];
+  max_envios_por_participante: number; // máximo 3 por defecto
+  tamaño_max_archivo: number; // en MB, 10MB por defecto
+  dimensiones_max: { width: number; height: number }; // 4000x4000px por defecto
+  formatos_permitidos: string[]; // ['image/jpeg', 'image/png', 'image/webp']
 }
 ```
 
@@ -139,8 +145,16 @@ interface ImageService {
 
 interface ProcessedImage {
   original: string;
-  preview: string; // 1280x720px (16:9)
-  thumbnail: string; // 400x225px (16:9)
+  preview: string; // 1280x720px (16:9 widescreen)
+  thumbnail: string; // 400x225px (16:9 widescreen)
+  metadata: ImageMetadata;
+}
+
+interface ImageMetadata {
+  exif: Record<string, any>;
+  dimensions: { width: number; height: number };
+  fileSize: number;
+  format: string;
 }
 ```
 
@@ -268,34 +282,199 @@ interface UserMetrics {
   usersByRole: Record<string, number>;
 }
 
-### 9. Mini CMS para Contenido Estático
+### 9. Sistema CMS Dinámico y Unificado
 
 **Responsabilidades**:
-- Gestión de contenido de la página estática
-- Editor WYSIWYG integrado
-- Gestión de imágenes con Immich
-- Preview en tiempo real
+- Sistema CMS dinámico que maneja múltiples tipos de contenido de forma unificada
+- Gestión de contenido estático, blog posts y futuras extensiones
+- Editor WYSIWYG integrado con campos personalizables según tipo de contenido
+- Gestión de imágenes con integración directa a Immich
+- Preview en tiempo real y optimización SEO automática
+- Sistema unificado de comentarios y moderación
+- Categorización y etiquetado flexible
+- Newsletter automático para suscriptores
+- Escalabilidad para nuevos tipos de contenido sin cambios de esquema
 
 ```typescript
 interface CMSService {
-  getContent(seccion: string): Promise<ContenidoEstatico>;
-  updateContent(seccion: string, content: ContenidoEstatico): Promise<void>;
+  // Gestión de contenido principal
+  getContent(filters: ContentFilters): Promise<PaginatedContent>;
+  getContentBySlug(slug: string): Promise<Contenido>;
+  createContent(content: CreateContentDto, userId: string): Promise<Contenido>;
+  updateContent(id: number, content: UpdateContentDto, userId: string): Promise<Contenido>;
+  deleteContent(id: number, userId: string): Promise<void>;
+  publishContent(id: number, userId: string): Promise<void>;
+  
+  // Gestión de configuración
+  updateContentConfig(contentId: number, config: ContenidoConfiguracion): Promise<void>;
+  
+  // Gestión de SEO
+  updateContentSEO(contentId: number, seo: ContenidoSEO): Promise<void>;
+  
+  // Gestión de taxonomía
+  updateContentTaxonomy(contentId: number, taxonomia: ContenidoTaxonomia[]): Promise<void>;
+  getCategories(tipo?: string): Promise<string[]>;
+  getTags(query?: string): Promise<string[]>;
+  
+  // Métricas
+  updateContentMetrics(contentId: number, metricas: Partial<ContenidoMetricas>): Promise<void>;
+  getContentMetrics(contentId: number): Promise<ContenidoMetricas>;
+  
+  // Gestión de plantillas y tipos
+  getContentTypes(): Promise<ContentType[]>;
+  getContentTemplate(tipo: string): Promise<ContentTemplate>;
+  
+  // Gestión de imágenes
   uploadImage(file: File): Promise<string>;
-  previewContent(seccion: string): Promise<string>;
-  reorderSections(order: string[]): Promise<void>;
+  previewContent(id: number): Promise<string>;
+  
+  // Validaciones
+  validateContentAdmin(userId: string): Promise<boolean>;
 }
 
-interface ContenidoEstatico {
+interface Contenido {
   id: number;
-  seccion: string;
+  tipo: 'pagina_estatica' | 'blog_post' | 'seccion_cms';
+  slug: string;
   titulo: string;
-  contenido: string;
-  imagen_url?: string;
+  contenido?: string;
+  resumen?: string;
+  imagen_destacada?: string;
+  autor_id: string;
+  autor: User;
+  estado: 'borrador' | 'publicado' | 'archivado' | 'programado';
+  fecha_publicacion?: Date;
+  created_at: Date;
+  updated_at: Date;
+  updated_by?: string;
+  
+  // Relaciones (cargadas según necesidad)
+  configuracion?: ContenidoConfiguracion;
+  seo?: ContenidoSEO;
+  metricas?: ContenidoMetricas;
+  taxonomia?: ContenidoTaxonomia[];
+}
+
+interface ContenidoConfiguracion {
+  contenido_id: number;
   activo: boolean;
   orden: number;
-  metadatos?: Record<string, any>;
-  updated_by: string;
-  updated_at: Date;
+  permite_comentarios: boolean;
+  destacado: boolean;
+  configuracion_adicional?: Record<string, any>;
+}
+
+interface ContenidoSEO {
+  contenido_id: number;
+  seo_titulo?: string;
+  seo_descripcion?: string;
+  seo_keywords: string[];
+  meta_tags?: Record<string, any>;
+  structured_data?: Record<string, any>;
+}
+
+interface ContenidoMetricas {
+  contenido_id: number;
+  vistas: number;
+  likes: number;
+  comentarios_count: number;
+  shares: number;
+  ultima_vista?: Date;
+  primera_publicacion?: Date;
+}
+
+interface ContenidoTaxonomia {
+  id: number;
+  contenido_id: number;
+  categoria?: string;
+  etiqueta?: string;
+  tipo_taxonomia: 'categoria' | 'etiqueta';
+}
+
+interface ContentFilters {
+  tipo?: string;
+  categoria?: string;
+  etiqueta?: string;
+  autor?: string;
+  estado?: 'borrador' | 'publicado' | 'archivado' | 'programado';
+  busqueda?: string;
+  activo?: boolean;
+  page: number;
+  limit: number;
+}
+
+interface PaginatedContent {
+  contenido: Contenido[];
+  total: number;
+  page: number;
+  totalPages: number;
+}
+
+interface ContentType {
+  tipo: string;
+  nombre: string;
+  descripcion: string;
+  campos_requeridos: string[];
+  campos_opcionales: string[];
+  permite_comentarios: boolean;
+  tiene_orden: boolean;
+  plantilla_defecto: string;
+}
+
+interface ContentTemplate {
+  tipo: string;
+  campos: ContentField[];
+  configuracion: Record<string, any>;
+}
+
+interface ContentField {
+  nombre: string;
+  tipo: 'text' | 'textarea' | 'wysiwyg' | 'image' | 'select' | 'multiselect' | 'date' | 'boolean';
+  requerido: boolean;
+  opciones?: string[];
+  validacion?: Record<string, any>;
+}
+
+interface ContentInteractionService {
+  // Interacciones unificadas
+  likeContent(contentId: number, tipoContenido: string, userId: string): Promise<void>;
+  unlikeContent(contentId: number, tipoContenido: string, userId: string): Promise<void>;
+  addComment(contentId: number, tipoContenido: string, userId: string, contenido: string, parentId?: number): Promise<ContenidoComentario>;
+  moderateComment(commentId: number, approved: boolean, userId: string): Promise<void>;
+  reportContent(elementId: number, tipoElemento: string, userId: string, razon: string, descripcion?: string): Promise<void>;
+  
+  // Estadísticas
+  getContentStats(tipo?: string): Promise<ContentStats>;
+  getPopularContent(tipo: string, limit: number): Promise<Contenido[]>;
+  getTrendingTopics(tipo: string): Promise<string[]>;
+  
+  // Newsletter
+  subscribeToNewsletter(email: string): Promise<void>;
+  sendNewsletterDigest(): Promise<void>;
+}
+
+interface ContenidoComentario {
+  id: number;
+  contenido_id: number;
+  tipo_contenido: string;
+  usuario_id: string;
+  usuario: User;
+  contenido: string;
+  aprobado: boolean;
+  reportado: boolean;
+  parent_id?: number;
+  fecha_comentario: Date;
+}
+
+interface ContentStats {
+  total_contenido: number;
+  contenido_publicado: number;
+  total_comentarios: number;
+  total_vistas: number;
+  total_likes: number;
+  contenido_mas_popular: Contenido[];
+  categorias_activas: { categoria: string; count: number }[];
+  etiquetas_populares: { etiqueta: string; count: number }[];
 }
 
 interface CMSEditor {
@@ -303,6 +482,23 @@ interface CMSEditor {
   content: string;
   toolbar: string[];
   plugins: string[];
+  dragAndDrop: boolean;
+  autoSave: boolean;
+  spellCheck: boolean;
+}
+
+interface StaticPageService {
+  generateSEOMetadata(content: ContenidoEstatico[]): Promise<SEOMetadata>;
+  getFeaturedContests(): Promise<Concurso[]>;
+  getPublicGallery(): Promise<Foto[]>;
+  getFeaturedBlogPosts(limit: number): Promise<BlogPost[]>;
+}
+
+interface SEOMetadata {
+  title: string;
+  description: string;
+  keywords: string[];
+  structuredData: Record<string, any>;
 }
 ```
 ```
@@ -437,19 +633,120 @@ CREATE TABLE "notificaciones" (
   FOREIGN KEY ("usuario_id") REFERENCES "usuarios"("id") ON DELETE CASCADE
 );
 
--- Configuración de contenido estático
-CREATE TABLE "contenido_estatico" (
+-- Sistema CMS normalizado y optimizado
+CREATE TABLE "contenido" (
   "id" SERIAL NOT NULL PRIMARY KEY,
-  "seccion" TEXT NOT NULL UNIQUE,
-  "titulo" TEXT,
+  "tipo" TEXT NOT NULL,
+  "slug" TEXT NOT NULL UNIQUE,
+  "titulo" TEXT NOT NULL,
   "contenido" TEXT,
-  "imagen_url" TEXT,
+  "resumen" TEXT,
+  "imagen_destacada" TEXT,
+  "autor_id" TEXT NOT NULL,
+  "estado" TEXT NOT NULL DEFAULT 'borrador',
+  "fecha_publicacion" TIMESTAMP(3),
+  "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updated_by" TEXT,
+  FOREIGN KEY ("autor_id") REFERENCES "usuarios"("id") ON DELETE CASCADE,
+  FOREIGN KEY ("updated_by") REFERENCES "usuarios"("id")
+);
+
+-- Configuración específica por contenido
+CREATE TABLE "contenido_configuracion" (
+  "contenido_id" INTEGER NOT NULL PRIMARY KEY,
   "activo" BOOLEAN DEFAULT TRUE,
   "orden" INTEGER DEFAULT 0,
-  "metadatos" JSONB,
-  "updated_by" TEXT,
-  "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY ("updated_by") REFERENCES "usuarios"("id")
+  "permite_comentarios" BOOLEAN DEFAULT FALSE,
+  "destacado" BOOLEAN DEFAULT FALSE,
+  "configuracion_adicional" JSONB,
+  FOREIGN KEY ("contenido_id") REFERENCES "contenido"("id") ON DELETE CASCADE
+);
+
+-- Información SEO separada
+CREATE TABLE "contenido_seo" (
+  "contenido_id" INTEGER NOT NULL PRIMARY KEY,
+  "seo_titulo" TEXT,
+  "seo_descripcion" TEXT,
+  "seo_keywords" TEXT[],
+  "meta_tags" JSONB,
+  "structured_data" JSONB,
+  FOREIGN KEY ("contenido_id") REFERENCES "contenido"("id") ON DELETE CASCADE
+);
+
+-- Métricas y estadísticas
+CREATE TABLE "contenido_metricas" (
+  "contenido_id" INTEGER NOT NULL PRIMARY KEY,
+  "vistas" INTEGER DEFAULT 0,
+  "likes" INTEGER DEFAULT 0,
+  "comentarios_count" INTEGER DEFAULT 0,
+  "shares" INTEGER DEFAULT 0,
+  "ultima_vista" TIMESTAMP(3),
+  "primera_publicacion" TIMESTAMP(3),
+  FOREIGN KEY ("contenido_id") REFERENCES "contenido"("id") ON DELETE CASCADE
+);
+
+-- Taxonomía (categorías y etiquetas)
+CREATE TABLE "contenido_taxonomia" (
+  "id" SERIAL NOT NULL PRIMARY KEY,
+  "contenido_id" INTEGER NOT NULL,
+  "categoria" TEXT,
+  "etiqueta" TEXT,
+  "tipo_taxonomia" TEXT NOT NULL,
+  FOREIGN KEY ("contenido_id") REFERENCES "contenido"("id") ON DELETE CASCADE
+);
+
+-- Sistema unificado de comentarios
+CREATE TABLE "contenido_comentarios" (
+  "id" SERIAL NOT NULL PRIMARY KEY,
+  "contenido_id" INTEGER NOT NULL,
+  "tipo_contenido" TEXT NOT NULL,
+  "usuario_id" TEXT NOT NULL,
+  "contenido" TEXT NOT NULL,
+  "aprobado" BOOLEAN DEFAULT FALSE,
+  "reportado" BOOLEAN DEFAULT FALSE,
+  "parent_id" INTEGER,
+  "fecha_comentario" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY ("usuario_id") REFERENCES "usuarios"("id") ON DELETE CASCADE,
+  FOREIGN KEY ("parent_id") REFERENCES "contenido_comentarios"("id") ON DELETE CASCADE
+);
+
+-- Sistema unificado de likes
+CREATE TABLE "contenido_likes" (
+  "id" SERIAL NOT NULL PRIMARY KEY,
+  "contenido_id" INTEGER NOT NULL,
+  "tipo_contenido" TEXT NOT NULL,
+  "usuario_id" TEXT NOT NULL,
+  "fecha_like" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY ("usuario_id") REFERENCES "usuarios"("id") ON DELETE CASCADE,
+  UNIQUE("contenido_id", "tipo_contenido", "usuario_id")
+);
+
+-- Suscriptores del newsletter
+CREATE TABLE "newsletter_suscriptores" (
+  "id" SERIAL NOT NULL PRIMARY KEY,
+  "email" TEXT NOT NULL UNIQUE,
+  "activo" BOOLEAN DEFAULT TRUE,
+  "fecha_suscripcion" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "fecha_confirmacion" TIMESTAMP(3),
+  "token_confirmacion" TEXT
+);
+
+-- Sistema unificado de reportes
+CREATE TABLE "contenido_reportes" (
+  "id" SERIAL NOT NULL PRIMARY KEY,
+  "elemento_id" INTEGER NOT NULL,
+  "tipo_elemento" TEXT NOT NULL,
+  "usuario_id" TEXT NOT NULL,
+  "razon" TEXT NOT NULL,
+  "descripcion" TEXT,
+  "fecha_reporte" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "resuelto" BOOLEAN DEFAULT FALSE,
+  "resuelto_por" TEXT,
+  "fecha_resolucion" TIMESTAMP(3),
+  "accion_tomada" TEXT,
+  FOREIGN KEY ("usuario_id") REFERENCES "usuarios"("id") ON DELETE CASCADE,
+  FOREIGN KEY ("resuelto_por") REFERENCES "usuarios"("id")
 );
 ```
 
@@ -587,6 +884,32 @@ CREATE INDEX idx_fotos_concurso_categoria ON fotos(concurso_id, categoria_id);
 CREATE INDEX idx_calificaciones_foto ON calificaciones(foto_id);
 CREATE INDEX idx_usuarios_email ON usuarios(email);
 CREATE INDEX idx_inscripciones_usuario_concurso ON inscripciones(usuario_id, concurso_id);
+
+-- Índices para el sistema CMS normalizado
+CREATE INDEX idx_contenido_tipo_estado ON contenido(tipo, estado);
+CREATE INDEX idx_contenido_slug ON contenido(slug);
+CREATE INDEX idx_contenido_autor ON contenido(autor_id);
+CREATE INDEX idx_contenido_fecha_pub ON contenido(fecha_publicacion DESC);
+CREATE INDEX idx_contenido_updated_at ON contenido(updated_at DESC);
+
+-- Índices para taxonomía
+CREATE INDEX idx_contenido_taxonomia_contenido ON contenido_taxonomia(contenido_id);
+CREATE INDEX idx_contenido_taxonomia_categoria ON contenido_taxonomia(categoria);
+CREATE INDEX idx_contenido_taxonomia_etiqueta ON contenido_taxonomia(etiqueta);
+CREATE INDEX idx_contenido_taxonomia_tipo ON contenido_taxonomia(tipo_taxonomia);
+
+-- Índices para configuración y métricas
+CREATE INDEX idx_contenido_config_activo ON contenido_configuracion(activo);
+CREATE INDEX idx_contenido_config_orden ON contenido_configuracion(orden);
+CREATE INDEX idx_contenido_metricas_vistas ON contenido_metricas(vistas DESC);
+CREATE INDEX idx_contenido_metricas_likes ON contenido_metricas(likes DESC);
+
+-- Índices para interacciones (sin cambios)
+CREATE INDEX idx_contenido_comentarios_contenido ON contenido_comentarios(contenido_id, tipo_contenido);
+CREATE INDEX idx_contenido_comentarios_usuario ON contenido_comentarios(usuario_id);
+CREATE INDEX idx_contenido_likes_contenido ON contenido_likes(contenido_id, tipo_contenido);
+CREATE INDEX idx_contenido_likes_usuario ON contenido_likes(usuario_id);
+CREATE INDEX idx_contenido_reportes_elemento ON contenido_reportes(elemento_id, tipo_elemento);
 ```
 
 ## Deployment y DevOps

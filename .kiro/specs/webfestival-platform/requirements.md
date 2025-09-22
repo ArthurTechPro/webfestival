@@ -2,7 +2,7 @@
 
 ## Introducción
 
-WebFestival es una plataforma web completa para la gestión de concursos de fotografía online. La plataforma debe ser escalable, con una arquitectura API-first que permita servir tanto a la aplicación web actual como a una futura aplicación móvil nativa. El sistema gestiona tres tipos de usuarios principales: participantes (fotógrafos), jurados y administradores, cada uno con funcionalidades específicas para el flujo completo de un concurso fotográfico.
+WebFestival es una plataforma web completa para la gestión de concursos de fotografía online. La plataforma debe ser escalable, con una arquitectura API-first que permita servir tanto a la aplicación web actual como a una futura aplicación móvil nativa. El sistema gestiona cuatro tipos de usuarios principales: participantes (fotógrafos), jurados, administradores y administradores de contenido, cada uno con funcionalidades específicas para el flujo completo de un concurso fotográfico. La plataforma integra Immich ([https://immich.app/](https://immich.app/)) para gestión inteligente de imágenes y incluye un mini CMS para gestión de contenido estático.
 
 ## Requisitos
 
@@ -35,8 +35,8 @@ WebFestival es una plataforma web completa para la gestión de concursos de foto
 #### Criterios de Aceptación
 
 1. CUANDO un participante inscrito accede a un concurso ENTONCES el sistema DEBERÁ mostrar todas las categorías disponibles
-2. CUANDO un participante sube una fotografía ENTONCES el sistema DEBERÁ generar una URL pre-firmada para subida directa al almacenamiento
-3. CUANDO la subida es exitosa ENTONCES el sistema DEBERÁ guardar la foto_url, título, concurso_id y categoria_id en la base de datos
+2. CUANDO un participante sube una fotografía ENTONCES el sistema DEBERÁ conectarse con Immich para generar una URL segura y extraer metadatos EXIF automáticamente
+3. CUANDO la subida es exitosa ENTONCES el sistema DEBERÁ guardar la foto_url, título, concurso_id, categoria_id y metadatos en la base de datos, generando versiones optimizadas en formato widescreen (16:9)
 4. CUANDO un participante intenta subir sin estar inscrito ENTONCES el sistema DEBERÁ denegar el acceso
 
 ### Requisito 4
@@ -45,9 +45,10 @@ WebFestival es una plataforma web completa para la gestión de concursos de foto
 
 #### Criterios de Aceptación
 
-1. CUANDO un participante accede a "Mis Envíos" ENTONCES el sistema DEBERÁ mostrar todas sus fotografías enviadas con estado del concurso solo se permiten 3 envios.
+1. CUANDO un participante accede a "Mis Envíos" ENTONCES el sistema DEBERÁ mostrar todas sus fotografías enviadas con estado del concurso y límite máximo de 3 envíos por concurso
 2. CUANDO un concurso está en evaluación ENTONCES el sistema DEBERÁ mostrar el estado "En Calificación"
-3. CUANDO un concurso finaliza ENTONCES el sistema DEBERÁ mostrar los resultados y calificaciones recibidas
+3. CUANDO un concurso finaliza ENTONCES el sistema DEBERÁ mostrar los resultados y calificaciones recibidas con los cinco criterios evaluados
+4. CUANDO hay comentarios de jurados ENTONCES el sistema DEBERÁ mostrarlos junto con las calificaciones
 4. CUANDO hay comentarios de jurados ENTONCES el sistema DEBERÁ mostrarlos junto con las calificaciones
 
 ### Requisito 5
@@ -184,7 +185,7 @@ WebFestival es una plataforma web completa para la gestión de concursos de foto
 
 ### Requisito 17
 
-**Historia de Usuario:** Como participante usando la aplicación móvil o aplicacion web, quiero poder subir fotografías directamente desde mi dispositivo a un servidor independiente de Immich, para tener una experiencia fluida y segura de carga de archivos con gestión avanzada de metadatos.
+**Historia de Usuario:** Como participante usando la aplicación móvil o aplicación web, quiero poder subir fotografías directamente desde mi dispositivo a un servidor independiente de Immich, para tener una experiencia fluida y segura de carga de archivos con gestión avanzada de metadatos.
 
 #### Criterios de Aceptación
 
@@ -212,7 +213,7 @@ WebFestival es una plataforma web completa para la gestión de concursos de foto
 
 1. CUANDO un visitante accede a la página estática ENTONCES el sistema DEBERÁ mostrar información sobre la plataforma, misión y beneficios
 2. CUANDO se muestran concursos destacados ENTONCES el sistema DEBERÁ obtener datos en tiempo real de la base de datos de WebFestival
-3. CUANDO un visitante quiere registrarse ENTONCES el sistema DEBERÁ redirigir a la aplicación principal de WebFestival al formulario de registro.
+3. CUANDO un visitante quiere registrarse ENTONCES el sistema DEBERÁ redirigir a la aplicación principal de WebFestival mostrando el formulario de registro
 4. CUANDO se carga la página ENTONCES el sistema DEBERÁ optimizar para SEO con meta tags, structured data y sitemap
 
 ### Requisito 20
@@ -225,17 +226,6 @@ WebFestival es una plataforma web completa para la gestión de concursos de foto
 2. CUANDO subo imágenes ENTONCES el sistema DEBERÁ integrarlas con Immich y generar URLs optimizadas
 3. CUANDO reordeno secciones ENTONCES el sistema DEBERÁ permitir cambiar el orden de visualización mediante drag & drop
 4. CUANDO publico cambios ENTONCES el sistema DEBERÁ actualizar inmediatamente la página estática y registrar el usuario que hizo el cambio
-
-### Requisito 23
-
-**Historia de Usuario:** Como sistema, necesito gestionar roles específicos para administración de contenido, para separar las responsabilidades de gestión técnica y gestión de contenido.
-
-#### Criterios de Aceptación
-
-1. CUANDO se asigna el rol CONTENT_ADMIN ENTONCES el sistema DEBERÁ permitir acceso solo al mini CMS y gestión de contenido estático
-2. CUANDO un CONTENT_ADMIN accede al sistema ENTONCES el sistema DEBERÁ mostrar únicamente las funcionalidades de gestión de contenido
-3. CUANDO se realizan cambios de contenido ENTONCES el sistema DEBERÁ registrar qué usuario CONTENT_ADMIN realizó la modificación
-4. CUANDO un ADMIN gestiona usuarios ENTONCES el sistema DEBERÁ permitir asignar y revocar el rol CONTENT_ADMIN
 
 ### Requisito 21
 
@@ -258,3 +248,113 @@ WebFestival es una plataforma web completa para la gestión de concursos de foto
 2. CUANDO se genera el thumbnail ENTONCES el sistema DEBERÁ crear una versión de 300x300px optimizada para listados y galerías
 3. CUANDO se genera el preview ENTONCES el sistema DEBERÁ crear una versión de 800x800px para visualización rápida en modales
 4. CUANDO se sirven las imágenes ENTONCES el sistema DEBERÁ seleccionar automáticamente la versión apropiada según el contexto de uso
+
+### Requisito 24
+
+**Historia de Usuario:** Como sistema, necesito optimizar las imágenes en formato widescreen para redes sociales y visualización moderna, para mejorar la experiencia visual y compatibilidad con plataformas sociales.
+
+#### Criterios de Aceptación
+
+1. CUANDO se procesa una imagen ENTONCES el sistema DEBERÁ generar automáticamente versiones en formato 16:9 (widescreen)
+2. CUANDO se genera el thumbnail ENTONCES el sistema DEBERÁ crear una versión de 400x225px optimizada para listados
+3. CUANDO se genera el preview ENTONCES el sistema DEBERÁ crear una versión de 1280x720px para visualización detallada
+4. CUANDO se comparte en redes sociales ENTONCES el sistema DEBERÁ usar automáticamente las versiones widescreen optimizadas
+
+### Requisito 23
+
+**Historia de Usuario:** Como administrador del sistema, necesito gestionar roles específicos para administración de contenido, para separar las responsabilidades de gestión técnica y gestión de contenido.
+
+#### Criterios de Aceptación
+
+1. CUANDO se asigna el rol CONTENT_ADMIN ENTONCES el sistema DEBERÁ permitir acceso solo al mini CMS y gestión de contenido estático
+2. CUANDO un CONTENT_ADMIN accede al sistema ENTONCES el sistema DEBERÁ mostrar únicamente las funcionalidades de gestión de contenido
+3. CUANDO se realizan cambios de contenido ENTONCES el sistema DEBERÁ registrar qué usuario CONTENT_ADMIN realizó la modificación
+4. CUANDO un ADMIN gestiona usuarios ENTONCES el sistema DEBERÁ permitir asignar y revocar el rol CONTENT_ADMIN
+
+### Requisito 25
+
+**Historia de Usuario:** Como administrador de contenido (CONTENT_ADMIN), quiero gestionar todo tipo de contenido de forma unificada a través de un CMS dinámico, para mantener tanto la página estática como el blog de la comunidad de manera eficiente y escalable.
+
+#### Criterios de Aceptación
+
+1. CUANDO accedo al sistema CMS ENTONCES el sistema DEBERÁ mostrar una interfaz unificada para gestionar contenido estático, posts de blog y futuras extensiones
+2. CUANDO creo contenido ENTONCES el sistema DEBERÁ permitir seleccionar el tipo (página estática, blog post, sección CMS) y mostrar campos apropiados dinámicamente
+3. CUANDO trabajo con cualquier tipo de contenido ENTONCES el sistema DEBERÁ proporcionar editor WYSIWYG, gestión de imágenes, categorización flexible y configuración SEO
+4. CUANDO guardo cambios ENTONCES el sistema DEBERÁ generar automáticamente slugs únicos y permitir preview en tiempo real sin afectar el contenido publicado
+
+### Requisito 26
+
+**Historia de Usuario:** Como visitante o usuario registrado, quiero leer posts del blog de la comunidad, para mantenerme informado sobre noticias, consejos y eventos relacionados con fotografía.
+
+#### Criterios de Aceptación
+
+1. CUANDO accedo al blog ENTONCES el sistema DEBERÁ mostrar todos los posts publicados ordenados por fecha de publicación más reciente
+2. CUANDO leo un post ENTONCES el sistema DEBERÁ mostrar título, contenido, autor, fecha, categoría, etiquetas e imagen destacada
+3. CUANDO navego por el blog ENTONCES el sistema DEBERÁ permitir filtrar por categoría, etiqueta, autor y buscar por texto
+4. CUANDO accedo desde dispositivos móviles ENTONCES el sistema DEBERÁ mostrar el contenido optimizado para lectura en pantallas pequeñas
+
+### Requisito 27
+
+**Historia de Usuario:** Como usuario registrado, quiero interactuar con cualquier tipo de contenido que permita interacciones, para participar activamente en la comunidad y expresar mi opinión de manera unificada.
+
+#### Criterios de Aceptación
+
+1. CUANDO veo contenido que permite interacciones ENTONCES el sistema DEBERÁ mostrar botones para likes y comentarios de forma consistente independientemente del tipo de contenido
+2. CUANDO doy like ENTONCES el sistema DEBERÁ actualizar el contador y registrar mi interacción usando el sistema unificado de likes
+3. CUANDO escribo un comentario ENTONCES el sistema DEBERÁ usar el sistema unificado de comentarios con soporte para respuestas anidadas
+4. CUANDO reporto contenido inapropiado ENTONCES el sistema DEBERÁ usar el sistema unificado de reportes para cualquier tipo de elemento (contenido o comentario)
+
+### Requisito 28
+
+**Historia de Usuario:** Como administrador de contenido, quiero gestionar la organización del contenido de forma flexible, para mantener una estructura coherente que se adapte a diferentes tipos de contenido y facilite la navegación de los usuarios.
+
+#### Criterios de Aceptación
+
+1. CUANDO organizo contenido ENTONCES el sistema DEBERÁ permitir asignar categorías de texto libre que se adapten al tipo de contenido (ej: "técnicas" para blog, "hero" para página estática)
+2. CUANDO uso etiquetas ENTONCES el sistema DEBERÁ proporcionar autocompletado basado en etiquetas existentes y permitir crear nuevas dinámicamente
+3. CUANDO filtro contenido ENTONCES el sistema DEBERÁ permitir búsqueda por tipo, categoría, etiquetas y estado de publicación
+4. CUANDO visualizo estadísticas ENTONCES el sistema DEBERÁ mostrar métricas unificadas de contenido por tipo, categoría y etiquetas más utilizadas
+
+### Requisito 29
+
+**Historia de Usuario:** Como administrador, quiero moderar comentarios del blog y gestionar reportes, para mantener un ambiente respetuoso y constructivo en la comunidad.
+
+#### Criterios de Aceptación
+
+1. CUANDO accedo al panel de moderación ENTONCES el sistema DEBERÁ mostrar todos los comentarios pendientes de aprobación y reportados
+2. CUANDO apruebo un comentario ENTONCES el sistema DEBERÁ hacerlo visible públicamente y notificar al autor del post
+3. CUANDO rechazo un comentario ENTONCES el sistema DEBERÁ mantenerlo oculto y opcionalmente notificar al autor del comentario
+4. CUANDO reviso reportes ENTONCES el sistema DEBERÁ mostrar el comentario, la razón del reporte y permitir tomar acciones (aprobar, rechazar, eliminar)
+
+### Requisito 30
+
+**Historia de Usuario:** Como visitante interesado, quiero suscribirme a un newsletter para recibir actualizaciones sobre nuevos posts del blog y concursos destacados, para mantenerme informado sin tener que visitar la plataforma constantemente.
+
+#### Criterios de Aceptación
+
+1. CUANDO me suscribo al newsletter ENTONCES el sistema DEBERÁ validar mi email y enviar un correo de confirmación
+2. CUANDO confirmo mi suscripción ENTONCES el sistema DEBERÁ activar mi suscripción y enviar un email de bienvenida
+3. CUANDO se publican nuevos posts ENTONCES el sistema DEBERÁ enviar un digest semanal con los posts más destacados
+4. CUANDO quiero cancelar la suscripción ENTONCES el sistema DEBERÁ proporcionar un enlace de cancelación en cada email
+
+### Requisito 31
+
+**Historia de Usuario:** Como administrador de contenido, quiero acceder a estadísticas del blog, para entender qué tipo de contenido genera más interacción y optimizar la estrategia de contenido.
+
+#### Criterios de Aceptación
+
+1. CUANDO accedo a las estadísticas ENTONCES el sistema DEBERÁ mostrar número total de posts, comentarios, likes y vistas
+2. CUANDO analizo el rendimiento ENTONCES el sistema DEBERÁ mostrar los posts más populares, categorías más leídas y tendencias de engagement
+3. CUANDO reviso métricas temporales ENTONCES el sistema DEBERÁ mostrar gráficos de actividad por día, semana y mes
+4. CUANDO evalúo el crecimiento ENTONCES el sistema DEBERÁ mostrar estadísticas de suscriptores del newsletter y nuevos comentaristas
+
+### Requisito 32
+
+**Historia de Usuario:** Como sistema, necesito optimizar el SEO del blog, para mejorar la visibilidad en motores de búsqueda y atraer más visitantes a la plataforma.
+
+#### Criterios de Aceptación
+
+1. CUANDO se publica un post ENTONCES el sistema DEBERÁ generar automáticamente meta tags optimizados (title, description, keywords)
+2. CUANDO se indexa contenido ENTONCES el sistema DEBERÁ crear structured data (JSON-LD) para mejorar la comprensión de los motores de búsqueda
+3. CUANDO se genera el sitemap ENTONCES el sistema DEBERÁ incluir todas las URLs del blog con fechas de última modificación
+4. CUANDO se comparte en redes sociales ENTONCES el sistema DEBERÁ generar Open Graph tags optimizados con imagen, título y descripción
