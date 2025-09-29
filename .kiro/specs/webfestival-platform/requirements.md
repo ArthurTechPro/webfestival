@@ -2,13 +2,21 @@
 
 ## Introducción
 
-WebFestival es una plataforma web completa para la gestión de concursos de fotografía online. La plataforma debe ser escalable, con una arquitectura API-first que permita servir tanto a la aplicación web actual como a una futura aplicación móvil nativa. El sistema gestiona cuatro tipos de usuarios principales: participantes (fotógrafos), jurados, administradores y administradores de contenido, cada uno con funcionalidades específicas para el flujo completo de un concurso fotográfico. La plataforma integra Immich ([https://immich.app/](https://immich.app/)) para gestión inteligente de imágenes y incluye un mini CMS para gestión de contenido estático.
+WebFestival es un ecosistema completo de aplicaciones para la gestión de concursos multimedia online que conecta artistas creativos (fotógrafos, videomakers, músicos, cineastas), jurados profesionales y organizadores en un ambiente colaborativo y competitivo. El sistema está dividido en tres proyectos independientes pero interconectados:
+
+1. **webfestival-api**: API backend desarrollada con Node.js 22+, Express.js 4.17+ y Prisma 5+ + PostgreSQL 14+ que centraliza toda la lógica de negocio
+2. **webfestival-app**: Aplicación React 19+ que consume la API y proporciona interfaces especializadas para participantes, jurados y administradores
+3. **webfestival-cms**: Landing page con Next.js 15+ que incluye CMS dinámico y blog, también consumiendo la API
+
+El sistema gestiona cuatro tipos de usuarios principales: participantes (artistas creativos), jurados especializados por tipo de medio, administradores y administradores de contenido (CONTENT_ADMIN), cada uno con funcionalidades específicas para el flujo completo de un concurso multimedia. La plataforma integra Immich ([https://immich.app/](https://immich.app/)) para gestión inteligente de medios multimedia con extracción automática de metadatos y está diseñada con arquitectura API-first para máxima escalabilidad y flexibilidad.
+
+**Visión del Producto**: Crear la plataforma líder en concursos multimedia online que facilite el descubrimiento de talento creativo emergente en múltiples disciplinas (fotografía, video, audio, cine) y genere una comunidad activa de creadores y profesionales del sector con contenido educativo continuo.
 
 ## Requisitos
 
 ### Requisito 1
 
-**Historia de Usuario:** Como participante (fotógrafo), quiero poder crear una cuenta y gestionar mi perfil, para poder participar en los concursos de fotografía.
+**Historia de Usuario:** Como participante (artista creativo), quiero poder crear una cuenta y gestionar mi perfil, para poder participar en los concursos multimedia.
 
 #### Criterios de Aceptación
 
@@ -30,14 +38,15 @@ WebFestival es una plataforma web completa para la gestión de concursos de foto
 
 ### Requisito 3
 
-**Historia de Usuario:** Como participante, quiero poder subir mis fotografías a las categorías correspondientes, para participar en el concurso con mis mejores trabajos.
+**Historia de Usuario:** Como participante (artista creativo), quiero poder subir mis obras multimedia (fotografías, videos, audios, cortos de cine) a las categorías correspondientes, para participar en el concurso con mis mejores trabajos creativos.
 
 #### Criterios de Aceptación
 
-1. CUANDO un participante inscrito accede a un concurso ENTONCES el sistema DEBERÁ mostrar todas las categorías disponibles
-2. CUANDO un participante sube una fotografía ENTONCES el sistema DEBERÁ conectarse con Immich para generar una URL segura y extraer metadatos EXIF automáticamente
-3. CUANDO la subida es exitosa ENTONCES el sistema DEBERÁ guardar la foto_url, título, concurso_id, categoria_id y metadatos en la base de datos, generando versiones optimizadas en formato widescreen (16:9)
-4. CUANDO un participante intenta subir sin estar inscrito ENTONCES el sistema DEBERÁ denegar el acceso
+1. CUANDO un participante inscrito accede a un concurso ENTONCES el sistema DEBERÁ mostrar todas las categorías disponibles organizadas por tipo de medio
+2. CUANDO un participante sube un medio ENTONCES el sistema DEBERÁ conectarse con Immich para generar una URL segura y extraer metadatos automáticamente (EXIF para imágenes, metadata para videos/audios)
+3. CUANDO la subida es exitosa ENTONCES el sistema DEBERÁ guardar la medio_url, título, tipo_medio, concurso_id, categoria_id y metadatos, generando versiones optimizadas (thumbnails, previews) según el tipo de medio
+4. CUANDO un participante intenta subir más de 3 medios por concurso ENTONCES el sistema DEBERÁ mostrar error indicando el límite máximo
+5. CUANDO un participante intenta subir sin estar inscrito ENTONCES el sistema DEBERÁ denegar el acceso
 
 ### Requisito 4
 
@@ -45,33 +54,32 @@ WebFestival es una plataforma web completa para la gestión de concursos de foto
 
 #### Criterios de Aceptación
 
-1. CUANDO un participante accede a "Mis Envíos" ENTONCES el sistema DEBERÁ mostrar todas sus fotografías enviadas con estado del concurso y límite máximo de 3 envíos por concurso
+1. CUANDO un participante accede a "Mis Envíos" ENTONCES el sistema DEBERÁ mostrar todos sus medios enviados con estado del concurso y límite máximo de 3 envíos por concurso
 2. CUANDO un concurso está en evaluación ENTONCES el sistema DEBERÁ mostrar el estado "En Calificación"
-3. CUANDO un concurso finaliza ENTONCES el sistema DEBERÁ mostrar los resultados y calificaciones recibidas con los cinco criterios evaluados
-4. CUANDO hay comentarios de jurados ENTONCES el sistema DEBERÁ mostrarlos junto con las calificaciones
+3. CUANDO un concurso finaliza ENTONCES el sistema DEBERÁ mostrar los resultados y calificaciones recibidas con todos los criterios evaluados según el tipo de medio
 4. CUANDO hay comentarios de jurados ENTONCES el sistema DEBERÁ mostrarlos junto con las calificaciones
 
 ### Requisito 5
 
-**Historia de Usuario:** Como jurado, quiero acceder a un panel para ver las fotografías que me han sido asignadas, para poder evaluarlas según mi área de especialización.
+**Historia de Usuario:** Como jurado, quiero acceder a un panel para ver los medios que me han sido asignados, para poder evaluarlos según mi área de especialización.
 
 #### Criterios de Aceptación
 
 1. CUANDO un jurado accede al sistema ENTONCES el sistema DEBERÁ mostrar solo las categorías asignadas a él
-2. CUANDO un jurado ve sus asignaciones ENTONCES el sistema DEBERÁ mostrar todas las fotografías de las categorías correspondientes
-3. CUANDO un jurado accede a una fotografía ENTONCES el sistema DEBERÁ mostrar la imagen, título y datos del concurso
+2. CUANDO un jurado ve sus asignaciones ENTONCES el sistema DEBERÁ mostrar todos los medios de las categorías correspondientes según su especialización
+3. CUANDO un jurado accede a un medio ENTONCES el sistema DEBERÁ mostrar el contenido multimedia, título y datos del concurso con reproductor integrado si es necesario
 4. SI un jurado no tiene asignaciones ENTONCES el sistema DEBERÁ mostrar un mensaje informativo
 
 ### Requisito 6
 
-**Historia de Usuario:** Como jurado, quiero poder calificar y dejar comentarios en cada fotografía, para proporcionar evaluación profesional a los participantes.
+**Historia de Usuario:** Como jurado, quiero poder calificar y dejar comentarios en cada medio, para proporcionar evaluación profesional a los participantes.
 
 #### Criterios de Aceptación
 
-1. CUANDO un jurado evalúa una fotografía ENTONCES el sistema DEBERÁ permitir calificar enfoque, exposición, composición, creatividad e impacto visual (escala 1-10)
-2. CUANDO un jurado envía calificación ENTONCES el sistema DEBERÁ requerir puntuación en los cinco criterios
+1. CUANDO un jurado evalúa un medio ENTONCES el sistema DEBERÁ mostrar los criterios dinámicos configurados para ese tipo de medio (escala 1-10 para cada criterio)
+2. CUANDO un jurado envía calificación ENTONCES el sistema DEBERÁ requerir puntuación en todos los criterios activos para ese tipo de medio
 3. CUANDO un jurado deja comentarios ENTONCES el sistema DEBERÁ permitir texto libre opcional
-4. CUANDO un jurado ya calificó una foto ENTONCES el sistema DEBERÁ permitir editar la calificación hasta que el concurso cierre
+4. CUANDO un jurado ya calificó un medio ENTONCES el sistema DEBERÁ permitir editar la calificación hasta que el concurso cierre
 
 ### Requisito 7
 
@@ -92,7 +100,7 @@ WebFestival es una plataforma web completa para la gestión de concursos de foto
 
 1. CUANDO un administrador ve el progreso ENTONCES el sistema DEBERÁ mostrar estadísticas de calificaciones completadas por categoría
 2. CUANDO todas las evaluaciones están completas ENTONCES el sistema DEBERÁ permitir cambiar el estado del concurso a "Finalizado"
-3. CUANDO un concurso finaliza ENTONCES el sistema DEBERÁ calcular automáticamente los puntajes finales por fotografía
+3. CUANDO un concurso finaliza ENTONCES el sistema DEBERÁ calcular automáticamente los puntajes finales por medio
 4. CUANDO se anuncian ganadores ENTONCES el sistema DEBERÁ hacer visibles los resultados a todos los participantes
 
 ### Requisito 9
@@ -108,25 +116,25 @@ WebFestival es una plataforma web completa para la gestión de concursos de foto
 
 ### Requisito 10
 
-**Historia de Usuario:** Como sistema, necesito gestionar el almacenamiento de fotografías de manera eficiente y segura, para manejar archivos de gran tamaño sin impactar el rendimiento.
+**Historia de Usuario:** Como sistema, necesito gestionar el almacenamiento de medios multimedia de manera eficiente y segura, para manejar archivos de gran tamaño sin impactar el rendimiento.
 
 #### Criterios de Aceptación
 
-1. CUANDO se solicita subir una foto ENTONCES el sistema DEBERÁ generar una URL pre-firmada temporal
+1. CUANDO se solicita subir un medio ENTONCES el sistema DEBERÁ generar una URL pre-firmada temporal
 2. CUANDO la subida es directa al almacenamiento ENTONCES el sistema DEBERÁ validar la notificación de éxito
 3. CUANDO se almacena la referencia ENTONCES el sistema DEBERÁ guardar solo la URL en la base de datos
-4. CUANDO se accede a una foto ENTONCES el sistema DEBERÁ servir la URL del almacenamiento externo
+4. CUANDO se accede a un medio ENTONCES el sistema DEBERÁ servir la URL del almacenamiento externo
 
 ### Requisito 11
 
-**Historia de Usuario:** Como participante, quiero poder compartir mis fotografías ganadoras en redes sociales, para promocionar mis logros y atraer más seguidores a mi trabajo.
+**Historia de Usuario:** Como participante, quiero poder compartir mis medios ganadores en redes sociales, para promocionar mis logros y atraer más seguidores a mi trabajo.
 
 #### Criterios de Aceptación
 
 1. CUANDO un participante gana un concurso ENTONCES el sistema DEBERÁ mostrar botones para compartir en Facebook, Instagram, Twitter y LinkedIn
-2. CUANDO se comparte una fotografía ENTONCES el sistema DEBERÁ generar un enlace público con la imagen, título del concurso y posición obtenida
+2. CUANDO se comparte un medio ENTONCES el sistema DEBERÁ generar un enlace público con el contenido, título del concurso y posición obtenida
 3. CUANDO se comparte ENTONCES el sistema DEBERÁ incluir hashtags relevantes del concurso y la plataforma
-4. CUANDO un usuario no autenticado accede al enlace compartido ENTONCES el sistema DEBERÁ mostrar la fotografía con información básica del concurso
+4. CUANDO un usuario no autenticado accede al enlace compartido ENTONCES el sistema DEBERÁ mostrar el medio con información básica del concurso
 
 ### Requisito 12
 
@@ -135,20 +143,20 @@ WebFestival es una plataforma web completa para la gestión de concursos de foto
 #### Criterios de Aceptación
 
 1. CUANDO se acerca la fecha límite de un concurso inscrito ENTONCES el sistema DEBERÁ enviar notificación por email 48 horas antes
-2. CUANDO un jurado completa la evaluación de mis fotografías ENTONCES el sistema DEBERÁ notificarme por email
+2. CUANDO un jurado completa la evaluación de mis medios ENTONCES el sistema DEBERÁ notificarme por email
 3. CUANDO se publican los resultados de un concurso ENTONCES el sistema DEBERÁ enviar notificación a todos los participantes
 4. CUANDO un administrador crea un nuevo concurso ENTONCES el sistema DEBERÁ notificar a todos los usuarios registrados
 
 ### Requisito 13
 
-**Historia de Usuario:** Como visitante de la plataforma, quiero ver una galería pública con las mejores fotografías, para inspirarme y conocer el nivel de calidad de los concursos.
+**Historia de Usuario:** Como visitante de la plataforma, quiero ver una galería pública multimedia con los mejores trabajos creativos, para inspirarme y conocer el nivel de calidad de los concursos en diferentes disciplinas artísticas.
 
 #### Criterios de Aceptación
 
-1. CUANDO un visitante accede a la galería pública ENTONCES el sistema DEBERÁ mostrar fotografías ganadoras de concursos finalizados
-2. CUANDO se muestra una fotografía ENTONCES el sistema DEBERÁ incluir título, nombre del fotógrafo, concurso y posición obtenida
-3. CUANDO un visitante hace clic en una fotografía ENTONCES el sistema DEBERÁ mostrar detalles completos y comentarios de jurados
-4. CUANDO se filtra la galería ENTONCES el sistema DEBERÁ permitir filtrar por categoría, concurso y año
+1. CUANDO un visitante accede a la galería pública ENTONCES el sistema DEBERÁ mostrar medios ganadores de concursos finalizados (fotografías, videos, audios, cortos de cine)
+2. CUANDO se muestra un medio ENTONCES el sistema DEBERÁ incluir título, nombre del artista creativo, tipo de medio, concurso y posición obtenida
+3. CUANDO un visitante hace clic en un medio ENTONCES el sistema DEBERÁ mostrar detalles completos, reproductor integrado (para videos/audios) y comentarios de jurados
+4. CUANDO se filtra la galería ENTONCES el sistema DEBERÁ permitir filtrar por tipo de medio, categoría, concurso y año
 
 ### Requisito 14
 
@@ -358,3 +366,60 @@ WebFestival es una plataforma web completa para la gestión de concursos de foto
 2. CUANDO se indexa contenido ENTONCES el sistema DEBERÁ crear structured data (JSON-LD) para mejorar la comprensión de los motores de búsqueda
 3. CUANDO se genera el sitemap ENTONCES el sistema DEBERÁ incluir todas las URLs del blog con fechas de última modificación
 4. CUANDO se comparte en redes sociales ENTONCES el sistema DEBERÁ generar Open Graph tags optimizados con imagen, título y descripción
+
+### Requisito 33
+
+**Historia de Usuario:** Como administrador, quiero gestionar criterios de evaluación dinámicos, para poder configurar y personalizar los criterios según el tipo de medio y las necesidades específicas de cada concurso.
+
+#### Criterios de Aceptación
+
+1. CUANDO accedo a la gestión de criterios ENTONCES el sistema DEBERÁ permitir crear, editar y eliminar criterios de evaluación
+2. CUANDO creo un criterio ENTONCES el sistema DEBERÁ permitir definir nombre, descripción, tipo de medio aplicable, peso y orden de presentación
+3. CUANDO configuro criterios por tipo de medio ENTONCES el sistema DEBERÁ permitir asignar criterios específicos a fotografía, video, audio o corto de cine
+4. CUANDO un jurado evalúa un medio ENTONCES el sistema DEBERÁ mostrar solo los criterios activos configurados para ese tipo de medio
+5. CUANDO se calcula el puntaje final ENTONCES el sistema DEBERÁ aplicar los pesos configurados para cada criterio
+
+### Requisito 34
+
+**Historia de Usuario:** Como sistema, necesito proporcionar criterios de evaluación preconfigurados por tipo de medio, para facilitar la configuración inicial y garantizar evaluaciones profesionales especializadas.
+
+#### Criterios de Aceptación
+
+1. CUANDO se inicializa el sistema ENTONCES el sistema DEBERÁ incluir criterios preconfigurados para fotografía (Enfoque, Exposición, Composición, Creatividad, Impacto Visual)
+2. CUANDO se evalúan videos ENTONCES el sistema DEBERÁ proporcionar criterios específicos (Narrativa, Técnica Visual, Audio, Creatividad, Impacto Emocional)
+3. CUANDO se evalúan audios ENTONCES el sistema DEBERÁ incluir criterios especializados (Calidad Técnica, Composición, Creatividad, Producción, Impacto Sonoro)
+4. CUANDO se evalúan cortos de cine ENTONCES el sistema DEBERÁ ofrecer criterios cinematográficos (Narrativa, Dirección, Técnica, Creatividad, Impacto Cinematográfico)
+5. CUANDO se configuran criterios universales ENTONCES el sistema DEBERÁ permitir criterios que apliquen a todos los tipos de medios
+
+### Requisito 35
+
+**Historia de Usuario:** Como jurado especializado, quiero que el sistema reconozca mi área de especialización, para ser asignado a evaluar solo los tipos de medios en los que tengo experiencia profesional.
+
+#### Criterios de Aceptación
+
+1. CUANDO se configura mi perfil de jurado ENTONCES el sistema DEBERÁ permitir seleccionar mis especializaciones (fotografía, video, audio, cine)
+2. CUANDO un administrador asigna jurados ENTONCES el sistema DEBERÁ mostrar solo jurados especializados en el tipo de medio de la categoría
+3. CUANDO accedo a mi panel de evaluación ENTONCES el sistema DEBERÁ mostrar solo medios del tipo en el que estoy especializado
+4. CUANDO evalúo un medio ENTONCES el sistema DEBERÁ cargar automáticamente los criterios específicos para mi especialización
+
+### Requisito 36
+
+**Historia de Usuario:** Como administrador del negocio, quiero implementar un sistema de planes de suscripción, para generar ingresos sostenibles y ofrecer funcionalidades premium a usuarios comprometidos.
+
+#### Criterios de Aceptación
+
+1. CUANDO se configura el sistema ENTONCES el sistema DEBERÁ soportar múltiples planes de suscripción (Básico, Profesional, Premium, Organizador)
+2. CUANDO un usuario se suscribe a un plan ENTONCES el sistema DEBERÁ aplicar las limitaciones y beneficios correspondientes (límites de participación, funcionalidades premium)
+3. CUANDO un usuario excede los límites de su plan ENTONCES el sistema DEBERÁ mostrar opciones de upgrade
+4. CUANDO se procesan pagos ENTONCES el sistema DEBERÁ integrar con pasarelas de pago seguras y manejar renovaciones automáticas
+
+### Requisito 37
+
+**Historia de Usuario:** Como visitante interesado en la comunidad creativa, quiero acceder a contenido educativo y de inspiración a través del blog, para mejorar mis habilidades y mantenerme actualizado sobre tendencias en medios multimedia.
+
+#### Criterios de Aceptación
+
+1. CUANDO accedo al blog ENTONCES el sistema DEBERÁ mostrar contenido educativo sobre técnicas de fotografía, video, audio y cine
+2. CUANDO leo un artículo ENTONCES el sistema DEBERÁ mostrar contenido relacionado y sugerencias personalizadas
+3. CUANDO interactúo con el contenido ENTONCES el sistema DEBERÁ permitir comentarios, likes y compartir en redes sociales
+4. CUANDO me suscribo al newsletter ENTONCES el sistema DEBERÁ enviar digest semanal con contenido destacado y nuevos concursos

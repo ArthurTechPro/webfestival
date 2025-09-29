@@ -1,25 +1,29 @@
-# Proyecto WebFestival - Arquitectura
+# Proyecto WebFestival - Ecosistema de Concursos Multimedia
 
 ## 1. Resumen Ejecutivo del Proyecto
 
-Desarrollar una plataforma web completa y una API robusta llamada "webfestival" para la gestión de concursos de fotografía online. La plataforma debe ser escalable y estar preparada para servir en el futuro a una aplicación móvil nativa.
+Desarrollar un ecosistema completo de aplicaciones para la gestión de concursos multimedia online, dividido en tres proyectos independientes pero interconectados. La arquitectura se basa en una separación clara de responsabilidades para maximizar la escalabilidad, mantenibilidad y flexibilidad del sistema, con enfoque principal en concursos multimedia que incluyen fotografía, video, audio y cortos de cine.
 
-La arquitectura se basará en proyectos separados: un repositorio para la aplicación web, la API, y el servicio de almacenamiento de fotografías con Immich, y otro repositorio futuro para la aplicación móvil.
+### Proyectos del Ecosistema:
+
+1. **webfestival-api** - API backend con Node.js 22+, Express.js 4.17+ y Prisma 5+ + PostgreSQL 14+
+2. **webfestival-app** - Aplicación React 19+ que consume la API para funcionalidades de concursos multimedia
+3. **webfestival-cms** - Landing page con Next.js 15+ que incluye CMS y Blog integrado
 
 ## 2. Roles de Usuario y User Stories
 
-### a. Rol: Participante (Fotógrafo)
-- Como participante, quiero poder crear una cuenta y gestionar mi perfil.
-- Como participante, quiero ver y inscribirme en los concursos activos.
-- Como participante, quiero poder subir mis fotografías a las categorías correspondientes.
-- Como participante, quiero ver el estado y los resultados de mis envíos.
-- Como participante, quiero compartir mis fotografías ganadoras en redes sociales.
-- Como participante, quiero seguir a otros fotógrafos y ver sus trabajos.
-- Como participante, quiero comentar en las fotografías de otros participantes.
+### a. Rol: Participante (Artista Creativo)
+- Como participante, quiero poder crear una cuenta y gestionar mi perfil multimedia.
+- Como participante, quiero ver y inscribirme en los concursos activos de diferentes tipos de medios.
+- Como participante, quiero poder subir mis medios (fotografías, videos, audios, cortos de cine) a las categorías correspondientes.
+- Como participante, quiero ver el estado y los resultados de mis envíos multimedia.
+- Como participante, quiero compartir mis obras ganadoras en redes sociales.
+- Como participante, quiero seguir a otros artistas creativos y ver sus trabajos.
+- Como participante, quiero comentar en las obras de otros participantes.
 
 ### b. Rol: Jurado
-- Como jurado, quiero acceder a un panel para ver las fotografías que me han sido asignadas.
-- Como jurado, quiero poder calificar y dejar comentarios en cada fotografía.
+- Como jurado, quiero acceder a un panel para ver los medios que me han sido asignados según mi especialización.
+- Como jurado, quiero poder calificar y dejar comentarios en cada obra multimedia usando criterios específicos por tipo de medio.
 
 ### c. Rol: Administrador
 - Como administrador, quiero un panel de control para gestionar concursos, categorías, usuarios y jurados.
@@ -41,32 +45,89 @@ La arquitectura se basará en proyectos separados: un repositorio para la aplica
 - Como usuario registrado, quiero suscribirme al newsletter para recibir actualizaciones.
 - Como usuario registrado, quiero reportar comentarios inapropiados.
 
-## 3. Stack Tecnológico (Últimas Versiones)
+## 3. Stack Tecnológico por Proyecto (Últimas Versiones)
 
-- **Frontend**: React 18+ / Next.js 14+
+### webfestival-api (Backend API)
+- **Runtime**: Node.js 22+
+- **Framework**: Express.js 4.17+
 - **Lenguaje**: TypeScript 5+
-- **Estilos**: Bootstrap 5.3+ (integrado con React)
-- **Backend / API**: Next.js API Routes
-- **Base de Datos**: PostgreSQL 16+
-- **Almacenamiento de Archivos**: Immich Server (gestión inteligente de fotografías) - [https://immich.app/](https://immich.app/)
-- **Autenticación**: NextAuth.js o Clerk
+- **ORM**: Prisma 5+
+- **Base de Datos**: PostgreSQL 14+
+- **Autenticación**: JWT + bcryptjs
+- **Validación**: Zod 3+
+- **Documentación**: Swagger/OpenAPI 3.0
+- **Testing**: Jest 29+ + Supertest
+- **Puerto**: 3001 (desarrollo)
+
+### webfestival-app (Frontend App)
+- **Framework**: React 19+
+- **Lenguaje**: TypeScript 5+
+- **Build Tool**: Vite 5+
+- **Routing**: React Router 6+
+- **Estado**: Zustand 4+ o TanStack Query 5+
+- **Estilos**: Bootstrap 5.3+ con React Bootstrap 2.10+
+- **HTTP Client**: Axios 1.6+
+- **Testing**: Vitest 1+ + React Testing Library 14+
+- **Puerto**: 3000 (desarrollo)
+
+### webfestival-cms (Landing + CMS)
+- **Framework**: Next.js 15+
+- **Lenguaje**: TypeScript 5+
+- **Estilos**: Bootstrap 5.3+ con React Bootstrap 2+
+- **CMS**: Sistema personalizado consumiendo webfestival-api
+- **SEO**: Next.js built-in optimizations + structured data
+- **Puerto**: 3002 (desarrollo)
+
+### Servicios Compartidos
+- **Almacenamiento de Archivos**: Immich Server (gestión inteligente de medios multimedia) - [https://immich.app/](https://immich.app/)
 - **Notificaciones**: SendGrid/Resend para emails
 - **Redes Sociales**: APIs de Facebook, Instagram, Twitter, LinkedIn
 
 ## 4. Estructura de Repositorios del Proyecto
 
-El desarrollo se organizará en repositorios separados para mantener una clara división de responsabilidades.
+El desarrollo se organizará en tres repositorios independientes para mantener una clara separación de responsabilidades y facilitar el desarrollo paralelo.
 
-### Repositorio 1: webfestival-api-web (Proyecto Principal a desarrollar)
-- **Tecnología**: Next.js, TypeScript, PostgreSQL, Immich ([https://immich.app/](https://immich.app/))
-- **Contenido**:
-  - **API (Backend)**: Toda la lógica de negocio, endpoints y comunicación con la base de datos se construirán usando Next.js API Routes. Esta API será la única fuente de verdad.
-  - **Aplicación Web (Frontend)**: La interfaz de usuario para participantes, jurados y administradores, construida con React/Next.js.
-  - **Página Estática**: Landing page informativa con gestión de contenido.
+### Repositorio 1: webfestival-api (Backend API)
+- **Tecnología**: Node.js 22+, Express.js 4.17+, TypeScript, Prisma, PostgreSQL
+- **Responsabilidades**:
+  - API REST completa para todos los servicios
+  - Autenticación y autorización JWT
+  - Lógica de negocio de concursos multimedia
+  - Integración con Immich para gestión de imágenes
+  - Sistema de notificaciones por email
+  - Integración con redes sociales
+  - Sistema CMS para contenido dinámico
+  - Gestión de usuarios y roles
+- **Puerto**: 3001 (desarrollo)
 
-### Repositorio 2: webfestival-mobile (Proyecto futuro)
+### Repositorio 2: webfestival-app (Frontend Aplicación)
+- **Tecnología**: React 19+, TypeScript, Vite, React Router, Bootstrap
+- **Responsabilidades**:
+  - Interfaz de usuario para participantes, jurados y administradores
+  - Dashboard personalizado por rol de usuario
+  - Gestión de concursos y medios multimedia
+  - Panel de administración completo
+  - Sistema de comunidad y seguimientos
+  - Galería pública de medios multimedia
+- **Puerto**: 3000 (desarrollo)
+- **Consume**: webfestival-api (puerto 3001)
+
+### Repositorio 3: webfestival-cms (Landing Page + CMS)
+- **Tecnología**: Next.js 15+, TypeScript, Bootstrap
+- **Responsabilidades**:
+  - Landing page informativa y optimizada para SEO
+  - Blog de la comunidad multimedia
+  - Sistema CMS para administradores de contenido
+  - Newsletter y suscripciones
+  - Páginas estáticas optimizadas
+  - Integración con el sistema de usuarios de la API
+- **Puerto**: 3002 (desarrollo)
+- **Consume**: webfestival-api (puerto 3001)
+
+### Repositorio 4: webfestival-mobile (Proyecto futuro)
 - **Tecnología**: React Native
-- **Descripción**: Aplicación cliente que consumirá exclusivamente la API desarrollada en el repositorio principal.
+- **Descripción**: Aplicación móvil que consumirá exclusivamente la API desarrollada
+- **Consume**: webfestival-api (puerto 3001)
 
 ## 5. Esquema de la Base de Datos (PostgreSQL)
 
@@ -100,7 +161,7 @@ CREATE TABLE "usuarios" (
 ```
 
 ### Tabla: concursos
-Contiene la información de todos los concursos de fotografía creados en la plataforma.
+Contiene la información de todos los concursos multimedia creados en la plataforma.
 
 | Campo | Tipo | Descripción |
 |-------|------|-------------|
@@ -109,10 +170,10 @@ Contiene la información de todos los concursos de fotografía creados en la pla
 | `descripcion` | TEXT | Descripción detallada del concurso, objetivos y temática |
 | `reglas` | TEXT | Reglas específicas del concurso en formato texto o markdown |
 | `fecha_inicio` | TIMESTAMP | Fecha y hora de inicio del período de inscripciones |
-| `fecha_final` | TIMESTAMP | Fecha y hora límite para envío de fotografías |
+| `fecha_final` | TIMESTAMP | Fecha y hora límite para envío de medios |
 | `status` | TEXT | Estado actual: 'Próximamente', 'Activo', 'Calificación', 'Finalizado' |
 | `imagen_url` | TEXT | URL de la imagen promocional del concurso |
-| `max_envios` | INTEGER | Número máximo de fotografías por participante (default: 3) |
+| `max_envios` | INTEGER | Número máximo de medios por participante (default: 3) |
 | `tamaño_max_mb` | INTEGER | Tamaño máximo permitido por archivo en MB (default: 10) |
 | `created_at` | TIMESTAMP | Fecha de creación del concurso |
 
@@ -172,33 +233,41 @@ CREATE TABLE "inscripciones" (
 );
 ```
 
-### Tabla: fotos
-Almacena la información de todas las fotografías subidas a los concursos.
+### Tabla: medios
+Almacena la información de todos los medios multimedia subidos a los concursos.
 
 | Campo | Tipo | Descripción |
 |-------|------|-------------|
-| `id` | SERIAL PRIMARY KEY | Identificador único de la fotografía |
-| `titulo` | TEXT | Título de la fotografía asignado por el autor |
-| `usuario_id` | TEXT | Referencia al fotógrafo que subió la imagen |
+| `id` | SERIAL PRIMARY KEY | Identificador único del medio |
+| `titulo` | TEXT | Título del medio asignado por el autor |
+| `tipo_medio` | TEXT | Tipo de medio: 'fotografia', 'video', 'audio', 'corto_cine' |
+| `usuario_id` | TEXT | Referencia al artista que subió el medio |
 | `concurso_id` | INTEGER | Referencia al concurso al que pertenece |
 | `categoria_id` | INTEGER | Referencia a la categoría específica |
-| `foto_url` | TEXT | URL de la imagen original almacenada en Immich |
-| `thumbnail_url` | TEXT | URL de la miniatura (400x225px - 16:9) generada automáticamente |
-| `preview_url` | TEXT | URL de la vista previa (1280x720px - 16:9) para visualización rápida |
-| `metadatos_exif` | JSONB | Metadatos EXIF extraídos automáticamente por Immich |
-| `fecha_subida` | TIMESTAMP | Fecha y hora de subida de la fotografía |
+| `medio_url` | TEXT | URL del archivo original almacenado en Immich |
+| `thumbnail_url` | TEXT | URL de la miniatura generada automáticamente |
+| `preview_url` | TEXT | URL de la vista previa para visualización rápida |
+| `duracion` | INTEGER | Duración en segundos (para videos y audios) |
+| `formato` | TEXT | Formato del archivo (JPEG, MP4, MP3, etc.) |
+| `tamaño_archivo` | BIGINT | Tamaño del archivo en bytes |
+| `metadatos` | JSONB | Metadatos extraídos automáticamente por Immich |
+| `fecha_subida` | TIMESTAMP | Fecha y hora de subida del medio |
 
 ```sql
-CREATE TABLE "fotos" (
+CREATE TABLE "medios" (
   "id" SERIAL NOT NULL PRIMARY KEY,
   "titulo" TEXT NOT NULL,
+  "tipo_medio" TEXT NOT NULL CHECK ("tipo_medio" IN ('fotografia', 'video', 'audio', 'corto_cine')),
   "usuario_id" TEXT NOT NULL,
   "concurso_id" INTEGER NOT NULL,
   "categoria_id" INTEGER NOT NULL,
-  "foto_url" TEXT NOT NULL,
+  "medio_url" TEXT NOT NULL,
   "thumbnail_url" TEXT,
   "preview_url" TEXT,
-  "metadatos_exif" JSONB,
+  "duracion" INTEGER,
+  "formato" TEXT NOT NULL,
+  "tamaño_archivo" BIGINT NOT NULL,
+  "metadatos" JSONB,
   "fecha_subida" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY ("usuario_id") REFERENCES "usuarios"("id") ON DELETE CASCADE,
   FOREIGN KEY ("concurso_id") REFERENCES "concursos"("id") ON DELETE CASCADE,
@@ -226,40 +295,78 @@ CREATE TABLE "jurados" (
 );
 ```
 
+### Tabla: criterios
+Define los criterios de evaluación dinámicos que se pueden usar para calificar medios.
+
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| `id` | SERIAL PRIMARY KEY | Identificador único del criterio |
+| `nombre` | TEXT UNIQUE | Nombre del criterio (ej: "Enfoque", "Narrativa", "Calidad Técnica") |
+| `descripcion` | TEXT | Descripción detallada del criterio |
+| `tipo_medio` | TEXT | Tipo de medio al que aplica ('fotografia', 'video', 'audio', 'corto_cine') o NULL para todos |
+| `peso` | NUMERIC(5,2) | Peso del criterio para cálculo de puntaje final (default: 1.0) |
+| `activo` | BOOLEAN | Indica si el criterio está activo |
+| `orden` | INTEGER | Orden de presentación en la interfaz |
+
+```sql
+-- Tabla de criterios de evaluación (dinámicos)
+CREATE TABLE "criterios" (
+  "id" SERIAL NOT NULL PRIMARY KEY,
+  "nombre" TEXT NOT NULL UNIQUE,
+  "descripcion" TEXT,
+  "tipo_medio" TEXT, -- 'fotografia', 'video', 'audio', 'corto_cine', NULL para todos
+  "peso" NUMERIC(5,2) DEFAULT 1.0,
+  "activo" BOOLEAN NOT NULL DEFAULT TRUE,
+  "orden" INTEGER DEFAULT 0
+);
+```
 ### Tabla: calificaciones
-Almacena las evaluaciones de los jurados para cada fotografía.
+Almacena el evento principal de evaluación de cada jurado por medio.
 
 | Campo | Tipo | Descripción |
 |-------|------|-------------|
 | `id` | SERIAL PRIMARY KEY | Identificador único de la calificación |
-| `foto_id` | INTEGER | Referencia a la fotografía evaluada |
+| `medio_id` | INTEGER | Referencia al medio evaluado |
 | `jurado_id` | TEXT | Referencia al jurado que realizó la evaluación |
-| `score_enfoque` | INTEGER | Puntuación de enfoque (1-10): nitidez, profundidad de campo, precisión |
-| `score_exposicion` | INTEGER | Puntuación de exposición (1-10): iluminación, contraste, balance de blancos |
-| `score_composicion` | INTEGER | Puntuación de composición (1-10): regla de tercios, balance, encuadre |
-| `score_creatividad` | INTEGER | Puntuación de creatividad (1-10): originalidad, concepto, innovación |
-| `score_impacto_visual` | INTEGER | Puntuación de impacto visual (1-10): fuerza emocional, atractivo estético |
 | `comentarios` | TEXT | Comentarios opcionales del jurado para feedback constructivo |
 | `fecha_calificacion` | TIMESTAMP | Fecha y hora de la evaluación |
 
 ```sql
+-- Tabla de calificaciones (evento principal)
 CREATE TABLE "calificaciones" (
   "id" SERIAL NOT NULL PRIMARY KEY,
-  "foto_id" INTEGER NOT NULL,
+  "medio_id" INTEGER NOT NULL,
   "jurado_id" TEXT NOT NULL,
-  "score_enfoque" INTEGER NOT NULL CHECK ("score_enfoque" >= 1 AND "score_enfoque" <= 10),
-  "score_exposicion" INTEGER NOT NULL CHECK ("score_exposicion" >= 1 AND "score_exposicion" <= 10),
-  "score_composicion" INTEGER NOT NULL CHECK ("score_composicion" >= 1 AND "score_composicion" <= 10),
-  "score_creatividad" INTEGER NOT NULL CHECK ("score_creatividad" >= 1 AND "score_creatividad" <= 10),
-  "score_impacto_visual" INTEGER NOT NULL CHECK ("score_impacto_visual" >= 1 AND "score_impacto_visual" <= 10),
   "comentarios" TEXT,
   "fecha_calificacion" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY ("foto_id") REFERENCES "fotos"("id") ON DELETE CASCADE,
+  FOREIGN KEY ("medio_id") REFERENCES "medios"("id") ON DELETE CASCADE,
   FOREIGN KEY ("jurado_id") REFERENCES "usuarios"("id") ON DELETE CASCADE,
-  UNIQUE("foto_id", "jurado_id")
+  UNIQUE("medio_id", "jurado_id")
 );
 ```
 
+### Tabla: calificaciones_detalle
+Almacena las puntuaciones específicas por cada criterio de evaluación.
+
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| `id` | SERIAL PRIMARY KEY | Identificador único del detalle |
+| `calificacion_id` | INTEGER | Referencia a la calificación principal |
+| `criterio_id` | INTEGER | Referencia al criterio evaluado |
+| `puntuacion` | INTEGER | Puntuación otorgada (1-10) |
+
+```sql
+-- Tabla de detalle de calificaciones (puntuaciones por criterio)
+CREATE TABLE "calificaciones_detalle" (
+  "id" SERIAL NOT NULL PRIMARY KEY,
+  "calificacion_id" INTEGER NOT NULL,
+  "criterio_id" INTEGER NOT NULL,
+  "puntuacion" INTEGER NOT NULL CHECK ("puntuacion" >= 1 AND "puntuacion" <= 10),
+  FOREIGN KEY ("calificacion_id") REFERENCES "calificaciones"("id") ON DELETE CASCADE,
+  FOREIGN KEY ("criterio_id") REFERENCES "criterios"("id") ON DELETE CASCADE,
+  UNIQUE("calificacion_id", "criterio_id")
+);
+```
 ### Tabla: seguimientos
 Gestiona las relaciones de seguimiento entre usuarios para funcionalidades sociales.
 
@@ -283,12 +390,12 @@ CREATE TABLE "seguimientos" (
 ```
 
 ### Tabla: comentarios
-Almacena los comentarios públicos en fotografías después de finalizar concursos.
+Almacena los comentarios públicos en medios multimedia después de finalizar concursos.
 
 | Campo | Tipo | Descripción |
 |-------|------|-------------|
 | `id` | SERIAL PRIMARY KEY | Identificador único del comentario |
-| `foto_id` | INTEGER | Referencia a la fotografía comentada |
+| `medio_id` | INTEGER | Referencia al medio comentado |
 | `usuario_id` | TEXT | Referencia al usuario que escribió el comentario |
 | `contenido` | TEXT | Texto del comentario (máximo 500 caracteres) |
 | `fecha_comentario` | TIMESTAMP | Fecha y hora del comentario |
@@ -297,12 +404,12 @@ Almacena los comentarios públicos en fotografías después de finalizar concurs
 ```sql
 CREATE TABLE "comentarios" (
   "id" SERIAL NOT NULL PRIMARY KEY,
-  "foto_id" INTEGER NOT NULL,
+  "medio_id" INTEGER NOT NULL,
   "usuario_id" TEXT NOT NULL,
   "contenido" TEXT NOT NULL,
   "fecha_comentario" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "reportado" BOOLEAN DEFAULT FALSE,
-  FOREIGN KEY ("foto_id") REFERENCES "fotos"("id") ON DELETE CASCADE,
+  FOREIGN KEY ("medio_id") REFERENCES "medios"("id") ON DELETE CASCADE,
   FOREIGN KEY ("usuario_id") REFERENCES "usuarios"("id") ON DELETE CASCADE
 );
 ```
@@ -333,7 +440,7 @@ CREATE TABLE "notificaciones" (
 );
 ```
 
-### Tabla: contenido (Tabla principal normalizada)
+### Tabla: contenido (Tabla principal)
 Tabla principal que contiene la información básica de todo el contenido.
 
 | Campo | Tipo | Descripción |
@@ -467,8 +574,6 @@ CREATE TABLE "contenido_taxonomia" (
 );
 ```
 
-
-
 ### Tabla: contenido_comentarios
 Sistema unificado de comentarios para cualquier tipo de contenido (blog posts, fotografías).
 
@@ -476,7 +581,7 @@ Sistema unificado de comentarios para cualquier tipo de contenido (blog posts, f
 |-------|------|-------------|
 | `id` | SERIAL PRIMARY KEY | Identificador único del comentario |
 | `contenido_id` | INTEGER | Referencia al contenido comentado (contenido_dinamico o fotos) |
-| `tipo_contenido` | TEXT | Tipo de contenido: 'blog_post', 'foto', 'pagina_estatica' |
+| `tipo_contenido` | TEXT | Tipo de contenido: 'blog_post', 'medio', 'pagina_estatica' |
 | `usuario_id` | TEXT | Referencia al usuario que escribió el comentario |
 | `contenido` | TEXT | Texto del comentario (máximo 1000 caracteres) |
 | `aprobado` | BOOLEAN | Indica si el comentario ha sido aprobado por moderadores |
@@ -507,7 +612,7 @@ Sistema unificado de likes para cualquier tipo de contenido.
 |-------|------|-------------|
 | `id` | SERIAL PRIMARY KEY | Identificador único del like |
 | `contenido_id` | INTEGER | Referencia al contenido que recibió el like |
-| `tipo_contenido` | TEXT | Tipo de contenido: 'blog_post', 'foto' |
+| `tipo_contenido` | TEXT | Tipo de contenido: 'blog_post', 'medio' |
 | `usuario_id` | TEXT | Referencia al usuario que dio el like |
 | `fecha_like` | TIMESTAMP | Fecha y hora del like |
 
@@ -553,7 +658,7 @@ Sistema unificado de reportes para cualquier tipo de contenido o comentario.
 |-------|------|-------------|
 | `id` | SERIAL PRIMARY KEY | Identificador único del reporte |
 | `elemento_id` | INTEGER | Referencia al elemento reportado (comentario, contenido, foto) |
-| `tipo_elemento` | TEXT | Tipo de elemento: 'comentario', 'blog_post', 'foto' |
+| `tipo_elemento` | TEXT | Tipo de elemento: 'comentario', 'blog_post', 'medio' |
 | `usuario_id` | TEXT | Referencia al usuario que hizo el reporte |
 | `razon` | TEXT | Razón del reporte (spam, contenido inapropiado, etc.) |
 | `descripcion` | TEXT | Descripción adicional del reporte |
@@ -585,7 +690,7 @@ CREATE TABLE "contenido_reportes" (
 
 La API será consumida tanto por la aplicación web como por la futura aplicación móvil.
 
-### Flujo de Subida de Fotografías (Integración con Immich):
+### Flujo de Subida de Medios Multimedia (Integración con Immich):
 
 1. El cliente solicita una URL de subida a la API.
 2. La API se conecta con Immich y genera una URL segura y temporal.
@@ -594,77 +699,103 @@ La API será consumida tanto por la aplicación web como por la futura aplicaci�
 5. El cliente notifica a la API sobre la subida exitosa.
 6. La API almacena la URL de la imagen y los metadatos relevantes en la base de datos.
 
-### Endpoints Principales:
+### API Endpoints (webfestival-api):
 
 **Autenticación:**
 - POST /api/auth/login
 - POST /api/auth/register
 - POST /api/auth/logout
+- POST /api/auth/refresh
+- GET /api/auth/me (protegido)
 
 **Concursos:**
 - GET /api/concursos
 - GET /api/concursos/:id
+- POST /api/concursos (protegido, rol ADMIN)
+- PUT /api/concursos/:id (protegido, rol ADMIN)
+- DELETE /api/concursos/:id (protegido, rol ADMIN)
 - POST /api/concursos/:id/inscribirse (protegido)
+- GET /api/concursos/:id/participantes (protegido, rol ADMIN)
 
-**Fotografías:**
-- GET /api/fotos/upload-url (protegido)
-- POST /api/fotos (protegido)
-- GET /api/fotos/mis-envios (protegido)
+**Categorías:**
+- GET /api/categorias/concurso/:concursoId
+- POST /api/categorias (protegido, rol ADMIN)
+- PUT /api/categorias/:id (protegido, rol ADMIN)
+- DELETE /api/categorias/:id (protegido, rol ADMIN)
+
+**Medios Multimedia:**
+- GET /api/medios/upload-url (protegido)
+- POST /api/medios (protegido)
+- GET /api/medios/mis-envios (protegido)
+- GET /api/medios/concurso/:concursoId
+- GET /api/medios/:id
+- DELETE /api/medios/:id (protegido)
+- GET /api/medios/tipos (tipos de medio soportados)
+- GET /api/medios/formatos/:tipo (formatos por tipo de medio)
 
 **Jurados:**
 - GET /api/jurados/asignaciones (protegido, rol JURADO)
 - POST /api/jurados/calificaciones (protegido, rol JURADO)
+- PUT /api/jurados/calificaciones/:id (protegido, rol JURADO)
+- GET /api/jurados/progreso (protegido, rol JURADO)
 
 **Administración:**
-- GET, POST, PUT /api/admin/concursos (protegido, rol ADMIN)
-- GET, POST, PUT /api/admin/usuarios (protegido, rol ADMIN)
+- GET /api/admin/usuarios (protegido, rol ADMIN)
+- PUT /api/admin/usuarios/:id/role (protegido, rol ADMIN)
 - GET /api/admin/metricas (protegido, rol ADMIN)
+- POST /api/admin/jurados/asignar (protegido, rol ADMIN)
+- GET /api/admin/concursos/progreso (protegido, rol ADMIN)
 
 **Redes Sociales:**
 - POST /api/social/compartir (protegido)
-- GET /api/social/enlace-publico/:fotoId
+- GET /api/social/enlace-publico/:medioId
 
 **Comunidad:**
 - POST /api/comunidad/seguir (protegido)
+- DELETE /api/comunidad/seguir/:userId (protegido)
 - GET /api/comunidad/feed (protegido)
 - POST /api/comunidad/comentarios (protegido)
+- GET /api/comunidad/comentarios/medio/:medioId
 
 **Galería Pública:**
 - GET /api/galeria/publica
-- GET /api/galeria/foto/:id
+- GET /api/galeria/medio/:id
+- GET /api/galeria/ganadores
+- GET /api/galeria/filtros
 
-**Sistema CMS Dinámico:**
-- GET /api/contenido - Obtener contenido con filtros (tipo, categoría, estado)
-- GET /api/contenido/:slug - Obtener contenido específico por slug
-- POST /api/contenido (protegido, rol CONTENT_ADMIN) - Crear nuevo contenido
-- PUT /api/contenido/:id (protegido, rol CONTENT_ADMIN) - Actualizar contenido
-- DELETE /api/contenido/:id (protegido, rol CONTENT_ADMIN) - Eliminar contenido
-- POST /api/contenido/:id/publish (protegido, rol CONTENT_ADMIN) - Publicar contenido
-- GET /api/contenido/preview/:id (protegido, rol CONTENT_ADMIN) - Preview de contenido
+**Sistema CMS:**
+- GET /api/contenido
+- GET /api/contenido/:slug
+- POST /api/contenido (protegido, rol CONTENT_ADMIN)
+- PUT /api/contenido/:id (protegido, rol CONTENT_ADMIN)
+- DELETE /api/contenido/:id (protegido, rol CONTENT_ADMIN)
+- POST /api/contenido/:id/publish (protegido, rol CONTENT_ADMIN)
 
-**Gestión de Contenido:**
-- GET /api/contenido/categorias - Obtener categorías disponibles por tipo
-- GET /api/contenido/etiquetas - Obtener etiquetas con autocompletado
-- POST /api/contenido/upload-imagen (protegido, rol CONTENT_ADMIN) - Subir imagen
-- GET /api/contenido/plantillas/:tipo - Obtener plantillas por tipo de contenido
+**Blog:**
+- GET /api/blog/posts
+- GET /api/blog/posts/:slug
+- POST /api/blog/posts (protegido, rol CONTENT_ADMIN)
+- PUT /api/blog/posts/:id (protegido, rol CONTENT_ADMIN)
+- GET /api/blog/categorias
+- GET /api/blog/etiquetas
 
-**Interacciones Unificadas:**
-- POST /api/contenido/:id/like (protegido) - Dar/quitar like a contenido
-- GET /api/contenido/:id/comentarios - Obtener comentarios de contenido
-- POST /api/contenido/:id/comentarios (protegido) - Agregar comentario
-- POST /api/comentarios/:id/report (protegido) - Reportar comentario
-- PUT /api/comentarios/:id/moderate (protegido, rol ADMIN) - Moderar comentario
+**Interacciones:**
+- POST /api/contenido/:id/like (protegido)
+- GET /api/contenido/:id/comentarios
+- POST /api/contenido/:id/comentarios (protegido)
+- POST /api/comentarios/:id/report (protegido)
+- PUT /api/comentarios/:id/moderate (protegido, rol ADMIN)
 
 **Newsletter:**
-- POST /api/newsletter/subscribe - Suscribirse al newsletter
-- GET /api/newsletter/confirm/:token - Confirmar suscripción
-- POST /api/newsletter/unsubscribe - Cancelar suscripción
-- POST /api/newsletter/send-digest (protegido, rol CONTENT_ADMIN) - Enviar digest manual
+- POST /api/newsletter/subscribe
+- GET /api/newsletter/confirm/:token
+- POST /api/newsletter/unsubscribe
+- POST /api/newsletter/send-digest (protegido, rol CONTENT_ADMIN)
 
-**Analytics Unificado:**
-- GET /api/contenido/stats (protegido, rol CONTENT_ADMIN) - Estadísticas generales
-- GET /api/contenido/:id/analytics (protegido, rol CONTENT_ADMIN) - Analytics específico
-- GET /api/contenido/trending - Contenido trending por tipo
+**Analytics:**
+- GET /api/analytics/contenido (protegido, rol CONTENT_ADMIN)
+- GET /api/analytics/concursos (protegido, rol ADMIN)
+- GET /api/analytics/usuarios (protegido, rol ADMIN)
 
 ## 7. Consideraciones Adicionales
 
