@@ -96,14 +96,11 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
     - Configurar criterios universales aplicables a todos los tipos de medios
     - _Requisitos: 34.1, 34.2, 34.3, 34.4, 34.5_
 
-
   - [x] 2.6 Ejecutar migraciones y crear índices
     - Generar y ejecutar migraciones de Prisma
     - Crear índices optimizados para consultas frecuentes de concursos y suscripciones
     - Poblar datos iniciales (roles, categorías base, criterios preconfigurados)
     - _Requisitos: Todos los modelos de datos_
-
-
 
 - [ ] 3. Sistema de autenticación y autorización
   - [x] 3.1 Implementar autenticación JWT
