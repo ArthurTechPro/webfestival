@@ -60,8 +60,7 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
     - Configurar conexión y variables de entorno
     - _Requisitos: 9.1, 10.3_
 
-  - [-] 2.2 Crear modelos de datos principales para concursos
-
+  - [x] 2.2 Crear modelos de datos principales para concursos
     - Implementar modelo User con roles (PARTICIPANTE, JURADO, ADMIN, CONTENT_ADMIN)
     - Crear modelos Concurso, Categoria, Inscripcion con configuraciones avanzadas
     - Implementar modelo Medio con soporte para fotografía, video, audio y cortos de cine
@@ -71,18 +70,17 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
     - Implementar modelo JuradoEspecializacion para gestión de especialidades por tipo de medio
     - _Requisitos: 1.1, 1.2, 2.1, 3.1, 5.1, 6.1, 15.1, 17.1, 23.1, 33.1, 33.2, 35.1, 35.2_
 
-  - [ ] 2.3 Crear esquema CMS normalizado
+  - [x] 2.3 Crear esquema CMS normalizado
     - Implementar tabla principal Contenido con información básica
     - Crear tablas especializadas: ContenidoConfiguracion, ContenidoSEO, ContenidoMetricas
     - Implementar tabla ContenidoTaxonomia para categorías y etiquetas flexibles
     - Crear modelos unificados ContenidoComentarios, ContenidoLikes, ContenidoReportes
-
     - Implementar modelo NewsletterSuscriptor
     - Configurar índices optimizados para consultas eficientes
     - _Requisitos: 20.1, 25.1, 26.1, 27.1, 28.1, 30.1_
 
 
-  - [ ] 2.4 Crear modelos de suscripciones y monetización
+  - [x] 2.4 Crear modelos de suscripciones y monetización
     - Implementar modelos SubscriptionPlan, UserSubscription y SubscriptionUsage
     - Crear modelo para gestión de límites y funcionalidades por plan
     - Implementar sistema de tracking de uso por suscripción
@@ -90,7 +88,7 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
     - _Requisitos: 36.1, 36.2, 36.3, 36.4_
 
 
-  - [ ] 2.5 Poblar criterios preconfigurados por tipo de medio
+  - [x] 2.5 Poblar criterios preconfigurados por tipo de medio
     - Crear criterios específicos para fotografía (Enfoque, Exposición, Composición, Creatividad, Impacto Visual)
     - Implementar criterios para video (Narrativa, Técnica Visual, Audio, Creatividad, Impacto Emocional)
     - Crear criterios para audio (Calidad Técnica, Composición, Creatividad, Producción, Impacto Sonoro)
@@ -99,7 +97,7 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
     - _Requisitos: 34.1, 34.2, 34.3, 34.4, 34.5_
 
 
-  - [ ] 2.6 Ejecutar migraciones y crear índices
+  - [x] 2.6 Ejecutar migraciones y crear índices
     - Generar y ejecutar migraciones de Prisma
     - Crear índices optimizados para consultas frecuentes de concursos y suscripciones
     - Poblar datos iniciales (roles, categorías base, criterios preconfigurados)

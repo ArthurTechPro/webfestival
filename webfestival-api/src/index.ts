@@ -21,6 +21,8 @@ validateDatabaseConfig();
 
 const app = express();
 const PORT = process.env['PORT'] || 3001;
+const SERVER_NAME = process.env['SERVER_NAME'] || 'WebFestival API';
+const SERVER_URL = process.env['SERVER_URL'] || `http://localhost:${PORT}`;
 
 // Rate limiting
 const limiter = rateLimit({
@@ -50,9 +52,11 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use('/health', healthRoutes);
 
 // API routes will be added here
-app.get('/api/v1', (req, res) => {
+app.get('/api/v1', (_req, res) => {
   res.json({
-    message: 'WebFestival API v1.0.0',
+    message: `${SERVER_NAME} v1.0.0`,
+    server: SERVER_NAME,
+    url: SERVER_URL,
     version: '1.0.0',
     timestamp: new Date().toISOString(),
     database: 'PostgreSQL 14+ with Prisma 5+',
@@ -80,7 +84,7 @@ app.all('*', (req, res) => {
 });
 
 // Global error handler
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error('Global error handler:', err);
   
   res.status(err.status || 500).json({
@@ -95,11 +99,12 @@ if (process.env['NODE_ENV'] !== 'test') {
   connectDatabase()
     .then(() => {
       app.listen(PORT, () => {
-        console.log(`🚀 WebFestival API server running on port ${PORT}`);
+        console.log(`🚀 ${SERVER_NAME} running on port ${PORT}`);
+        console.log(`🌐 Server URL: ${SERVER_URL}`);
         console.log(`📊 Environment: ${process.env['NODE_ENV'] || 'development'}`);
-        console.log(`🔗 Health check: http://localhost:${PORT}/health`);
-        console.log(`📊 Database stats: http://localhost:${PORT}/health/database/stats`);
-        console.log(`📡 API endpoint: http://localhost:${PORT}/api/v1`);
+        console.log(`🔗 Health check: ${SERVER_URL}/health`);
+        console.log(`📊 Database stats: ${SERVER_URL}/health/database/stats`);
+        console.log(`📡 API endpoint: ${SERVER_URL}/api/v1`);
         console.log(`🎯 Features: Multimedia contests, Dynamic criteria, Subscriptions, CMS, Social features`);
       });
     })

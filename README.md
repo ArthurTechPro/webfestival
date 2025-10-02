@@ -346,42 +346,6 @@ INSERT INTO criterios (nombre, descripcion, tipo_medio, peso, orden) VALUES
 ```
 https://35awards.com/11th/welcome/upload/
 ```
-###  Ejecucions del proyecto. 
 
-✅ Configuración Completada
-1. Estructura de Carpetas
-✅ src/ - Código fuente principal
-✅ routes/ - Rutas de la API
-✅ middleware/ - Middleware personalizado
-✅ services/ - Lógica de negocio
-✅ types/ - Definiciones de TypeScript
-✅ prisma/ - Configuración de base de datos
-✅ tests/ - Archivos de pruebas
-2. Dependencias Principales Instaladas
-✅ Express.js 5.1.0+
-✅ Prisma 5+ para ORM
-✅ JWT para autenticación
-✅ bcryptjs para hash de contraseñas
-✅ Zod 3+ para validación
-✅ TypeScript 5+ configurado
-3. Archivos de Configuración Creados
-✅ .eslintrc.js - Configuración de ESLint
-✅ .prettierrc - Configuración de Prettier
-✅ .prettierignore - Archivos ignorados por Prettier
-✅ jest.config.js - Configuración de Jest para testing
-✅ .gitignore - Archivos ignorados por Git
-4. Variables de Entorno Configuradas
-✅ .env.example - Plantilla de variables de entorno
-✅ .env.test - Variables para testing
-✅ Configuración para base de datos, Immich, servicios de email, redes sociales
-5. Scripts de Desarrollo Configurados
-✅ npm run dev - Servidor de desarrollo
-✅ npm run build - Compilar TypeScript
-✅ npm run test - Ejecutar pruebas con Jest
-✅ npm run lint - Verificar código con ESLint
-✅ npm run format - Formatear código con Prettier
-6. Testing Configurado
-✅ Jest 29+ con Supertest
-✅ Archivo de configuración de pruebas
-✅ Pruebas de ejemplo para endpoints básicos
-✅ Configuración de cobertura de código
+
+

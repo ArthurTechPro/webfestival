@@ -7,27 +7,27 @@ export class ContestService {
     throw new Error('Not implemented yet');
   }
 
-  async getContestById(id: number): Promise<Concurso | null> {
+  async getContestById(_id: number): Promise<Concurso | null> {
     // TODO: Implement with Prisma
     throw new Error('Not implemented yet');
   }
 
-  async createContest(contestData: Partial<Concurso>): Promise<Concurso> {
+  async createContest(_contestData: Partial<Concurso>): Promise<Concurso> {
     // TODO: Implement with Prisma
     throw new Error('Not implemented yet');
   }
 
-  async updateContest(id: number, contestData: Partial<Concurso>): Promise<Concurso> {
+  async updateContest(_id: number, _contestData: Partial<Concurso>): Promise<Concurso> {
     // TODO: Implement with Prisma
     throw new Error('Not implemented yet');
   }
 
-  async deleteContest(id: number): Promise<void> {
+  async deleteContest(_id: number): Promise<void> {
     // TODO: Implement with Prisma
     throw new Error('Not implemented yet');
   }
 
-  async getContestCategories(contestId: number): Promise<Categoria[]> {
+  async getContestCategories(_contestId: number): Promise<Categoria[]> {
     // TODO: Implement with Prisma
     throw new Error('Not implemented yet');
   }

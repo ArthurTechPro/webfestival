@@ -9,7 +9,7 @@ const router = Router();
  * GET /health
  * Endpoint para verificar el estado general del sistema
  */
-router.get('/', async (req, res) => {
+router.get('/', async (_req, res) => {
   try {
     const dbHealth = await checkDatabaseHealth();
     const dbInfo = await getDatabaseInfo(prisma);
@@ -18,7 +18,7 @@ router.get('/', async (req, res) => {
       status: dbHealth.status === 'healthy' ? 'OK' : 'ERROR',
       timestamp: new Date().toISOString(),
       version: '1.0.0',
-      environment: process.env.NODE_ENV || 'development',
+      environment: process.env['NODE_ENV'] || 'development',
       services: {
         database: {
           status: dbHealth.status,
@@ -48,7 +48,7 @@ router.get('/', async (req, res) => {
  * GET /health/database
  * Endpoint específico para verificar el estado de la base de datos
  */
-router.get('/database', async (req, res) => {
+router.get('/database', async (_req, res) => {
   try {
     const dbHealth = await checkDatabaseHealth();
     const dbInfo = await getDatabaseInfo(prisma);
@@ -72,7 +72,7 @@ router.get('/database', async (req, res) => {
  * GET /health/database/stats
  * Endpoint para obtener estadísticas básicas de la base de datos
  */
-router.get('/database/stats', async (req, res) => {
+router.get('/database/stats', async (_req, res) => {
   try {
     const [
       totalUsuarios,

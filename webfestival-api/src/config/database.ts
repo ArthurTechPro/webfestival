@@ -3,10 +3,10 @@ import { PrismaClient } from '@prisma/client';
 // Configuración de la base de datos
 export const databaseConfig = {
   // URL de conexión desde variables de entorno
-  url: process.env.DATABASE_URL,
+  url: process.env['DATABASE_URL'],
   
   // Configuración de logging según el entorno
-  logging: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  logging: process.env['NODE_ENV'] === 'development' ? ['query', 'error', 'warn'] : ['error'],
   
   // Configuración de pool de conexiones
   connectionPool: {
@@ -29,13 +29,13 @@ export const databaseConfig = {
 
 // Validación de configuración de base de datos
 export function validateDatabaseConfig() {
-  if (!process.env.DATABASE_URL) {
+  if (!process.env['DATABASE_URL']) {
     throw new Error('DATABASE_URL no está definida en las variables de entorno');
   }
 
   // Validar formato de URL de PostgreSQL
   const urlPattern = /^postgresql:\/\/[^:]+:[^@]+@[^:]+:\d+\/[^?]+(\?.*)?$/;
-  if (!urlPattern.test(process.env.DATABASE_URL)) {
+  if (!urlPattern.test(process.env['DATABASE_URL'])) {
     throw new Error('DATABASE_URL no tiene el formato correcto para PostgreSQL');
   }
 

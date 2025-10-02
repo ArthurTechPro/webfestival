@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { JWTPayload, ApiError } from '../types';
+import { JWTPayload } from '../types';
 
 // Extend Express Request interface to include user
 declare global {
@@ -11,15 +11,16 @@ declare global {
   }
 }
 
-export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
+export const authenticateToken = (req: Request, res: Response, next: NextFunction): void => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
 
   if (!token) {
-    return res.status(401).json({
+    res.status(401).json({
       success: false,
       error: 'Access token required'
     });
+    return;
   }
 
   try {
@@ -27,7 +28,7 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
     req.user = decoded;
     next();
   } catch (error) {
-    return res.status(403).json({
+    res.status(403).json({
       success: false,
       error: 'Invalid or expired token'
     });
@@ -35,21 +36,23 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
 };
 
 export const requireRole = (roles: string | string[]) => {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: Request, res: Response, next: NextFunction): void => {
     if (!req.user) {
-      return res.status(401).json({
+      res.status(401).json({
         success: false,
         error: 'Authentication required'
       });
+      return;
     }
 
     const allowedRoles = Array.isArray(roles) ? roles : [roles];
     
     if (!allowedRoles.includes(req.user.role)) {
-      return res.status(403).json({
+      res.status(403).json({
         success: false,
         error: 'Insufficient permissions'
       });
+      return;
     }
 
     next();
