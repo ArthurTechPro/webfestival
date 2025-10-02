@@ -51,7 +51,11 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Health check routes
 app.use('/health', healthRoutes);
 
-// API routes will be added here
+// API routes
+import apiRoutes from './routes';
+app.use('/api/v1', apiRoutes);
+
+// API info endpoint
 app.get('/api/v1', (_req, res) => {
   res.json({
     message: `${SERVER_NAME} v1.0.0`,
@@ -74,7 +78,13 @@ app.get('/api/v1', (_req, res) => {
   });
 });
 
-// 404 handler - Express 5 compatible
+// Error handling middleware
+import { errorHandler, notFoundHandler } from './middleware/errorHandler';
+
+// 404 handler for API routes
+app.use('/api/*', notFoundHandler);
+
+// 404 handler for all other routes
 app.all('*', (req, res) => {
   res.status(404).json({
     error: 'Not Found',
@@ -84,14 +94,7 @@ app.all('*', (req, res) => {
 });
 
 // Global error handler
-app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
-  console.error('Global error handler:', err);
-  
-  res.status(err.status || 500).json({
-    error: process.env['NODE_ENV'] === 'production' ? 'Internal server error' : err.message,
-    ...(process.env['NODE_ENV'] !== 'production' && { stack: err.stack })
-  });
-});
+app.use(errorHandler);
 
 // Start server only if not in test environment
 if (process.env['NODE_ENV'] !== 'test') {

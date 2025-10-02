@@ -106,14 +106,22 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
 
 
 - [ ] 3. Sistema de autenticación y autorización
-  - [ ] 3.1 Implementar autenticación JWT
+  - [x] 3.1 Implementar autenticación JWT
     - Crear middleware de autenticación con JWT
     - Implementar endpoints de login, registro y refresh token
     - Configurar validación de tokens y manejo de expiración
     - _Requisitos: 1.1, 9.1, 9.2_
 
 
-  - [ ] 3.2 Implementar sistema de roles y permisos
+  - [x] 3.2 Implementar sistema de roles y permisos
+
+
+
+
+
+
+
+
     - Crear middleware de autorización por roles
     - Implementar guards para rutas protegidas por rol
     - Crear validaciones específicas para CONTENT_ADMIN

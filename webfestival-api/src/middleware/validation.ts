@@ -60,14 +60,19 @@ export const validateParams = (schema: ZodSchema) => {
             message: err.message
           }))
         });
+        return;
       }
       next(error);
     }
   };
 };
 
+// Alias para validateBody para mayor claridad en las rutas
+export const validateRequest = validateBody;
+
 export default {
   validateBody,
   validateQuery,
-  validateParams
+  validateParams,
+  validateRequest
 };

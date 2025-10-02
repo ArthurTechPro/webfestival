@@ -4,8 +4,8 @@ export interface User {
   email: string;
   nombre: string;
   role: 'PARTICIPANTE' | 'JURADO' | 'ADMIN' | 'CONTENT_ADMIN';
-  picture_url?: string;
-  bio?: string;
+  picture_url?: string | undefined;
+  bio?: string | undefined;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -20,7 +20,7 @@ export interface RegisterData {
   email: string;
   password: string;
   nombre: string;
-  bio?: string;
+  bio?: string | undefined;
 }
 
 export interface AuthTokens {

@@ -20,7 +20,8 @@
     "db:seed": "tsx prisma/seed.ts",
     "verify-criterios": "tsx src/scripts/verify-criterios.ts",
     "test-criterios": "tsx src/scripts/test-criterios-service.ts",
-    "init-plans": "tsx src/scripts/init-subscription-plans.ts"
+    "init-plans": "tsx src/scripts/init-subscription-plans.ts",
+    "verify-auth": "tsx src/scripts/verify-auth-config.ts"
   },
   "keywords": [
     "webfestival",

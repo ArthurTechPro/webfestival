@@ -1,7 +1,11 @@
 import { Router } from 'express';
 import criteriosRoutes from './criterios.routes';
+import authRoutes from './auth.routes';
 
 const router = Router();
+
+// Rutas de autenticación
+router.use('/auth', authRoutes);
 
 // Rutas de criterios de evaluación
 router.use('/criterios', criteriosRoutes);
