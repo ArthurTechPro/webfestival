@@ -111,21 +111,13 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
 
 
   - [x] 3.2 Implementar sistema de roles y permisos
-
-
-
-
-
-
-
-
     - Crear middleware de autorización por roles
     - Implementar guards para rutas protegidas por rol
     - Crear validaciones específicas para CONTENT_ADMIN
     - _Requisitos: 9.2, 23.1, 23.2, 23.3, 23.4_
 
 - [-] 4. Integración con servidor Immich
-  - [-] 4.1 Configurar conexión con Immich
+  - [x] 4.1 Configurar conexión con Immich
     - Instalar SDK de Immich y configurar autenticación con API keys
     - Crear servicio de conexión con manejo de errores y reintentos
     - Implementar validación de configuración y health checks

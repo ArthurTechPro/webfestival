@@ -10,8 +10,10 @@ import dotenv from 'dotenv';
 import { connectDatabase, disconnectDatabase } from './lib/prisma';
 import { validateDatabaseConfig } from './config/database';
 
+// Immich configuration
+import { initializeImmich } from './middleware/immich.middleware';
+
 // Routes
-import healthRoutes from './routes/health';
 
 // Load environment variables
 dotenv.config();
@@ -49,6 +51,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Health check routes
+import healthRoutes from './routes/health';
 app.use('/health', healthRoutes);
 
 // API routes
@@ -98,14 +101,18 @@ app.use(errorHandler);
 
 // Start server only if not in test environment
 if (process.env['NODE_ENV'] !== 'test') {
-  // Connect to database and start server
+  // Connect to database and initialize services
   connectDatabase()
-    .then(() => {
+    .then(async () => {
+      // Initialize Immich connection
+      await initializeImmich();
+      
       app.listen(PORT, () => {
         console.log(`🚀 ${SERVER_NAME} running on port ${PORT}`);
         console.log(`🌐 Server URL: ${SERVER_URL}`);
         console.log(`📊 Environment: ${process.env['NODE_ENV'] || 'development'}`);
         console.log(`🔗 Health check: ${SERVER_URL}/health`);
+        console.log(`🖼️ Immich health: ${SERVER_URL}/health/immich`);
         console.log(`📊 Database stats: ${SERVER_URL}/health/database/stats`);
         console.log(`📡 API endpoint: ${SERVER_URL}/api/v1`);
         console.log(`🎯 Features: Multimedia contests, Dynamic criteria, Subscriptions, CMS, Social features`);

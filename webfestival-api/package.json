@@ -21,7 +21,8 @@
     "verify-criterios": "tsx src/scripts/verify-criterios.ts",
     "test-criterios": "tsx src/scripts/test-criterios-service.ts",
     "init-plans": "tsx src/scripts/init-subscription-plans.ts",
-    "verify-auth": "tsx src/scripts/verify-auth-config.ts"
+    "verify-auth": "tsx src/scripts/verify-auth-config.ts",
+    "verify-immich": "tsx src/scripts/verify-immich-connection.ts"
   },
   "keywords": [
     "webfestival",
@@ -32,6 +33,7 @@
   "author": "WebFestival Team",
   "license": "MIT",
   "dependencies": {
+    "@immich/sdk": "^1.138.1",
     "@prisma/client": "^5.8.1",
     "axios": "^1.12.2",
     "bcryptjs": "^2.4.3",
