@@ -133,11 +133,6 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
 
 - [-] 5. API endpoints principales para concursos
   - [x] 5.1 APIs de gestión de usuarios y especialización
-
-
-
-
-
     - Crear endpoints para registro y actualización de perfil
     - Implementar API para gestión de seguimientos entre usuarios
     - Crear endpoints para obtener perfiles públicos
@@ -145,7 +140,12 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
     - Crear endpoints para asignación inteligente de jurados según especialización
     - _Requisitos: 1.1, 1.3, 15.1, 15.2, 35.1, 35.2, 35.3, 35.4_
 
-  - [-] 5.2 APIs de gestión de concursos
+  - [x] 5.2 APIs de gestión de concursos
+
+
+
+
+
     - Crear CRUD completo para concursos (admin)
     - Implementar API para inscripciones de participantes
     - Crear endpoints para obtener concursos activos y finalizados

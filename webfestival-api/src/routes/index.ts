@@ -3,6 +3,7 @@ import criteriosRoutes from './criterios.routes';
 import authRoutes from './auth.routes';
 import mediaRoutes from './media.routes';
 import userRoutes from './user.routes';
+import concursoRoutes from './concurso.routes';
 
 const router = Router();
 
@@ -11,6 +12,9 @@ router.use('/auth', authRoutes);
 
 // Rutas de usuarios
 router.use('/users', userRoutes);
+
+// Rutas de concursos
+router.use('/concursos', concursoRoutes);
 
 // Rutas de criterios de evaluación
 router.use('/criterios', criteriosRoutes);
@@ -38,7 +42,7 @@ router.get('/', (_req, res) => {
       criterios: '/api/v1/criterios',
       auth: '/api/v1/auth',
       users: '/api/v1/users',
-      contests: '/api/v1/contests',
+      concursos: '/api/v1/concursos',
       media: '/api/v1/media'
     }
   });

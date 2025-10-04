@@ -1,3 +1,10 @@
+import { Request } from 'express';
+
+// Authentication types for Express
+export interface AuthenticatedRequest extends Request {
+  user?: JWTPayload;
+}
+
 // User types
 export interface User {
   id: string;
