@@ -36,6 +36,7 @@ export interface AuthTokens {
 }
 
 export interface JWTPayload {
+  id: string;
   userId: string;
   email: string;
   role: string;
@@ -157,6 +158,30 @@ export interface UserProfile extends User {
   medios_count?: number;
   especializaciones?: JuradoEspecializacion[];
   is_following?: boolean;
+}
+
+// Gallery filter types
+export interface CategoriesByMediaType {
+  [key: string]: Categoria[];
+}
+
+export interface MedioWithDetails extends Medio {
+  usuario?: {
+    id: string;
+    nombre: string;
+    picture_url?: string;
+  };
+  concurso?: {
+    id: number;
+    titulo: string;
+    año: number;
+  };
+  categoria?: {
+    id: number;
+    nombre: string;
+  };
+  posicion?: number;
+  puntaje_final?: number;
 }
 
 // Error types

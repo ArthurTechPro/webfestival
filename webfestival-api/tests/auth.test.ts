@@ -13,7 +13,7 @@ describe('AuthService Configuration', () => {
   it('debería poder importar el servicio de autenticación', () => {
     // Importación dinámica para evitar problemas de tipos durante la compilación
     expect(() => {
-      require('../services/auth.service');
+      require('../src/services/auth.service');
     }).not.toThrow();
   });
 });

@@ -1,7 +1,7 @@
 import { describe, it, expect } from '@jest/globals';
 import './setup';
 import request from 'supertest';
-import { app } from '../index';
+import { app } from '../src/index';
 
 describe('Auth Integration Tests', () => {
     describe('POST /api/v1/auth/login', () => {

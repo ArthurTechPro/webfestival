@@ -1,5 +1,5 @@
 import { TipoMedio } from '@prisma/client';
-import { criteriosService } from '../services/criterios.service';
+import { criteriosService } from '../src/services/criterios.service';
 
 describe('CriteriosService', () => {
   describe('getCriteriosPorTipoMedio', () => {

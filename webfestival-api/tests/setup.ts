@@ -1,16 +1,7 @@
-import { config } from 'dotenv';
-
-// Load test environment variables
-config({ path: '.env.test' });
-
-// Global test setup
-beforeAll(async () => {
-  // Setup test database or mock services if needed
-});
-
-afterAll(async () => {
-  // Cleanup after all tests
-});
-
-// Increase timeout for integration tests
-jest.setTimeout(30000);
+// Configuración de variables de entorno para pruebas
+process.env['JWT_SECRET'] = 'test-jwt-secret-key-for-testing-only';
+process.env['JWT_EXPIRES_IN'] = '1h';
+process.env['JWT_REFRESH_SECRET'] = 'test-refresh-secret-key-for-testing-only';
+process.env['JWT_REFRESH_EXPIRES_IN'] = '7d';
+process.env['NODE_ENV'] = 'test';
+process.env['DATABASE_URL'] = 'postgresql://postgres:wasi3355@localhost:5432/webfestival_test_db';

@@ -4,6 +4,9 @@ import authRoutes from './auth.routes';
 import mediaRoutes from './media.routes';
 import userRoutes from './user.routes';
 import concursoRoutes from './concurso.routes';
+import calificacionRoutes from './calificacion.routes';
+import juradoAsignacionRoutes from './jurado-asignacion.routes';
+import cmsRoutes from './cms.routes';
 
 const router = Router();
 
@@ -21,6 +24,15 @@ router.use('/criterios', criteriosRoutes);
 
 // Rutas de medios multimedia
 router.use('/media', mediaRoutes);
+
+// Rutas de calificaciones
+router.use('/calificaciones', calificacionRoutes);
+
+// Rutas de asignaciones de jurados
+router.use('/jurado-asignaciones', juradoAsignacionRoutes);
+
+// Rutas del CMS
+router.use('/cms', cmsRoutes);
 
 // Health check route
 router.get('/health', (_req, res) => {
@@ -43,7 +55,10 @@ router.get('/', (_req, res) => {
       auth: '/api/v1/auth',
       users: '/api/v1/users',
       concursos: '/api/v1/concursos',
-      media: '/api/v1/media'
+      media: '/api/v1/media',
+      calificaciones: '/api/v1/calificaciones',
+      jurado_asignaciones: '/api/v1/jurado-asignaciones',
+      cms: '/api/v1/cms'
     }
   });
 });

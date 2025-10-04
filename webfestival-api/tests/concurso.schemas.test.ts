@@ -4,7 +4,7 @@ import {
   updateConcursoSchema, 
   inscripcionConcursoSchema,
   concursoFiltersSchema 
-} from '../schemas/concurso.schemas';
+} from '../src/schemas/concurso.schemas';
 
 describe('Concurso Schemas', () => {
   describe('createConcursoSchema', () => {

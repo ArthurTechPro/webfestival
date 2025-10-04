@@ -1,8 +1,8 @@
 import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 import { Request, Response } from 'express';
-import { concursoController } from '../controllers/concurso.controller';
-import { concursoService } from '../services/concurso.service';
-import { AuthenticatedRequest } from '../types';
+import { concursoController } from '../src/controllers/concurso.controller';
+import { concursoService } from '../src/services/concurso.service';
+import { AuthenticatedRequest } from '../src/types';
 
 // Mock del servicio
 jest.mock('../services/concurso.service');

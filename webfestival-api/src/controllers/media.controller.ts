@@ -263,6 +263,9 @@ export class MediaController {
       const { titulo } = req.body;
       
       // TODO: Implementar actualización real del título
+      console.log('Actualizando medio con título:', titulo);
+      
+      // TODO: Implementar actualización real del título
 
       // Verificar que el medio existe y pertenece al usuario
       const existingMedio = await mediaService.getMediaById(id);
@@ -385,6 +388,115 @@ export class MediaController {
       res.status(500).json({
         success: false,
         error: 'Error interno del servidor'
+      });
+    }
+  }
+
+  /**
+   * Obtiene galería de medios ganadores para visualización pública
+   * GET /api/media/gallery/winners
+   */
+  async getWinnerGallery(
+    req: Request,
+    res: Response<ApiResponse<PaginatedResponse<Medio>>>
+  ): Promise<void> {
+    try {
+      const page = parseInt(req.query['page'] as string || '1');
+      const limit = parseInt(req.query['limit'] as string || '20');
+      const tipo_medio = req.query['tipo_medio'] as TipoMedio;
+      const categoria_id = req.query['categoria_id'] ? parseInt(req.query['categoria_id'] as string) : undefined;
+      const concurso_id = req.query['concurso_id'] ? parseInt(req.query['concurso_id'] as string) : undefined;
+      const año = req.query['año'] ? parseInt(req.query['año'] as string) : undefined;
+
+      const filters = {
+        page,
+        limit,
+        tipo_medio,
+        categoria_id: categoria_id || undefined,
+        concurso_id: concurso_id || undefined,
+        año: año || undefined
+      };
+
+      const result = await mediaService.getWinnerGallery(filters);
+
+      res.status(200).json({
+        success: true,
+        data: result,
+        message: 'Galería de ganadores obtenida exitosamente'
+      });
+    } catch (error) {
+      console.error('Error al obtener galería de ganadores:', error);
+      
+      res.status(500).json({
+        success: false,
+        error: 'Error interno del servidor'
+      });
+    }
+  }
+
+  /**
+   * Obtiene galería de medios destacados para visualización pública
+   * GET /api/media/gallery/featured
+   */
+  async getFeaturedGallery(
+    req: Request,
+    res: Response<ApiResponse<PaginatedResponse<Medio>>>
+  ): Promise<void> {
+    try {
+      const page = parseInt(req.query['page'] as string || '1');
+      const limit = parseInt(req.query['limit'] as string || '12');
+      const tipo_medio = req.query['tipo_medio'] as TipoMedio;
+
+      const filters = {
+        page,
+        limit,
+        tipo_medio: tipo_medio || undefined
+      };
+
+      const result = await mediaService.getFeaturedGallery(filters);
+
+      res.status(200).json({
+        success: true,
+        data: result,
+        message: 'Galería destacada obtenida exitosamente'
+      });
+    } catch (error) {
+      console.error('Error al obtener galería destacada:', error);
+      
+      res.status(500).json({
+        success: false,
+        error: 'Error interno del servidor'
+      });
+    }
+  }
+
+  /**
+   * Obtiene categorías organizadas por tipo de medio para un concurso
+   * GET /api/media/contests/:concursoId/categories
+   */
+  async getCategoriesByMediaType(
+    req: Request,
+    res: Response<ApiResponse>
+  ): Promise<void> {
+    try {
+      const concursoId = parseInt(req.params['concursoId'] || '0');
+
+      const categories = await mediaService.getCategoriesByMediaType(concursoId);
+
+      res.status(200).json({
+        success: true,
+        data: categories,
+        message: 'Categorías por tipo de medio obtenidas exitosamente'
+      });
+    } catch (error) {
+      console.error('Error al obtener categorías por tipo de medio:', error);
+      
+      const errorMessage = error instanceof Error ? error.message : 'Error interno del servidor';
+      const statusCode = this.getErrorStatusCode(errorMessage);
+      
+      res.status(statusCode).json({
+        success: false,
+        error: errorMessage
       });
     }
   }

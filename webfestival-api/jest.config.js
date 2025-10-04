@@ -9,9 +9,7 @@ module.exports = {
   transform: {
     '^.+\\.ts$': 'ts-jest',
   },
-  moduleNameMapping: {
-    '^@/(.*)$': '<rootDir>/src/$1',
-  },
+
   collectCoverageFrom: [
     'src/**/*.ts',
     '!src/**/*.d.ts',
@@ -24,15 +22,19 @@ module.exports = {
     'lcov',
     'html'
   ],
-  setupFilesAfterEnv: ['<rootDir>/src/tests/setup.ts'],
+  setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
   testTimeout: 10000,
   verbose: true,
   forceExit: true,
   clearMocks: true,
   resetMocks: true,
   restoreMocks: true,
-moduleNameMapper: {
+  transformIgnorePatterns: [
+    'node_modules/(?!(@immich/sdk)/)'
+  ],
+  moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    '^@immich/sdk$': '<rootDir>/tests/__mocks__/@immich/sdk.js'
   },
 };
 

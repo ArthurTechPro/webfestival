@@ -1,4 +1,4 @@
-import { Medio, TipoMedio } from '@/types';
+import { Medio, TipoMedio, PaginatedResponse } from '@/types';
 import { prisma } from '@/lib/prisma';
 import { immichService } from './immich.service';
 import { AssetResponseDto } from '@immich/sdk';
@@ -220,37 +220,145 @@ export class MediaService {
   }
 
   /**
-   * Obtiene medios por usuario
+   * Obtiene medios por usuario con información del estado del concurso
    */
-  async getMediaByUser(userId: string): Promise<Medio[]> {
+  async getMediaByUser(userId: string): Promise<any[]> {
     const medios = await prisma.medio.findMany({
       where: { usuario_id: userId },
       include: {
-        usuario: true,
-        concurso: true,
-        categoria: true
+        usuario: {
+          select: {
+            id: true,
+            nombre: true,
+            picture_url: true
+          }
+        },
+        concurso: {
+          select: {
+            id: true,
+            titulo: true,
+            status: true,
+            fecha_inicio: true,
+            fecha_final: true,
+            max_envios: true
+          }
+        },
+        categoria: {
+          select: {
+            id: true,
+            nombre: true
+          }
+        },
+        calificaciones: {
+          include: {
+            detalles: {
+              include: {
+                criterio: true
+              }
+            }
+          }
+        }
       },
       orderBy: { fecha_subida: 'desc' }
     });
 
-    return medios.map(this.mapPrismaToMedio);
+    // Obtener conteo de medios por concurso para mostrar límite
+    const mediaCountByContest = await prisma.medio.groupBy({
+      by: ['concurso_id'],
+      where: { usuario_id: userId },
+      _count: {
+        id: true
+      }
+    });
+
+    const contestCounts = mediaCountByContest.reduce((acc, item) => {
+      acc[item.concurso_id] = item._count.id;
+      return acc;
+    }, {} as Record<number, number>);
+
+    return medios.map(medio => {
+      const medioWithDetails = this.mapPrismaToMedioWithDetails(medio);
+      
+      // Agregar información del estado del concurso y límites
+      if (medio.concurso) {
+        medioWithDetails.concurso_info = {
+          ...medioWithDetails.concurso,
+          status: medio.concurso.status,
+          fecha_inicio: medio.concurso.fecha_inicio,
+          fecha_final: medio.concurso.fecha_final,
+          max_envios: medio.concurso.max_envios,
+          envios_actuales: contestCounts[medio.concurso_id] || 0,
+          puede_enviar_mas: (contestCounts[medio.concurso_id] || 0) < medio.concurso.max_envios
+        };
+      }
+      
+      // Calcular puntaje final si hay calificaciones
+      if (medio.calificaciones && medio.calificaciones.length > 0) {
+        medioWithDetails.puntaje_final = this.calculateFinalScore(medio.calificaciones);
+        medioWithDetails.tiene_calificaciones = true;
+      } else {
+        medioWithDetails.tiene_calificaciones = false;
+      }
+      
+      return medioWithDetails;
+    });
   }
 
   /**
-   * Obtiene medios por concurso
+   * Obtiene medios por concurso con información detallada
    */
-  async getMediaByContest(contestId: number): Promise<Medio[]> {
+  async getMediaByContest(contestId: number): Promise<any[]> {
     const medios = await prisma.medio.findMany({
       where: { concurso_id: contestId },
       include: {
-        usuario: true,
-        concurso: true,
-        categoria: true
+        usuario: {
+          select: {
+            id: true,
+            nombre: true,
+            picture_url: true
+          }
+        },
+        concurso: {
+          select: {
+            id: true,
+            titulo: true,
+            status: true,
+            fecha_inicio: true,
+            fecha_final: true
+          }
+        },
+        categoria: {
+          select: {
+            id: true,
+            nombre: true
+          }
+        },
+        calificaciones: {
+          include: {
+            detalles: {
+              include: {
+                criterio: true
+              }
+            }
+          }
+        }
       },
       orderBy: { fecha_subida: 'desc' }
     });
 
-    return medios.map(this.mapPrismaToMedio);
+    return medios.map(medio => {
+      const medioWithDetails = this.mapPrismaToMedioWithDetails(medio);
+      
+      // Calcular puntaje final si hay calificaciones
+      if (medio.calificaciones && medio.calificaciones.length > 0) {
+        medioWithDetails.puntaje_final = this.calculateFinalScore(medio.calificaciones);
+        medioWithDetails.tiene_calificaciones = true;
+      } else {
+        medioWithDetails.tiene_calificaciones = false;
+      }
+      
+      return medioWithDetails;
+    });
   }
 
   /**
@@ -570,6 +678,293 @@ export class MediaService {
   private async extractAudioDuration(_assetInfo: AssetResponseDto): Promise<number> {
     // TODO: Implementar extracción real de duración de audio
     return 180; // 3 minutos por defecto
+  }
+
+  /**
+   * Obtiene galería de medios ganadores con filtros
+   */
+  async getWinnerGallery(filters: any): Promise<PaginatedResponse<any>> {
+    const { page, limit, tipo_medio, categoria_id, concurso_id, año } = filters;
+    
+    // Construir filtros para la consulta
+    const whereClause: any = {};
+    
+    // Solo mostrar medios de concursos finalizados
+    whereClause.concurso = {
+      status: 'FINALIZADO'
+    };
+    
+    if (tipo_medio) {
+      whereClause.tipo_medio = tipo_medio;
+    }
+    
+    if (categoria_id) {
+      whereClause.categoria_id = categoria_id;
+    }
+    
+    if (concurso_id) {
+      whereClause.concurso_id = concurso_id;
+    }
+    
+    if (año) {
+      whereClause.concurso = {
+        ...whereClause.concurso,
+        fecha_inicio: {
+          gte: new Date(`${año}-01-01`),
+          lt: new Date(`${año + 1}-01-01`)
+        }
+      };
+    }
+
+    // Obtener medios con información de resultados
+    const medios = await prisma.medio.findMany({
+      where: whereClause,
+      include: {
+        usuario: {
+          select: {
+            id: true,
+            nombre: true,
+            picture_url: true
+          }
+        },
+        concurso: {
+          select: {
+            id: true,
+            titulo: true,
+            fecha_inicio: true
+          }
+        },
+        categoria: {
+          select: {
+            id: true,
+            nombre: true
+          }
+        },
+        // Incluir calificaciones para determinar posición
+        calificaciones: {
+          include: {
+            detalles: {
+              include: {
+                criterio: true
+              }
+            }
+          }
+        }
+      },
+      orderBy: [
+        { concurso_id: 'desc' },
+        { fecha_subida: 'desc' }
+      ],
+      skip: (page - 1) * limit,
+      take: limit
+    });
+
+    // Contar total para paginación
+    const total = await prisma.medio.count({
+      where: whereClause
+    });
+
+    // Procesar medios para incluir información de posición y puntaje
+    const processedMedias = medios.map(medio => {
+      const medioWithDetails = this.mapPrismaToMedioWithDetails(medio);
+      
+      // Calcular puntaje final si hay calificaciones
+      if (medio.calificaciones && medio.calificaciones.length > 0) {
+        medioWithDetails.puntaje_final = this.calculateFinalScore(medio.calificaciones);
+      }
+      
+      return medioWithDetails;
+    });
+
+    return {
+      data: processedMedias,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
+    };
+  }
+
+  /**
+   * Obtiene galería de medios destacados
+   */
+  async getFeaturedGallery(filters: any): Promise<PaginatedResponse<any>> {
+    const { page, limit, tipo_medio } = filters;
+    
+    const whereClause: any = {
+      concurso: {
+        status: 'FINALIZADO'
+      }
+    };
+    
+    if (tipo_medio) {
+      whereClause.tipo_medio = tipo_medio;
+    }
+
+    // Obtener medios más recientes de concursos finalizados
+    const medios = await prisma.medio.findMany({
+      where: whereClause,
+      include: {
+        usuario: {
+          select: {
+            id: true,
+            nombre: true,
+            picture_url: true
+          }
+        },
+        concurso: {
+          select: {
+            id: true,
+            titulo: true,
+            fecha_inicio: true
+          }
+        },
+        categoria: {
+          select: {
+            id: true,
+            nombre: true
+          }
+        }
+      },
+      orderBy: [
+        { concurso: { fecha_final: 'desc' } },
+        { fecha_subida: 'desc' }
+      ],
+      skip: (page - 1) * limit,
+      take: limit
+    });
+
+    const total = await prisma.medio.count({
+      where: whereClause
+    });
+
+    const processedMedias = medios.map(medio => this.mapPrismaToMedioWithDetails(medio));
+
+    return {
+      data: processedMedias,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
+    };
+  }
+
+  /**
+   * Obtiene categorías organizadas por tipo de medio para un concurso
+   */
+  async getCategoriesByMediaType(concursoId: number): Promise<any> {
+    // Verificar que el concurso existe
+    const concurso = await prisma.concurso.findUnique({
+      where: { id: concursoId }
+    });
+
+    if (!concurso) {
+      throw new Error('Concurso no encontrado');
+    }
+
+    // Obtener todas las categorías del concurso
+    const categorias = await prisma.categoria.findMany({
+      where: { concurso_id: concursoId },
+      orderBy: { nombre: 'asc' }
+    });
+
+    // Organizar categorías por tipo de medio
+    // Nota: En el esquema actual no hay campo tipo_medio en categorías
+    // Por ahora las organizamos por nombre o las devolvemos todas
+    const categoriesByType: any = {
+      fotografia: [],
+      video: [],
+      audio: [],
+      corto_cine: [],
+      general: []
+    };
+
+    // Clasificar categorías por nombre (heurística simple)
+    categorias.forEach(categoria => {
+      const nombre = categoria.nombre.toLowerCase();
+      
+      if (nombre.includes('foto') || nombre.includes('imagen') || nombre.includes('retrato')) {
+        categoriesByType.fotografia.push(categoria);
+      } else if (nombre.includes('video') || nombre.includes('documental') || nombre.includes('clip')) {
+        categoriesByType.video.push(categoria);
+      } else if (nombre.includes('audio') || nombre.includes('música') || nombre.includes('sonido')) {
+        categoriesByType.audio.push(categoria);
+      } else if (nombre.includes('corto') || nombre.includes('cine') || nombre.includes('film')) {
+        categoriesByType.corto_cine.push(categoria);
+      } else {
+        categoriesByType.general.push(categoria);
+      }
+    });
+
+    return {
+      concurso: {
+        id: concurso.id,
+        titulo: concurso.titulo,
+        status: concurso.status
+      },
+      categorias_por_tipo: categoriesByType,
+      total_categorias: categorias.length
+    };
+  }
+
+  /**
+   * Calcula el puntaje final de un medio basado en sus calificaciones
+   */
+  private calculateFinalScore(calificaciones: any[]): number {
+    if (!calificaciones || calificaciones.length === 0) {
+      return 0;
+    }
+
+    let totalScore = 0;
+    let totalWeight = 0;
+    let criteriaCount = 0;
+
+    calificaciones.forEach(calificacion => {
+      if (calificacion.detalles && calificacion.detalles.length > 0) {
+        calificacion.detalles.forEach((detalle: any) => {
+          const peso = detalle.criterio?.peso || 1;
+          totalScore += detalle.puntuacion * peso;
+          totalWeight += peso;
+          criteriaCount++;
+        });
+      }
+    });
+
+    if (totalWeight === 0 || criteriaCount === 0) {
+      return 0;
+    }
+
+    // Promedio ponderado
+    return Math.round((totalScore / totalWeight) * 100) / 100;
+  }
+
+  /**
+   * Mapea modelo de Prisma a tipo Medio con detalles adicionales
+   */
+  private mapPrismaToMedioWithDetails(prismaMedia: any): any {
+    const medio = this.mapPrismaToMedio(prismaMedia);
+    
+    return {
+      ...medio,
+      usuario: prismaMedia.usuario ? {
+        id: prismaMedia.usuario.id,
+        nombre: prismaMedia.usuario.nombre,
+        picture_url: prismaMedia.usuario.picture_url
+      } : undefined,
+      concurso: prismaMedia.concurso ? {
+        id: prismaMedia.concurso.id,
+        titulo: prismaMedia.concurso.titulo,
+        año: new Date(prismaMedia.concurso.fecha_inicio).getFullYear()
+      } : undefined,
+      categoria: prismaMedia.categoria ? {
+        id: prismaMedia.categoria.id,
+        nombre: prismaMedia.categoria.nombre
+      } : undefined
+    };
   }
 
   /**

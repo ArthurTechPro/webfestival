@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from '@jest/globals';
 import { PrismaClient } from '@prisma/client';
-import { concursoService } from '../services/concurso.service';
-import { CreateConcursoDto, UpdateConcursoDto } from '../schemas/concurso.schemas';
+import { concursoService } from '../src/services/concurso.service';
+import { CreateConcursoDto, UpdateConcursoDto } from '../src/schemas/concurso.schemas';
 
 const prisma = new PrismaClient();
 

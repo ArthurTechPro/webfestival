@@ -109,7 +109,6 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
     - Configurar validación de tokens y manejo de expiración
     - _Requisitos: 1.1, 9.1, 9.2_
 
-
   - [x] 3.2 Implementar sistema de roles y permisos
     - Crear middleware de autorización por roles
     - Implementar guards para rutas protegidas por rol
@@ -141,23 +140,18 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
     - _Requisitos: 1.1, 1.3, 15.1, 15.2, 35.1, 35.2, 35.3, 35.4_
 
   - [x] 5.2 APIs de gestión de concursos
-
-
-
-
-
     - Crear CRUD completo para concursos (admin)
     - Implementar API para inscripciones de participantes
     - Crear endpoints para obtener concursos activos y finalizados
     - _Requisitos: 2.1, 2.2, 2.3, 7.2, 8.1_
 
-  - [-] 5.3 APIs de gestión de medios multimedia
+  - [x] 5.3 APIs de gestión de medios multimedia
     - Crear endpoint para subida de medios con validaciones por tipo
     - Implementar API para obtener medios por concurso/usuario
     - Crear endpoints para galería pública con filtros
     - _Requisitos: 3.1, 3.3, 4.1, 13.1, 13.2, 13.4_
 
-  - [-] 5.4 APIs del sistema de calificaciones dinámicas
+  - [x] 5.4 APIs del sistema de calificaciones dinámicas
     - Crear endpoints para gestión completa de criterios (CRUD con validaciones)
     - Implementar API para configuración de criterios por tipo de medio (fotografía, video, audio, corto_cine)
     - Crear endpoints para asignación de jurados a categorías con especialización
@@ -169,7 +163,12 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
     - _Requisitos: 5.1, 5.2, 6.1, 6.2, 6.4, 7.4, 8.2, 8.3, 33.1, 33.2, 33.3, 33.4, 33.5_
 
 - [-] 6. APIs del sistema CMS normalizado
-  - [-] 6.1 APIs del CMS principal
+  - [x] 6.1 APIs del CMS principal
+
+
+
+
+
     - Crear endpoints CRUD para tabla principal de contenido
     - Implementar APIs específicas para configuración, SEO y métricas
     - Crear endpoints para gestión de taxonomía (categorías y etiquetas)

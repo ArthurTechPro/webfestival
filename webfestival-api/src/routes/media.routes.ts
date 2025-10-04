@@ -63,4 +63,22 @@ router.delete(
   mediaController.deleteMedia.bind(mediaController)
 );
 
+// Galería pública - obtener medios ganadores
+router.get(
+  '/gallery/winners',
+  mediaController.getWinnerGallery.bind(mediaController)
+);
+
+// Galería pública - obtener medios destacados
+router.get(
+  '/gallery/featured',
+  mediaController.getFeaturedGallery.bind(mediaController)
+);
+
+// Obtener categorías por concurso organizadas por tipo de medio
+router.get(
+  '/contests/:concursoId/categories',
+  mediaController.getCategoriesByMediaType.bind(mediaController)
+);
+
 export default router;

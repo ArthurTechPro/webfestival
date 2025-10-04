@@ -22,7 +22,9 @@
     "test-criterios": "tsx src/scripts/test-criterios-service.ts",
     "init-plans": "tsx src/scripts/init-subscription-plans.ts",
     "verify-auth": "tsx src/scripts/verify-auth-config.ts",
-    "verify-immich": "tsx src/scripts/verify-immich-connection.ts"
+    "verify-immich": "tsx src/scripts/verify-immich-connection.ts",
+    "verify-media-gallery": "tsx src/scripts/verify-media-gallery-implementation.ts",
+    "verify-calificacion-system": "tsx src/scripts/verify-calificacion-system.ts"
   },
   "keywords": [
     "webfestival",

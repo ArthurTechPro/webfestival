@@ -5,12 +5,12 @@ import {
   requirePermission,
   hasPermission,
   getRolePermissions
-} from '../middleware/auth';
+} from '../src/middleware/auth';
 import {
   canContentAdminPerformAction,
   getAllowedActionsForContentType
-} from '../middleware/contentAdmin.middleware';
-import { RoleUtils } from '../utils/roleUtils';
+} from '../src/middleware/contentAdmin.middleware';
+import { RoleUtils } from '../src/utils/roleUtils';
 import jwt from 'jsonwebtoken';
 
 // Mock JWT
@@ -18,7 +18,7 @@ jest.mock('jsonwebtoken');
 const mockedJwt = jwt as jest.Mocked<typeof jwt>;
 
 // Mock auth service
-jest.mock('../services/auth.service', () => ({
+jest.mock('../src/services/auth.service', () => ({
   authService: {
     getUserById: jest.fn()
   }

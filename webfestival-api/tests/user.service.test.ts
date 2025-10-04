@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from '@jest/globals';
 import { PrismaClient } from '@prisma/client';
-import { userService } from '../services/user.service';
+import { userService } from '../src/services/user.service';
 
 // Mock de Prisma
 jest.mock('@prisma/client');

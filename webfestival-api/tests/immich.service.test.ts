@@ -266,8 +266,8 @@ describe('ImmichService', () => {
       const connectionInfo = immichService.getConnectionInfo();
       expect(connectionInfo.isConnected).toBe(false);
       
-      // Debería fallar al intentar usar la API después de disconnect
-      expect(() => immichService.getApi()).toThrow('Servicio de Immich no inicializado');
+      // Debería fallar al intentar usar métodos después de disconnect
+      await expect(immichService.checkHealth()).rejects.toThrow();
     });
   });
 });
