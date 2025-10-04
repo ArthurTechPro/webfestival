@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import criteriosRoutes from './criterios.routes';
 import authRoutes from './auth.routes';
+import mediaRoutes from './media.routes';
 
 const router = Router();
 
@@ -9,6 +10,9 @@ router.use('/auth', authRoutes);
 
 // Rutas de criterios de evaluación
 router.use('/criterios', criteriosRoutes);
+
+// Rutas de medios multimedia
+router.use('/media', mediaRoutes);
 
 // Health check route
 router.get('/health', (_req, res) => {

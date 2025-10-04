@@ -58,10 +58,12 @@ export interface Categoria {
 }
 
 // Media types
+export type TipoMedio = 'fotografia' | 'video' | 'audio' | 'corto_cine';
+
 export interface Medio {
   id: number;
   titulo: string;
-  tipo_medio: 'fotografia' | 'video' | 'audio' | 'corto_cine';
+  tipo_medio: TipoMedio;
   usuario_id: string;
   concurso_id: number;
   categoria_id: number;

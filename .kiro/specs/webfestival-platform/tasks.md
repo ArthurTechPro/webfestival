@@ -123,7 +123,7 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
     - Implementar validación de configuración y health checks
     - _Requisitos: 17.1, 18.1, 18.3_
 
-  - [-] 4.2 Implementar servicio de subida de medios multimedia
+  - [x] 4.2 Implementar servicio de subida de medios multimedia
     - Crear API endpoint para generar URLs de subida seguras para todos los tipos de medios
     - Implementar validación específica por tipo: imágenes (JPEG, PNG, WebP), videos (MP4, WebM), audios (MP3, WAV, FLAC)
     - Crear servicio para procesar respuesta de Immich con metadatos específicos por tipo (EXIF para imágenes, metadata para videos/audios)

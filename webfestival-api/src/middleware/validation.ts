@@ -67,6 +67,40 @@ export const validateParams = (schema: ZodSchema) => {
   };
 };
 
+// Función de validación completa que maneja params, body, query y headers
+export const validate = (schema: ZodSchema) => {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    try {
+      const validatedData = schema.parse({
+        params: req.params,
+        body: req.body,
+        query: req.query,
+        headers: req.headers
+      });
+      
+      // Actualizar req con los datos validados y transformados
+      req.params = validatedData.params || req.params;
+      req.body = validatedData.body || req.body;
+      req.query = validatedData.query || req.query;
+      
+      next();
+    } catch (error) {
+      if (error instanceof ZodError) {
+        res.status(400).json({
+          success: false,
+          error: 'Validation failed',
+          details: error.errors.map(err => ({
+            field: err.path.join('.'),
+            message: err.message
+          }))
+        });
+        return;
+      }
+      next(error);
+    }
+  };
+};
+
 // Alias para validateBody para mayor claridad en las rutas
 export const validateRequest = validateBody;
 
@@ -74,5 +108,6 @@ export default {
   validateBody,
   validateQuery,
   validateParams,
-  validateRequest
+  validateRequest,
+  validate
 };
