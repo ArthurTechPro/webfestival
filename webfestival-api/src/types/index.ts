@@ -121,6 +121,37 @@ export interface PaginatedResponse<T> {
   };
 }
 
+// Community types
+export interface Seguimiento {
+  id: number;
+  seguidor_id: string;
+  seguido_id: string;
+  fecha_seguimiento: Date;
+}
+
+export interface JuradoEspecializacion {
+  id: number;
+  usuario_id: string;
+  especializacion: 'fotografia' | 'video' | 'audio' | 'corto_cine';
+  experiencia_años?: number;
+  certificaciones?: string[];
+  portfolio_url?: string;
+}
+
+export interface JuradoAsignacion {
+  id: number;
+  usuario_id: string;
+  categoria_id: number;
+}
+
+export interface UserProfile extends User {
+  seguimientos_count?: number;
+  seguidores_count?: number;
+  medios_count?: number;
+  especializaciones?: JuradoEspecializacion[];
+  is_following?: boolean;
+}
+
 // Error types
 export interface ApiError extends Error {
   status?: number;

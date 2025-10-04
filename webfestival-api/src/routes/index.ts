@@ -2,11 +2,15 @@ import { Router } from 'express';
 import criteriosRoutes from './criterios.routes';
 import authRoutes from './auth.routes';
 import mediaRoutes from './media.routes';
+import userRoutes from './user.routes';
 
 const router = Router();
 
 // Rutas de autenticación
 router.use('/auth', authRoutes);
+
+// Rutas de usuarios
+router.use('/users', userRoutes);
 
 // Rutas de criterios de evaluación
 router.use('/criterios', criteriosRoutes);
