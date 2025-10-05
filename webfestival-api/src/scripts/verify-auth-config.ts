@@ -39,6 +39,7 @@ async function verifyAuthConfig() {
     // Test 1: Generar tokens
     console.log('1. Generando tokens...');
     const testPayload = {
+      id: 'test-user-123',
       userId: 'test-user-123',
       email: 'test@example.com',
       role: 'PARTICIPANTE'

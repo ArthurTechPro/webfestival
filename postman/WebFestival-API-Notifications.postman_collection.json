@@ -1,0 +1,626 @@
+{
+    "info": {
+        "_postman_id": "notifications-api-collection",
+        "name": "WebFestival API - Notifications",
+        "description": "Colección de endpoints para el sistema de notificaciones automáticas",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "token",
+                "value": "{{access_token}}",
+                "type": "string"
+            }
+        ]
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:3001/api/v1",
+            "type": "string"
+        },
+        {
+            "key": "access_token",
+            "value": "",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "Gestión de Notificaciones",
+            "item": [
+                {
+                    "name": "Obtener Notificaciones del Usuario",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/notifications?page=1&limit=20&leidas=false",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "notifications"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1",
+                                    "description": "Número de página"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "20",
+                                    "description": "Elementos por página"
+                                },
+                                {
+                                    "key": "leidas",
+                                    "value": "false",
+                                    "description": "Filtrar por estado de lectura"
+                                }
+                            ]
+                        },
+                        "description": "Obtener notificaciones del usuario autenticado con paginación y filtros"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Marcar Notificación como Leída",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"notificationId\": 1\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/notifications/mark-read",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "notifications",
+                                "mark-read"
+                            ]
+                        },
+                        "description": "Marcar una notificación específica como leída"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Marcar Todas como Leídas",
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/notifications/mark-all-read",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "notifications",
+                                "mark-all-read"
+                            ]
+                        },
+                        "description": "Marcar todas las notificaciones del usuario como leídas"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Eliminar Notificación",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/notifications/1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "notifications",
+                                "1"
+                            ]
+                        },
+                        "description": "Eliminar una notificación específica"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Obtener Conteo de No Leídas",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/notifications/unread-count",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "notifications",
+                                "unread-count"
+                            ]
+                        },
+                        "description": "Obtener el número de notificaciones no leídas"
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Preferencias de Notificación",
+            "item": [
+                {
+                    "name": "Obtener Preferencias",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/notifications/preferences",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "notifications",
+                                "preferences"
+                            ]
+                        },
+                        "description": "Obtener las preferencias de notificación del usuario"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Actualizar Preferencias",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": {\n    \"nuevoConcurso\": true,\n    \"resultadosPublicados\": true,\n    \"recordatorioEvaluacion\": false,\n    \"newsletter\": true\n  },\n  \"push\": {\n    \"nuevoConcurso\": false,\n    \"resultadosPublicados\": true,\n    \"recordatorioEvaluacion\": true,\n    \"newsletter\": false\n  },\n  \"inApp\": {\n    \"nuevoConcurso\": true,\n    \"resultadosPublicados\": true,\n    \"recordatorioEvaluacion\": true,\n    \"newsletter\": true\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/notifications/preferences",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "notifications",
+                                "preferences"
+                            ]
+                        },
+                        "description": "Actualizar las preferencias de notificación del usuario"
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Notificaciones Automáticas (Admin)",
+            "item": [
+                {
+                    "name": "Enviar Notificación de Nuevo Concurso",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"concursoId\": 1\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/notifications/send/new-contest",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "notifications",
+                                "send",
+                                "new-contest"
+                            ]
+                        },
+                        "description": "Enviar notificación automática de nuevo concurso a todos los usuarios suscritos"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Enviar Notificación de Resultados",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"concursoId\": 1\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/notifications/send/results-published",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "notifications",
+                                "send",
+                                "results-published"
+                            ]
+                        },
+                        "description": "Enviar notificación de resultados publicados a participantes del concurso"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Enviar Recordatorio de Evaluación",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"concursoId\": 1,\n  \"diasRestantes\": 3\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/notifications/send/evaluation-reminder",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "notifications",
+                                "send",
+                                "evaluation-reminder"
+                            ]
+                        },
+                        "description": "Enviar recordatorio de evaluación a jurados asignados"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Enviar Newsletter Semanal",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"tipoContenido\": \"semanal\",\n  \"incluirConcursosActivos\": true,\n  \"incluirContenidoEducativo\": true\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/notifications/send/newsletter",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "notifications",
+                                "send",
+                                "newsletter"
+                            ]
+                        },
+                        "description": "Enviar newsletter semanal a todos los suscriptores"
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Templates de Notificación (Admin)",
+            "item": [
+                {
+                    "name": "Obtener Templates Disponibles",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/notifications/templates",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "notifications",
+                                "templates"
+                            ]
+                        },
+                        "description": "Obtener lista de templates de notificación disponibles"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Obtener Template Específico",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/notifications/templates/nuevo-concurso",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "notifications",
+                                "templates",
+                                "nuevo-concurso"
+                            ]
+                        },
+                        "description": "Obtener un template específico por su tipo"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Actualizar Template",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"tipo\": \"nuevo-concurso\",\n  \"asunto\": \"🎉 ¡Nuevo Concurso Disponible: {{concurso.titulo}}!\",\n  \"contenidoHtml\": \"<h2>¡Hola {{usuario.nombre}}!</h2><p>Te informamos que hay un nuevo concurso disponible: <strong>{{concurso.titulo}}</strong></p><p>{{concurso.descripcion}}</p><p>Fecha límite: {{concurso.fecha_final}}</p><a href='{{enlace_concurso}}' style='background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Ver Concurso</a>\",\n  \"contenidoTexto\": \"¡Hola {{usuario.nombre}}! Te informamos que hay un nuevo concurso disponible: {{concurso.titulo}}. {{concurso.descripcion}} Fecha límite: {{concurso.fecha_final}}. Visita: {{enlace_concurso}}\",\n  \"variables\": [\"usuario.nombre\", \"concurso.titulo\", \"concurso.descripcion\", \"concurso.fecha_final\", \"enlace_concurso\"]\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/notifications/templates/nuevo-concurso",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "notifications",
+                                "templates",
+                                "nuevo-concurso"
+                            ]
+                        },
+                        "description": "Actualizar un template de notificación existente"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Previsualizar Template",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"tipo\": \"nuevo-concurso\",\n  \"datosEjemplo\": {\n    \"usuario\": {\n      \"nombre\": \"Juan Pérez\"\n    },\n    \"concurso\": {\n      \"titulo\": \"Fotografía Urbana 2025\",\n      \"descripcion\": \"Captura la esencia de la vida urbana en tus fotografías\",\n      \"fecha_final\": \"2025-03-15\"\n    },\n    \"enlace_concurso\": \"https://webfestival.com/concursos/1\"\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/notifications/templates/preview",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "notifications",
+                                "templates",
+                                "preview"
+                            ]
+                        },
+                        "description": "Previsualizar un template con datos de ejemplo"
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Estadísticas y Monitoreo (Admin)",
+            "item": [
+                {
+                    "name": "Estadísticas de Notificaciones",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/notifications/stats?periodo=30d&tipo=email",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "notifications",
+                                "stats"
+                            ],
+                            "query": [
+                                {
+                                    "key": "periodo",
+                                    "value": "30d",
+                                    "description": "Período de estadísticas (7d, 30d, 90d, 1y)"
+                                },
+                                {
+                                    "key": "tipo",
+                                    "value": "email",
+                                    "description": "Tipo de notificación (email, push, inApp)"
+                                }
+                            ]
+                        },
+                        "description": "Obtener estadísticas de notificaciones enviadas"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Historial de Envíos",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/notifications/history?page=1&limit=50&estado=enviado",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "notifications",
+                                "history"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "50"
+                                },
+                                {
+                                    "key": "estado",
+                                    "value": "enviado",
+                                    "description": "Estado: pendiente, enviado, fallido, cancelado"
+                                }
+                            ]
+                        },
+                        "description": "Obtener historial detallado de envíos de notificaciones"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Métricas de Engagement",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/notifications/metrics/engagement?fechaInicio=2024-01-01&fechaFin=2024-12-31",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "notifications",
+                                "metrics",
+                                "engagement"
+                            ],
+                            "query": [
+                                {
+                                    "key": "fechaInicio",
+                                    "value": "2024-01-01"
+                                },
+                                {
+                                    "key": "fechaFin",
+                                    "value": "2024-12-31"
+                                }
+                            ]
+                        },
+                        "description": "Obtener métricas de engagement (apertura, clics, conversiones)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Estado del Sistema de Notificaciones",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/notifications/system/status",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "notifications",
+                                "system",
+                                "status"
+                            ]
+                        },
+                        "description": "Obtener estado del sistema de notificaciones (colas, servicios, errores)"
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Testing y Desarrollo",
+            "item": [
+                {
+                    "name": "Enviar Notificación de Prueba",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"destinatario\": \"test@webfestival.com\",\n  \"tipo\": \"nuevo-concurso\",\n  \"datos\": {\n    \"usuario\": {\n      \"nombre\": \"Usuario de Prueba\"\n    },\n    \"concurso\": {\n      \"titulo\": \"Concurso de Prueba\",\n      \"descripcion\": \"Este es un concurso de prueba para testing\",\n      \"fecha_final\": \"2025-12-31\"\n    },\n    \"enlace_concurso\": \"https://webfestival.com/concursos/test\"\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/notifications/test/send",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "notifications",
+                                "test",
+                                "send"
+                            ]
+                        },
+                        "description": "Enviar notificación de prueba para testing (solo en desarrollo)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Validar Configuración de Email",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/notifications/test/email-config",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "notifications",
+                                "test",
+                                "email-config"
+                            ]
+                        },
+                        "description": "Validar configuración de servicios de email (SendGrid/Resend)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Limpiar Cola de Notificaciones",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/notifications/test/clear-queue",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "notifications",
+                                "test",
+                                "clear-queue"
+                            ]
+                        },
+                        "description": "Limpiar cola de notificaciones pendientes (solo en desarrollo)"
+                    },
+                    "response": []
+                }
+            ]
+        }
+    ]
+}

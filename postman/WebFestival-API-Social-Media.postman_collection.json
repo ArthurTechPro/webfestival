@@ -1,0 +1,83 @@
+{
+	"info": {
+		"_postman_id": "social-media-api-collection",
+		"name": "WebFestival API - Social Media",
+		"description": "Colección de endpoints para integración con redes sociales y compartir contenido",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{access_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3001/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Generar Enlaces de Compartir",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"medioId\": 1\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/social-media/share-links",
+					"host": ["{{base_url}}"],
+					"path": ["social-media", "share-links"]
+				},
+				"description": "Genera enlaces para compartir un medio ganador en redes sociales"
+			},
+			"response": []
+		},
+		{
+			"name": "Obtener Medio Público",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/social-media/public/media/1/mi-foto-ganadora",
+					"host": ["{{base_url}}"],
+					"path": ["social-media", "public", "media", "1", "mi-foto-ganadora"]
+				},
+				"description": "Endpoint público para acceder a medios compartidos"
+			},
+			"response": []
+		},
+		{
+			"name": "Obtener Configuración de Redes Sociales",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/social-media/configuration",
+					"host": ["{{base_url}}"],
+					"path": ["social-media", "configuration"]
+				},
+				"description": "Obtiene el estado de configuración de APIs de redes sociales (Solo Admin)"
+			},
+			"response": []
+		}
+	]
+}

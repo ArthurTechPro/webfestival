@@ -28,7 +28,7 @@ export class SocialMediaController {
       const userId = req.user?.id;
 
       // Verificar que el medio existe y obtener información completa
-      const medio = await prisma.medios.findUnique({
+      const medio = await prisma.medio.findUnique({
         where: { id: medioId },
         include: {
           usuario: {
@@ -52,7 +52,7 @@ export class SocialMediaController {
       }
 
       // Verificar que el concurso está finalizado
-      if (medio.concurso.status !== 'Finalizado') {
+      if (medio.concurso.status !== 'FINALIZADO') {
         res.status(400).json({
           success: false,
           message: 'Solo se pueden compartir medios de concursos finalizados'
@@ -87,7 +87,7 @@ export class SocialMediaController {
         HAVING m.id = ${medioId}
       `;
 
-      const posicion = resultados.length > 0 ? Number(resultados[0].posicion) : 999;
+      const posicion = resultados.length > 0 ? Number(resultados[0]?.posicion) : 999;
 
       // Solo permitir compartir si está en los primeros 3 lugares
       if (posicion > 3) {
@@ -156,10 +156,10 @@ export class SocialMediaController {
    */
   async getPublicMedia(req: Request, res: Response): Promise<void> {
     try {
-      const { medioId, slug } = PublicMediaAccessSchema.parse(req.params);
+      const { medioId } = PublicMediaAccessSchema.parse(req.params);
 
       // Obtener información completa del medio
-      const medio = await prisma.medios.findUnique({
+      const medio = await prisma.medio.findUnique({
         where: { id: medioId },
         include: {
           usuario: {
@@ -202,7 +202,7 @@ export class SocialMediaController {
       }
 
       // Solo mostrar medios de concursos finalizados
-      if (medio.concurso.status !== 'Finalizado') {
+      if (medio.concurso.status !== 'FINALIZADO') {
         res.status(404).json({
           success: false,
           message: 'Medio no disponible públicamente'
@@ -320,7 +320,7 @@ export class SocialMediaController {
   /**
    * Obtiene la configuración de redes sociales (para debugging)
    */
-  async getConfiguration(req: Request, res: Response): Promise<void> {
+  async getConfiguration(_req: Request, res: Response): Promise<void> {
     try {
       const validation = socialMediaService.validateConfiguration();
       
@@ -330,10 +330,10 @@ export class SocialMediaController {
           isConfigured: validation.isValid,
           missingKeys: validation.missingKeys,
           availableServices: {
-            facebook: !!process.env.FACEBOOK_APP_ID,
-            instagram: !!process.env.INSTAGRAM_ACCESS_TOKEN,
-            twitter: !!process.env.TWITTER_API_KEY,
-            linkedin: !!process.env.LINKEDIN_CLIENT_ID
+            facebook: !!process.env['FACEBOOK_APP_ID'],
+            instagram: !!process.env['INSTAGRAM_ACCESS_TOKEN'],
+            twitter: !!process.env['TWITTER_API_KEY'],
+            linkedin: !!process.env['LINKEDIN_CLIENT_ID']
           }
         }
       });

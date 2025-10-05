@@ -59,7 +59,7 @@ try {
   });
   
 } catch (error) {
-  console.log('   - MediaService: ❌', error.message);
+  console.log('   - MediaService: ❌', (error as Error).message);
 }
 
 try {
@@ -87,7 +87,7 @@ try {
   });
   
 } catch (error) {
-  console.log('   - MediaController: ❌', error.message);
+  console.log('   - MediaController: ❌', (error as Error).message);
 }
 
 // 3. Verificar endpoints implementados

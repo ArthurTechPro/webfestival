@@ -22,9 +22,7 @@ const sendNewContestSchema = z.object({
   concursoId: z.number().int().positive()
 });
 
-const markAsReadSchema = z.object({
-  notificationId: z.number().int().positive()
-});
+// Schema removido - no se usa en el código actual
 
 const getUserNotificationsSchema = z.object({
   page: z.number().int().positive().default(1),

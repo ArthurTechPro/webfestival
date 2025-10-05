@@ -31,7 +31,7 @@ try {
   });
   
 } catch (error) {
-  console.log('   - CalificacionService: ❌', error.message);
+  console.log('   - CalificacionService: ❌', (error as Error).message);
 }
 
 try {
@@ -58,7 +58,7 @@ try {
   });
   
 } catch (error) {
-  console.log('   - JuradoAsignacionService: ❌', error.message);
+  console.log('   - JuradoAsignacionService: ❌', (error as Error).message);
 }
 
 // 2. Verificar controladores implementados
@@ -88,7 +88,7 @@ try {
   });
   
 } catch (error) {
-  console.log('   - CalificacionController: ❌', error.message);
+  console.log('   - CalificacionController: ❌', (error as Error).message);
 }
 
 try {
@@ -115,7 +115,7 @@ try {
   });
   
 } catch (error) {
-  console.log('   - JuradoAsignacionController: ❌', error.message);
+  console.log('   - JuradoAsignacionController: ❌', (error as Error).message);
 }
 
 // 3. Verificar endpoints implementados

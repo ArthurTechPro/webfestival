@@ -4,7 +4,7 @@
  * Script para verificar la funcionalidad del servicio de medios multimedia
  */
 
-import { mediaService, MEDIA_VALIDATION_CONFIG } from '../services/media.service';
+import { MEDIA_VALIDATION_CONFIG } from '../services/media.service';
 import { TipoMedio } from '../types';
 
 console.log('🚀 Verificando servicio de medios multimedia...\n');
@@ -104,13 +104,13 @@ solicitudesTest.forEach((solicitud, index) => {
   const tamañoValido = tamañoMB <= config.maxSizeMB;
   
   // Validar formato
-  const formatoValido = config.formats.includes(solicitud.archivo.file_type);
+  const formatoValido = (config.formats as readonly string[]).includes(solicitud.archivo.file_type);
   
   // Validar extensión
   const extension = solicitud.archivo.file_name.toLowerCase().substring(
     solicitud.archivo.file_name.lastIndexOf('.')
   );
-  const extensionValida = config.extensions.includes(extension);
+  const extensionValida = (config.extensions as readonly string[]).includes(extension);
   
   const esValido = tamañoValido && formatoValido && extensionValida;
   

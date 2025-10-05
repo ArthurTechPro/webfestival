@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { socialMediaController } from '../controllers/social-media.controller';
 import { authenticateToken } from '../middleware/auth.middleware';
-import { validateRole } from '../middleware/role.middleware';
+import { requireRole } from '../middleware/role.middleware';
 import rateLimit from 'express-rate-limit';
 
 const router = Router();
@@ -60,7 +60,7 @@ router.get(
   '/configuration',
   authRateLimit,
   authenticateToken,
-  validateRole(['ADMIN']),
+  requireRole(['ADMIN']),
   socialMediaController.getConfiguration
 );
 

@@ -1,0 +1,253 @@
+{
+	"info": {
+		"_postman_id": "newsletter-api-collection",
+		"name": "WebFestival API - Newsletter & Educational Content",
+		"description": "Colección de endpoints para newsletter y contenido educativo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{access_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3001/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Newsletter",
+			"item": [
+				{
+					"name": "Suscribirse al Newsletter",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"usuario@ejemplo.com\",\n  \"nombre\": \"Juan Pérez\",\n  \"intereses\": [\"fotografia\", \"video\"]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/newsletter/subscribe",
+							"host": ["{{base_url}}"],
+							"path": ["newsletter", "subscribe"]
+						},
+						"description": "Suscribirse al newsletter con intereses específicos"
+					},
+					"response": []
+				},
+				{
+					"name": "Confirmar Suscripción",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/newsletter/confirm/abc123token456",
+							"host": ["{{base_url}}"],
+							"path": ["newsletter", "confirm", "abc123token456"]
+						},
+						"description": "Confirmar suscripción mediante token enviado por email"
+					},
+					"response": []
+				},
+				{
+					"name": "Cancelar Suscripción",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"usuario@ejemplo.com\",\n  \"token\": \"unsubscribe_token_123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/newsletter/unsubscribe",
+							"host": ["{{base_url}}"],
+							"path": ["newsletter", "unsubscribe"]
+						},
+						"description": "Cancelar suscripción al newsletter"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Estadísticas Newsletter (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/newsletter/stats?periodo=30d",
+							"host": ["{{base_url}}"],
+							"path": ["newsletter", "stats"],
+							"query": [
+								{
+									"key": "periodo",
+									"value": "30d"
+								}
+							]
+						},
+						"description": "Obtener estadísticas del newsletter (solo admin)"
+					},
+					"response": []
+				},
+				{
+					"name": "Enviar Newsletter Manual (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"asunto\": \"Newsletter Especial - Nuevos Concursos\",\n  \"tipo\": \"especial\",\n  \"segmento\": \"todos\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/newsletter/send",
+							"host": ["{{base_url}}"],
+							"path": ["newsletter", "send"]
+						},
+						"description": "Enviar newsletter manual (solo admin)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Contenido Educativo",
+			"item": [
+				{
+					"name": "Obtener Contenido Educativo por Tipo",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/educational-content/fotografia?nivel=principiante&page=1&limit=10",
+							"host": ["{{base_url}}"],
+							"path": ["educational-content", "fotografia"],
+							"query": [
+								{
+									"key": "nivel",
+									"value": "principiante"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Obtener contenido educativo por tipo de medio"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Recomendaciones Personalizadas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/educational-content/recommendations?limit=5",
+							"host": ["{{base_url}}"],
+							"path": ["educational-content", "recommendations"],
+							"query": [
+								{
+									"key": "limit",
+									"value": "5"
+								}
+							]
+						},
+						"description": "Obtener recomendaciones personalizadas de contenido"
+					},
+					"response": []
+				},
+				{
+					"name": "Marcar Contenido como Leído",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"contenidoId\": 1,\n  \"tiempoLectura\": 300\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/educational-content/mark-read",
+							"host": ["{{base_url}}"],
+							"path": ["educational-content", "mark-read"]
+						},
+						"description": "Marcar contenido educativo como leído"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Progreso de Aprendizaje",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/educational-content/progress",
+							"host": ["{{base_url}}"],
+							"path": ["educational-content", "progress"]
+						},
+						"description": "Obtener progreso de aprendizaje del usuario"
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Contenido Educativo (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"titulo\": \"Fundamentos de Composición Fotográfica\",\n  \"contenido\": \"En este artículo aprenderás los principios básicos...\",\n  \"tipoMedio\": \"fotografia\",\n  \"nivel\": \"principiante\",\n  \"etiquetas\": [\"composicion\", \"regla-tercios\", \"encuadre\"],\n  \"tiempoEstimadoLectura\": 10\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/educational-content",
+							"host": ["{{base_url}}"],
+							"path": ["educational-content"]
+						},
+						"description": "Crear nuevo contenido educativo (solo admin)"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

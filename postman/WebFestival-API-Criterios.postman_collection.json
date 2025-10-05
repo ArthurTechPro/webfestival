@@ -1,0 +1,249 @@
+{
+  "info": {
+    "name": "WebFestival API - Criterios de Evaluación",
+    "description": "Colección de endpoints para gestión de criterios dinámicos por tipo de medio",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3001/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "criterioId",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Obtener Todos los Criterios",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/criterios",
+          "host": ["{{baseUrl}}"],
+          "path": ["criterios"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "2. Obtener Criterios Universales",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/criterios/universales",
+          "host": ["{{baseUrl}}"],
+          "path": ["criterios", "universales"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "3. Obtener Criterios por Tipo - Fotografía",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/criterios/tipo/fotografia",
+          "host": ["{{baseUrl}}"],
+          "path": ["criterios", "tipo", "fotografia"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "4. Obtener Criterios por Tipo - Video",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/criterios/tipo/video",
+          "host": ["{{baseUrl}}"],
+          "path": ["criterios", "tipo", "video"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "5. Obtener Criterios por Tipo - Audio",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/criterios/tipo/audio",
+          "host": ["{{baseUrl}}"],
+          "path": ["criterios", "tipo", "audio"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "6. Obtener Criterios por Tipo - Corto de Cine",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/criterios/tipo/corto_cine",
+          "host": ["{{baseUrl}}"],
+          "path": ["criterios", "tipo", "corto_cine"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "7. Validar Criterios por Tipo",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/criterios/validar/fotografia",
+          "host": ["{{baseUrl}}"],
+          "path": ["criterios", "validar", "fotografia"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "8. Obtener Estadísticas de Criterios",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/criterios/estadisticas",
+          "host": ["{{baseUrl}}"],
+          "path": ["criterios", "estadisticas"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "9. Obtener Criterio por ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/criterios/{{criterioId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["criterios", "{{criterioId}}"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "10. [ADMIN] Crear Criterio",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Iluminación\",\n  \"descripcion\": \"Evaluación del uso de la luz natural y artificial en la composición\",\n  \"tipo_medio\": \"fotografia\",\n  \"peso\": 1.2,\n  \"orden\": 6,\n  \"activo\": true\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/criterios",
+          "host": ["{{baseUrl}}"],
+          "path": ["criterios"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "11. [ADMIN] Actualizar Criterio",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Iluminación Avanzada\",\n  \"descripcion\": \"Evaluación avanzada del uso de la luz natural y artificial en la composición fotográfica\",\n  \"peso\": 1.5,\n  \"orden\": 5\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/criterios/{{criterioId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["criterios", "{{criterioId}}"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "12. [ADMIN] Eliminar Criterio",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/criterios/{{criterioId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["criterios", "{{criterioId}}"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "13. [ADMIN] Reordenar Criterios",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"criterios\": [\n    {\n      \"id\": 1,\n      \"orden\": 1\n    },\n    {\n      \"id\": 2,\n      \"orden\": 2\n    },\n    {\n      \"id\": 3,\n      \"orden\": 3\n    }\n  ]\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/criterios/reordenar",
+          "host": ["{{baseUrl}}"],
+          "path": ["criterios", "reordenar"]
+        }
+      },
+      "response": []
+    }
+  ]
+}

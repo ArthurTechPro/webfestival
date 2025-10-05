@@ -121,11 +121,11 @@ async function testSocialMediaIntegration() {
       console.log('✅ Conexión con base de datos exitosa');
       
       // Verificar si hay medios en la base de datos
-      const mediosCount = await prisma.medios.count();
+      const mediosCount = await prisma.medio.count();
       console.log(`   Total de medios en BD: ${mediosCount}`);
       
       if (mediosCount > 0) {
-        const medioEjemplo = await prisma.medios.findFirst({
+        const medioEjemplo = await prisma.medio.findFirst({
           include: {
             usuario: { select: { nombre: true } },
             concurso: { select: { titulo: true } }

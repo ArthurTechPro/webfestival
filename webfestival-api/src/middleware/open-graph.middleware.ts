@@ -20,7 +20,7 @@ export const generateOpenGraphMetadata = async (
       return;
     }
 
-    const medioId = parseInt(req.params.medioId, 10);
+    const medioId = parseInt(req.params['medioId'] || '0', 10);
     
     if (isNaN(medioId)) {
       next();
@@ -28,7 +28,7 @@ export const generateOpenGraphMetadata = async (
     }
 
     // Obtener información del medio
-    const medio = await prisma.medios.findUnique({
+    const medio = await prisma.medio.findUnique({
       where: { id: medioId },
       include: {
         usuario: {
@@ -40,7 +40,7 @@ export const generateOpenGraphMetadata = async (
       }
     });
 
-    if (!medio || medio.concurso.status !== 'Finalizado') {
+    if (!medio || medio.concurso.status !== 'FINALIZADO') {
       next();
       return;
     }
@@ -62,7 +62,7 @@ export const generateOpenGraphMetadata = async (
       GROUP BY m.id, m.categoria_id
     `;
 
-    const posicion = resultados.length > 0 ? Number(resultados[0].posicion) : 999;
+    const posicion = resultados.length > 0 ? Number(resultados[0]?.posicion) : 999;
 
     // Generar metadatos Open Graph
     const shareData = {
@@ -79,8 +79,8 @@ export const generateOpenGraphMetadata = async (
     const openGraphMetadata = socialMediaService.generateOpenGraphMetadata(shareData);
 
     // Agregar metadatos a la respuesta
-    res.locals.openGraphMetadata = openGraphMetadata;
-    res.locals.shareData = shareData;
+    res.locals['openGraphMetadata'] = openGraphMetadata;
+    res.locals['shareData'] = shareData;
 
     next();
 
@@ -94,16 +94,16 @@ export const generateOpenGraphMetadata = async (
  * Middleware para inyectar metadatos Open Graph en respuestas HTML
  */
 export const injectOpenGraphTags = (
-  req: Request, 
+  _req: Request, 
   res: Response, 
   next: NextFunction
 ): void => {
   const originalSend = res.send;
 
   res.send = function(body: any) {
-    if (res.locals.openGraphMetadata && typeof body === 'string' && body.includes('<head>')) {
+    if (res.locals['openGraphMetadata'] && typeof body === 'string' && body.includes('<head>')) {
       // Generar tags HTML
-      const metaTags = Object.entries(res.locals.openGraphMetadata)
+      const metaTags = Object.entries(res.locals['openGraphMetadata'])
         .map(([property, content]) => `<meta property="${property}" content="${content}" />`)
         .join('\n    ');
 
