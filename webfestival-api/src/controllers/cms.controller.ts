@@ -46,7 +46,15 @@ export class CMSController {
     /**
      * Valida que el ID sea un número válido
      */
-    private validateId(id: string, res: Response): number | null {
+    private validateId(id: string | undefined, res: Response): number | null {
+        if (!id) {
+            res.status(400).json({
+                success: false,
+                message: 'ID es requerido'
+            });
+            return null;
+        }
+
         const parsedId = parseInt(id);
         if (isNaN(parsedId)) {
             res.status(400).json({
