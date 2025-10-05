@@ -3,15 +3,15 @@ import { PaymentMethod, PaymentResult, Invoice, StripeWebhookEvent } from '../ty
 import { subscriptionService } from './subscription.service';
 
 // Inicializar Stripe con la clave secreta
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2024-06-20'
+const stripe = new Stripe(process.env['STRIPE_SECRET_KEY'] || '', {
+  apiVersion: '2025-08-27.basil'
 });
 
 export class StripeService {
   private stripe: Stripe;
 
   constructor() {
-    if (!process.env.STRIPE_SECRET_KEY) {
+    if (!process.env['STRIPE_SECRET_KEY']) {
       throw new Error('STRIPE_SECRET_KEY no está configurada en las variables de entorno');
     }
     this.stripe = stripe;

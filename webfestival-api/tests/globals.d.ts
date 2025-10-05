@@ -9,6 +9,7 @@ declare global {
   var afterAll: jest.Lifecycle;
   var beforeEach: jest.Lifecycle;
   var afterEach: jest.Lifecycle;
+  var jest: typeof import('jest');
 }
 
 export {};

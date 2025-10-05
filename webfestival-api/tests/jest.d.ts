@@ -1,6 +1,8 @@
 /// <reference types="jest" />
 
 declare global {
+  var jest: typeof import('jest');
+  
   namespace jest {
     interface Matchers<R> {
       toBeInstanceOf(expected: any): R;

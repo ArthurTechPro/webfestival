@@ -256,9 +256,7 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
     - _Requisitos: 30.1, 30.2, 30.3, 30.4, 37.1, 37.2, 37.3, 37.4_
 
 - [ ] 7. Sistema de suscripciones y monetización
-  - [ ] 7.1 APIs de gestión de suscripciones
-
-
+  - [x] 7.1 APIs de gestión de suscripciones
 
 
     - Crear endpoints para obtener planes disponibles y características

@@ -9,6 +9,7 @@ import juradoAsignacionRoutes from './jurado-asignacion.routes';
 import cmsRoutes from './cms.routes';
 import interactionsRoutes from './interactions.routes';
 import newsletterRoutes from './newsletter.routes';
+import subscriptionRoutes from './subscription.routes';
 
 const router = Router();
 
@@ -42,6 +43,9 @@ router.use('/interactions', interactionsRoutes);
 // Rutas de newsletter y contenido educativo
 router.use('/', newsletterRoutes);
 
+// Rutas de suscripciones y monetización
+router.use('/subscriptions', subscriptionRoutes);
+
 // Health check route
 router.get('/health', (_req, res) => {
   res.json({
@@ -69,7 +73,8 @@ router.get('/', (_req, res) => {
       cms: '/api/v1/cms',
       interactions: '/api/v1/interactions',
       newsletter: '/api/v1/newsletter',
-      educational_content: '/api/v1/educational-content'
+      educational_content: '/api/v1/educational-content',
+      subscriptions: '/api/v1/subscriptions'
     }
   });
 });

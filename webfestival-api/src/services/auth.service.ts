@@ -116,6 +116,7 @@ export class AuthService {
 
     // Generar tokens
     const tokenPayload: Omit<JWTPayload, 'iat' | 'exp'> = {
+      id: usuario.id,
       userId: usuario.id,
       email: usuario.email,
       role: usuario.role
@@ -171,6 +172,7 @@ export class AuthService {
 
     // Generar tokens
     const tokenPayload: Omit<JWTPayload, 'iat' | 'exp'> = {
+      id: usuario.id,
       userId: usuario.id,
       email: usuario.email,
       role: usuario.role
@@ -213,6 +215,7 @@ export class AuthService {
 
     // Generar nuevos tokens
     const tokenPayload: Omit<JWTPayload, 'iat' | 'exp'> = {
+      id: usuario.id,
       userId: usuario.id,
       email: usuario.email,
       role: usuario.role

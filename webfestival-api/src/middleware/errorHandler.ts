@@ -19,7 +19,7 @@ export const errorHandler = (
 
   // Handle Zod validation errors
   if (err instanceof ZodError) {
-    return res.status(400).json({
+    res.status(400).json({
       success: false,
       error: 'Datos de entrada inválidos',
       details: err.errors.map(error => ({
@@ -27,6 +27,7 @@ export const errorHandler = (
         message: error.message
       }))
     });
+    return;
   }
 
   // Handle Prisma errors
@@ -51,7 +52,7 @@ export const errorHandler = (
         message = 'Error de base de datos';
     }
 
-    return res.status(status).json({
+    res.status(status).json({
       success: false,
       error: message,
       ...(process.env['NODE_ENV'] !== 'production' && {
@@ -59,6 +60,7 @@ export const errorHandler = (
         meta: err.meta
       })
     });
+    return;
   }
 
   // Handle custom API errors

@@ -188,8 +188,8 @@ export class NewsletterService {
     return await prisma.newsletterSuscriptor.update({
       where: { id },
       data: {
-        activo: data.activo,
-        confirmado: data.confirmado,
+        ...(data.activo !== undefined && { activo: data.activo }),
+        ...(data.confirmado !== undefined && { confirmado: data.confirmado }),
         ...(data.activo === false && { fecha_cancelacion: new Date() })
       }
     });
