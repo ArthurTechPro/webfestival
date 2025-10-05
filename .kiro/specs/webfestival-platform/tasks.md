@@ -264,13 +264,6 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
     - _Requisitos: 36.1, 36.2, 36.3_
 
   - [x] 7.2 Integración con pasarelas de pago
-
-
-
-
-
-
-
     - Integrar Stripe para procesamiento de pagos y suscripciones
     - Implementar webhooks para manejo de eventos de pago
     - Crear sistema de facturación automática y renovaciones
@@ -278,7 +271,13 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
     - _Requisitos: 36.4_
 
 - [ ] 8. Sistema de notificaciones y servicios externos
-  - [ ] 8.1 Configurar servicio de email
+  - [x] 8.1 Configurar servicio de email
+
+
+
+
+
+
     - Integrar SendGrid o Resend para envío de emails
     - Crear templates de notificación HTML
     - Implementar cola de envío con reintentos

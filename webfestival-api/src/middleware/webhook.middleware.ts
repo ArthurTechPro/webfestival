@@ -5,15 +5,15 @@ import express from 'express';
  * Middleware para manejar webhooks de Stripe que requieren el body raw
  * Debe aplicarse antes del middleware express.json()
  */
-export const rawBodyMiddleware = (req: Request, res: Response, next: NextFunction): void => {
+export const rawBodyMiddleware = (req: Request, _res: Response, next: NextFunction): void => {
   if (req.originalUrl === '/api/v1/subscriptions/webhooks/stripe') {
     let data = '';
     req.setEncoding('utf8');
-    
+
     req.on('data', (chunk) => {
       data += chunk;
     });
-    
+
     req.on('end', () => {
       req.body = data;
       next();
@@ -33,7 +33,7 @@ export const webhookBodyParser = express.raw({ type: 'application/json' });
  */
 export const verifyStripeWebhook = (req: Request, res: Response, next: NextFunction): void => {
   const signature = req.headers['stripe-signature'];
-  
+
   if (!signature) {
     res.status(400).json({
       success: false,
@@ -41,7 +41,7 @@ export const verifyStripeWebhook = (req: Request, res: Response, next: NextFunct
     });
     return;
   }
-  
+
   next();
 };
 
@@ -57,9 +57,9 @@ export const verifyPayPalWebhook = (req: Request, res: Response, next: NextFunct
     'paypal-transmission-sig',
     'paypal-transmission-time'
   ];
-  
+
   const missingHeaders = requiredHeaders.filter(header => !req.headers[header]);
-  
+
   if (missingHeaders.length > 0) {
     res.status(400).json({
       success: false,
@@ -68,7 +68,7 @@ export const verifyPayPalWebhook = (req: Request, res: Response, next: NextFunct
     });
     return;
   }
-  
+
   next();
 };
 
@@ -84,7 +84,7 @@ export const logWebhook = (provider: 'stripe' | 'paypal') => {
       contentType: req.headers['content-type'],
       bodySize: req.body ? JSON.stringify(req.body).length : 0
     });
-    
+
     next();
   };
 };

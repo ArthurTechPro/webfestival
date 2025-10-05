@@ -5,3 +5,4 @@ export * from './contest.service';
 export * from './media.service';
 export * from './immich.service';
 export * from './newsletter.service';
+export * from './email.service';
