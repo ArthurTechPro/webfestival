@@ -9,7 +9,13 @@ import {
     ContenidoSEOSchema,
     ContenidoMetricasSchema,
     ContenidoTaxonomiaSchema,
-    TagSearchSchema
+    TagSearchSchema,
+    AdvancedSearchSchema,
+    AnalyticsOverviewSchema,
+    ContentPerformanceSchema,
+    TaxonomyStatsSchema,
+    GrowthTrendsSchema,
+    EngagementMetricsSchema
 } from '../schemas/cms.schemas';
 import { z } from 'zod';
 
@@ -618,6 +624,237 @@ export class CMSController {
             }
 
             console.error('Error al generar preview:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Error interno del servidor'
+            });
+        }
+    }
+
+    // ============================================================================
+    // MÉTODOS DE BÚSQUEDA AVANZADA Y ANALYTICS
+    // ============================================================================
+
+    /**
+     * Búsqueda avanzada por múltiples criterios
+     * GET /api/cms/search
+     */
+    async advancedSearch(req: AuthenticatedRequest, res: Response) {
+        try {
+            // Procesar arrays de query parameters
+            const categorias = req.query['categorias'];
+            const etiquetas = req.query['etiquetas'];
+
+            const searchParams = AdvancedSearchSchema.parse({
+                ...req.query,
+                categorias: Array.isArray(categorias) ? categorias : (categorias ? [categorias] : undefined),
+                etiquetas: Array.isArray(etiquetas) ? etiquetas : (etiquetas ? [etiquetas] : undefined),
+                page: req.query['page'] ? parseInt(req.query['page'] as string) : 1,
+                limit: req.query['limit'] ? parseInt(req.query['limit'] as string) : 10,
+                min_vistas: req.query['min_vistas'] ? parseInt(req.query['min_vistas'] as string) : undefined,
+                min_likes: req.query['min_likes'] ? parseInt(req.query['min_likes'] as string) : undefined,
+                destacado: req.query['destacado'] === 'true' ? true : req.query['destacado'] === 'false' ? false : undefined,
+            });
+
+            const result = await cmsService.advancedSearch(searchParams);
+
+            return res.json({
+                success: true,
+                data: result,
+                message: 'Búsqueda completada exitosamente'
+            });
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Parámetros de búsqueda inválidos',
+                    errors: error.errors
+                });
+            }
+
+            console.error('Error en búsqueda avanzada:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Error interno del servidor'
+            });
+        }
+    }
+
+    /**
+     * Obtiene métricas generales del CMS
+     * GET /api/cms/analytics/overview
+     */
+    async getAnalyticsOverview(req: AuthenticatedRequest, res: Response) {
+        try {
+            const userId = await this.validateContentAdminAccess(req.user?.id, res);
+            if (!userId) return;
+
+            const params = AnalyticsOverviewSchema.parse(req.query);
+            const overview = await cmsService.getAnalyticsOverview(params);
+
+            return res.json({
+                success: true,
+                data: overview,
+                message: 'Métricas generales obtenidas exitosamente'
+            });
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Parámetros inválidos',
+                    errors: error.errors
+                });
+            }
+
+            console.error('Error al obtener métricas generales:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Error interno del servidor'
+            });
+        }
+    }
+
+    /**
+     * Obtiene métricas de rendimiento de contenido
+     * GET /api/cms/analytics/content-performance
+     */
+    async getContentPerformance(req: AuthenticatedRequest, res: Response) {
+        try {
+            const userId = await this.validateContentAdminAccess(req.user?.id, res);
+            if (!userId) return;
+
+            const params = ContentPerformanceSchema.parse({
+                ...req.query,
+                limit: req.query['limit'] ? parseInt(req.query['limit'] as string) : 10,
+            });
+
+            const performance = await cmsService.getContentPerformance(params);
+
+            return res.json({
+                success: true,
+                data: performance,
+                message: 'Métricas de rendimiento obtenidas exitosamente'
+            });
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Parámetros inválidos',
+                    errors: error.errors
+                });
+            }
+
+            console.error('Error al obtener métricas de rendimiento:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Error interno del servidor'
+            });
+        }
+    }
+
+    /**
+     * Obtiene estadísticas de taxonomía
+     * GET /api/cms/analytics/taxonomy-stats
+     */
+    async getTaxonomyStats(req: AuthenticatedRequest, res: Response) {
+        try {
+            const userId = await this.validateContentAdminAccess(req.user?.id, res);
+            if (!userId) return;
+
+            const params = TaxonomyStatsSchema.parse({
+                ...req.query,
+                limit: req.query['limit'] ? parseInt(req.query['limit'] as string) : 10,
+            });
+
+            const stats = await cmsService.getTaxonomyStats(params);
+
+            return res.json({
+                success: true,
+                data: stats,
+                message: 'Estadísticas de taxonomía obtenidas exitosamente'
+            });
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Parámetros inválidos',
+                    errors: error.errors
+                });
+            }
+
+            console.error('Error al obtener estadísticas de taxonomía:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Error interno del servidor'
+            });
+        }
+    }
+
+    /**
+     * Obtiene tendencias de crecimiento
+     * GET /api/cms/analytics/growth-trends
+     */
+    async getGrowthTrends(req: AuthenticatedRequest, res: Response) {
+        try {
+            const userId = await this.validateContentAdminAccess(req.user?.id, res);
+            if (!userId) return;
+
+            const params = GrowthTrendsSchema.parse({
+                ...req.query,
+                meses: req.query['meses'] ? parseInt(req.query['meses'] as string) : 12,
+            });
+
+            const trends = await cmsService.getGrowthTrends(params);
+
+            return res.json({
+                success: true,
+                data: trends,
+                message: 'Tendencias de crecimiento obtenidas exitosamente'
+            });
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Parámetros inválidos',
+                    errors: error.errors
+                });
+            }
+
+            console.error('Error al obtener tendencias de crecimiento:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Error interno del servidor'
+            });
+        }
+    }
+
+    /**
+     * Obtiene métricas de engagement
+     * GET /api/cms/analytics/engagement-metrics
+     */
+    async getEngagementMetrics(req: AuthenticatedRequest, res: Response) {
+        try {
+            const userId = await this.validateContentAdminAccess(req.user?.id, res);
+            if (!userId) return;
+
+            const params = EngagementMetricsSchema.parse(req.query);
+            const metrics = await cmsService.getEngagementMetrics(params);
+
+            return res.json({
+                success: true,
+                data: metrics,
+                message: 'Métricas de engagement obtenidas exitosamente'
+            });
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Parámetros inválidos',
+                    errors: error.errors
+                });
+            }
+
+            console.error('Error al obtener métricas de engagement:', error);
             return res.status(500).json({
                 success: false,
                 message: 'Error interno del servidor'

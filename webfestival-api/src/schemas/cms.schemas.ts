@@ -141,6 +141,59 @@ export const ContentStatsSchema = z.object({
   fecha_fin: z.string().datetime().optional().or(z.date().optional()),
 });
 
+// Schema para búsqueda avanzada
+export const AdvancedSearchSchema = z.object({
+  q: z.string().optional(), // Búsqueda general
+  tipo: TipoContenidoSchema.optional(),
+  categorias: z.array(z.string()).optional(),
+  etiquetas: z.array(z.string()).optional(),
+  autor: z.string().optional(),
+  estado: EstadoContenidoSchema.optional(),
+  destacado: z.boolean().optional(),
+  fecha_desde: z.string().datetime().optional().or(z.date().optional()),
+  fecha_hasta: z.string().datetime().optional().or(z.date().optional()),
+  min_vistas: z.number().int().min(0).optional(),
+  min_likes: z.number().int().min(0).optional(),
+  sort_by: z.enum(['created_at', 'updated_at', 'fecha_publicacion', 'titulo', 'vistas', 'likes', 'comentarios_count']).default('created_at'),
+  sort_order: z.enum(['asc', 'desc']).default('desc'),
+  page: z.number().int().min(1).default(1),
+  limit: z.number().int().min(1).max(100).default(10),
+});
+
+// Schema para analytics overview
+export const AnalyticsOverviewSchema = z.object({
+  tipo: TipoContenidoSchema.optional(),
+  fecha_inicio: z.string().datetime().optional().or(z.date().optional()),
+  fecha_fin: z.string().datetime().optional().or(z.date().optional()),
+});
+
+// Schema para content performance
+export const ContentPerformanceSchema = z.object({
+  tipo: TipoContenidoSchema.optional(),
+  limit: z.number().int().min(1).max(50).default(10),
+  metric: z.enum(['vistas', 'likes', 'comentarios_count', 'shares']).default('vistas'),
+});
+
+// Schema para taxonomy stats
+export const TaxonomyStatsSchema = z.object({
+  tipo: TipoContenidoSchema.optional(),
+  limit: z.number().int().min(1).max(50).default(10),
+});
+
+// Schema para growth trends
+export const GrowthTrendsSchema = z.object({
+  periodo: z.enum(['daily', 'weekly', 'monthly', 'yearly']).default('monthly'),
+  tipo: TipoContenidoSchema.optional(),
+  meses: z.number().int().min(1).max(24).default(12),
+});
+
+// Schema para engagement metrics
+export const EngagementMetricsSchema = z.object({
+  tipo: TipoContenidoSchema.optional(),
+  fecha_inicio: z.string().datetime().optional().or(z.date().optional()),
+  fecha_fin: z.string().datetime().optional().or(z.date().optional()),
+});
+
 // Tipos TypeScript derivados de los esquemas
 export type TipoContenido = z.infer<typeof TipoContenidoSchema>;
 export type EstadoContenido = z.infer<typeof EstadoContenidoSchema>;
@@ -159,3 +212,9 @@ export type ContenidoReporte = z.infer<typeof ContenidoReporteSchema>;
 export type ContentTemplate = z.infer<typeof ContentTemplateSchema>;
 export type TagSearch = z.infer<typeof TagSearchSchema>;
 export type ContentStats = z.infer<typeof ContentStatsSchema>;
+export type AdvancedSearch = z.infer<typeof AdvancedSearchSchema>;
+export type AnalyticsOverview = z.infer<typeof AnalyticsOverviewSchema>;
+export type ContentPerformance = z.infer<typeof ContentPerformanceSchema>;
+export type TaxonomyStats = z.infer<typeof TaxonomyStatsSchema>;
+export type GrowthTrends = z.infer<typeof GrowthTrendsSchema>;
+export type EngagementMetrics = z.infer<typeof EngagementMetricsSchema>;

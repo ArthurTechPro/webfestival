@@ -167,4 +167,79 @@ router.put('/content/:id/metrics', authenticateToken, cmsController.updateConten
  */
 router.put('/content/:id/taxonomy', authenticateToken, cmsController.updateContentTaxonomy.bind(cmsController));
 
+// ============================================================================
+// RUTAS DE BÚSQUEDA AVANZADA Y ANALYTICS
+// ============================================================================
+
+/**
+ * @route GET /api/cms/search
+ * @desc Búsqueda avanzada por múltiples criterios
+ * @access Public
+ * @query {string} [q] - Texto de búsqueda general
+ * @query {string} [tipo] - Tipo de contenido
+ * @query {string[]} [categorias] - Array de categorías
+ * @query {string[]} [etiquetas] - Array de etiquetas
+ * @query {string} [autor] - ID del autor
+ * @query {string} [estado] - Estado del contenido
+ * @query {boolean} [destacado] - Solo contenido destacado
+ * @query {string} [fecha_desde] - Fecha desde (ISO string)
+ * @query {string} [fecha_hasta] - Fecha hasta (ISO string)
+ * @query {number} [min_vistas] - Mínimo número de vistas
+ * @query {number} [min_likes] - Mínimo número de likes
+ * @query {string} [sort_by] - Campo para ordenar
+ * @query {string} [sort_order] - Orden (asc, desc)
+ * @query {number} [page=1] - Página actual
+ * @query {number} [limit=10] - Elementos por página
+ */
+router.get('/search', cmsController.advancedSearch.bind(cmsController));
+
+/**
+ * @route GET /api/cms/analytics/overview
+ * @desc Obtiene métricas generales del CMS
+ * @access Private (CONTENT_ADMIN)
+ * @query {string} [tipo] - Filtrar por tipo de contenido
+ * @query {string} [fecha_inicio] - Fecha de inicio para el rango
+ * @query {string} [fecha_fin] - Fecha de fin para el rango
+ */
+router.get('/analytics/overview', authenticateToken, cmsController.getAnalyticsOverview.bind(cmsController));
+
+/**
+ * @route GET /api/cms/analytics/content-performance
+ * @desc Obtiene métricas de rendimiento de contenido
+ * @access Private (CONTENT_ADMIN)
+ * @query {string} [tipo] - Filtrar por tipo de contenido
+ * @query {number} [limit=10] - Límite de resultados
+ * @query {string} [metric=vistas] - Métrica para ordenar (vistas, likes, comentarios, shares)
+ */
+router.get('/analytics/content-performance', authenticateToken, cmsController.getContentPerformance.bind(cmsController));
+
+/**
+ * @route GET /api/cms/analytics/taxonomy-stats
+ * @desc Obtiene estadísticas de taxonomía (categorías y etiquetas más populares)
+ * @access Private (CONTENT_ADMIN)
+ * @query {string} [tipo] - Filtrar por tipo de contenido
+ * @query {number} [limit=10] - Límite de resultados
+ */
+router.get('/analytics/taxonomy-stats', authenticateToken, cmsController.getTaxonomyStats.bind(cmsController));
+
+/**
+ * @route GET /api/cms/analytics/growth-trends
+ * @desc Obtiene tendencias de crecimiento de contenido
+ * @access Private (CONTENT_ADMIN)
+ * @query {string} [periodo=monthly] - Periodo de agrupación (daily, weekly, monthly, yearly)
+ * @query {string} [tipo] - Filtrar por tipo de contenido
+ * @query {number} [meses=12] - Número de meses hacia atrás
+ */
+router.get('/analytics/growth-trends', authenticateToken, cmsController.getGrowthTrends.bind(cmsController));
+
+/**
+ * @route GET /api/cms/analytics/engagement-metrics
+ * @desc Obtiene métricas de engagement detalladas
+ * @access Private (CONTENT_ADMIN)
+ * @query {string} [tipo] - Filtrar por tipo de contenido
+ * @query {string} [fecha_inicio] - Fecha de inicio
+ * @query {string} [fecha_fin] - Fecha de fin
+ */
+router.get('/analytics/engagement-metrics', authenticateToken, cmsController.getEngagementMetrics.bind(cmsController));
+
 export default router;
