@@ -164,11 +164,6 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
 
 - [-] 6. APIs del sistema CMS normalizado
   - [x] 6.1 APIs del CMS principal
-
-
-
-
-
     - Crear endpoints CRUD para tabla principal de contenido
     - Implementar APIs específicas para configuración, SEO y métricas
     - Crear endpoints para gestión de taxonomía (categorías y etiquetas)
@@ -177,11 +172,46 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
     - Implementar sistema de filtros y búsqueda optimizado
     - _Requisitos: 20.1, 20.2, 20.3, 20.4, 25.1, 25.2, 25.3, 25.4_
 
-  - [-] 6.2 APIs de interacciones unificadas
-    - Crear endpoints para likes unificados (cualquier tipo de contenido)
-    - Implementar API para comentarios universales con anidamiento
-    - Crear endpoints para reportes unificados de contenido y comentarios
-    - Implementar API para moderación centralizada
+  - [x] 6.2 APIs de interacciones unificadas
+    - ✅ Crear endpoints para likes unificados (cualquier tipo de contenido)
+      - POST /api/v1/interactions/like - Dar like a contenido
+      - DELETE /api/v1/interactions/like - Quitar like
+      - GET /api/v1/interactions/likes/:contenidoId/:tipoContenido - Obtener likes con paginación
+      - Prevención de likes duplicados por usuario
+      - Actualización automática de métricas de contenido
+    - ✅ Implementar API para comentarios universales con anidamiento
+      - POST /api/v1/interactions/comments - Crear comentario (máx. 1000 caracteres)
+      - GET /api/v1/interactions/comments - Obtener comentarios con filtros avanzados
+      - PUT /api/v1/interactions/comments/:commentId - Editar comentario (solo autor)
+      - DELETE /api/v1/interactions/comments/:commentId - Eliminar comentario (autor/admin)
+      - Soporte para comentarios anidados (1 nivel)
+      - Sistema de moderación automática (aprobado=false por defecto)
+    - ✅ Crear endpoints para reportes unificados de contenido y comentarios
+      - POST /api/v1/interactions/reports - Crear reporte con múltiples razones
+      - GET /api/v1/interactions/reports - Obtener reportes con filtros (solo moderadores)
+      - PUT /api/v1/interactions/reports/:reportId/resolve - Resolver reporte
+      - Prevención de reportes duplicados por usuario
+      - Estados: PENDIENTE, REVISANDO, APROBADO, RECHAZADO, RESUELTO
+    - ✅ Implementar API para moderación centralizada
+      - PUT /api/v1/interactions/moderate/comment/:commentId - Moderación individual
+      - PUT /api/v1/interactions/moderate/bulk - Moderación masiva (hasta 50 elementos)
+      - Control granular de permisos (ADMIN y CONTENT_ADMIN)
+      - Historial de acciones de moderación con timestamps
+    - ✅ Sistema de estadísticas completas
+      - GET /api/v1/interactions/stats - Métricas detalladas (solo moderadores)
+      - Filtros por tipo de contenido, fechas y categorías
+      - Agrupación por estados y tipos de interacción
+      - Dashboard de moderación con métricas en tiempo real
+    - ✅ Validación robusta y manejo de errores
+      - Validación con Zod schemas para todos los endpoints
+      - Manejo consistente de errores HTTP (400, 401, 403, 404, 409, 500)
+      - Mensajes de error descriptivos en español
+      - Rate limiting y protección contra spam
+    - ✅ Testing y documentación completa
+      - Tests unitarios y de integración (interactions.test.ts)
+      - Documentación completa de API (interactions-api.md)
+      - Guía de deployment (interactions-deployment.md)
+      - README con ejemplos de uso (interactions-README.md)
     - _Requisitos: 27.1, 27.2, 27.3, 27.4, 29.1, 29.2, 29.3, 29.4_
 
   - [-] 6.3 APIs de organización y búsqueda

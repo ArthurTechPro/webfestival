@@ -7,6 +7,7 @@ import concursoRoutes from './concurso.routes';
 import calificacionRoutes from './calificacion.routes';
 import juradoAsignacionRoutes from './jurado-asignacion.routes';
 import cmsRoutes from './cms.routes';
+import interactionsRoutes from './interactions.routes';
 
 const router = Router();
 
@@ -34,6 +35,9 @@ router.use('/jurado-asignaciones', juradoAsignacionRoutes);
 // Rutas del CMS
 router.use('/cms', cmsRoutes);
 
+// Rutas de interacciones unificadas
+router.use('/interactions', interactionsRoutes);
+
 // Health check route
 router.get('/health', (_req, res) => {
   res.json({
@@ -58,7 +62,8 @@ router.get('/', (_req, res) => {
       media: '/api/v1/media',
       calificaciones: '/api/v1/calificaciones',
       jurado_asignaciones: '/api/v1/jurado-asignaciones',
-      cms: '/api/v1/cms'
+      cms: '/api/v1/cms',
+      interactions: '/api/v1/interactions'
     }
   });
 });
