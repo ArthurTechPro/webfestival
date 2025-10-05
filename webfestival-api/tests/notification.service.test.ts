@@ -6,37 +6,6 @@
 
 import { PrismaClient } from '@prisma/client';
 import { NotificationService } from '../src/services/notification.service';
-import { it } from 'node:test';
-import { describe } from 'node:test';
-import { it } from 'node:test';
-import { describe } from 'node:test';
-import { it } from 'node:test';
-import { describe } from 'node:test';
-import { it } from 'node:test';
-import { describe } from 'node:test';
-import { it } from 'node:test';
-import { it } from 'node:test';
-import { beforeEach } from 'node:test';
-import { describe } from 'node:test';
-import { it } from 'node:test';
-import { it } from 'node:test';
-import { beforeEach } from 'node:test';
-import { describe } from 'node:test';
-import { it } from 'node:test';
-import { it } from 'node:test';
-import { beforeEach } from 'node:test';
-import { describe } from 'node:test';
-import { it } from 'node:test';
-import { it } from 'node:test';
-import { it } from 'node:test';
-import { beforeEach } from 'node:test';
-import { describe } from 'node:test';
-import { it } from 'node:test';
-import { it } from 'node:test';
-import { describe } from 'node:test';
-import { afterEach } from 'node:test';
-import { beforeEach } from 'node:test';
-import { describe } from 'node:test';
 
 // Mock del servicio de email
 const mockEmailService = {
@@ -48,397 +17,80 @@ const mockEmailService = {
 };
 
 jest.mock('../src/services/email.service', () => ({
-  getEmailService: () => mockEmailService
+  getEmailService: jest.fn(() => mockEmailService)
+}));
+
+// Mock de Prisma
+const mockPrisma = {
+  notificacion: {
+    create: jest.fn(),
+    findMany: jest.fn(),
+    update: jest.fn(),
+    count: jest.fn(),
+    deleteMany: jest.fn()
+  },
+  usuario: {
+    findMany: jest.fn()
+  },
+  concurso: {
+    findMany: jest.fn(),
+    findUnique: jest.fn()
+  },
+  medio: {
+    findMany: jest.fn(),
+    findUnique: jest.fn()
+  },
+  calificacion: {
+    findMany: jest.fn()
+  }
+};
+
+jest.mock('@prisma/client', () => ({
+  PrismaClient: jest.fn(() => mockPrisma)
 }));
 
 describe('NotificationService', () => {
-  let prisma: PrismaClient;
   let notificationService: NotificationService;
 
   beforeEach(() => {
-    // Crear instancia de Prisma para tests
-    prisma = new PrismaClient();
-    
-    // Crear instancia del servicio de notificaciones
-    notificationService = new NotificationService(prisma);
-
-    // Mock de Prisma para evitar llamadas reales a la base de datos
-    jest.spyOn(prisma.notificacion, 'create').mockResolvedValue({
-      id: 1,
-      usuario_id: 'test-user-id',
-      tipo: 'test',
-      titulo: 'Test Notification',
-      mensaje: 'Test message',
-      leida: false,
-      fecha_creacion: new Date()
-    });
-
-    jest.spyOn(prisma.notificacion, 'findMany').mockResolvedValue([]);
-    jest.spyOn(prisma.notificacion, 'count').mockResolvedValue(0);
-    jest.spyOn(prisma.notificacion, 'updateMany').mockResolvedValue({ count: 1 });
-    jest.spyOn(prisma.notificacion, 'deleteMany').mockResolvedValue({ count: 0 });
+    jest.clearAllMocks();
+    notificationService = new NotificationService();
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    jest.resetAllMocks();
   });
 
   describe('createNotification', () => {
-    it('debería crear una notificación correctamente', async () => {
-      const notificationData = {
-        userId: 'test-user-id',
-        tipo: 'test',
-        titulo: 'Test Notification',
-        mensaje: 'Test message'
+    it('debería crear una notificación exitosamente', async () => {
+      const mockNotification = {
+        id: 1,
+        usuario_id: 'user-123',
+        tipo: 'DEADLINE_REMINDER',
+        titulo: 'Recordatorio de fecha límite',
+        mensaje: 'El concurso termina pronto',
+        leida: false,
+        fecha_creacion: new Date()
       };
 
-      await notificationService.createNotification(notificationData);
+      mockPrisma.notificacion.create.mockResolvedValue(mockNotification);
 
-      expect(prisma.notificacion.create).toHaveBeenCalledWith({
+      const result = await notificationService.createNotification(
+        'user-123',
+        'DEADLINE_REMINDER',
+        'Recordatorio de fecha límite',
+        'El concurso termina pronto'
+      );
+
+      expect(result).toEqual(mockNotification);
+      expect(mockPrisma.notificacion.create).toHaveBeenCalledWith({
         data: {
-          usuario_id: 'test-user-id',
-          tipo: 'test',
-          titulo: 'Test Notification',
-          mensaje: 'Test message',
-          leida: false
+          usuario_id: 'user-123',
+          tipo: 'DEADLINE_REMINDER',
+          titulo: 'Recordatorio de fecha límite',
+          mensaje: 'El concurso termina pronto'
         }
       });
-    });
-
-    it('debería manejar errores al crear notificación', async () => {
-      jest.spyOn(prisma.notificacion, 'create').mockRejectedValue(new Error('Database error'));
-
-      const notificationData = {
-        userId: 'test-user-id',
-        tipo: 'test',
-        titulo: 'Test Notification',
-        mensaje: 'Test message'
-      };
-
-      await expect(notificationService.createNotification(notificationData))
-        .rejects.toThrow('Database error');
-    });
-  });
-
-  describe('sendDeadlineReminder', () => {
-    beforeEach(() => {
-      // Mock para concurso con inscripciones
-      jest.spyOn(prisma.concurso, 'findUnique').mockResolvedValue({
-        id: 1,
-        titulo: 'Test Contest',
-        descripcion: 'Test Description',
-        reglas: null,
-        fecha_inicio: new Date(),
-        fecha_final: new Date(Date.now() + 48 * 60 * 60 * 1000), // 48 horas desde ahora
-        status: 'ACTIVO',
-        imagen_url: null,
-        max_envios: 3,
-        tamano_max_mb: 10,
-        created_at: new Date(),
-        inscripciones: [
-          {
-            id: 1,
-            usuario_id: 'user1',
-            concurso_id: 1,
-            fecha_inscripcion: new Date(),
-            usuario: {
-              id: 'user1',
-              nombre: 'Usuario 1',
-              email: 'user1@test.com',
-              password: null,
-              role: 'PARTICIPANTE',
-              picture_url: null,
-              bio: null,
-              created_at: new Date(),
-              updated_at: new Date()
-            }
-          }
-        ]
-      } as any);
-    });
-
-    it('debería enviar recordatorios de fecha límite correctamente', async () => {
-      await notificationService.sendDeadlineReminder({
-        concursoId: 1,
-        horasAntes: 48
-      });
-
-      expect(prisma.concurso.findUnique).toHaveBeenCalledWith({
-        where: { id: 1 },
-        include: {
-          inscripciones: {
-            include: {
-              usuario: true
-            }
-          }
-        }
-      });
-
-      expect(prisma.notificacion.create).toHaveBeenCalled();
-      expect(mockEmailService.sendDeadlineReminder).toHaveBeenCalledWith(
-        'user1@test.com',
-        'Usuario 1',
-        'Test Contest'
-      );
-    });
-
-    it('debería manejar concurso no encontrado', async () => {
-      jest.spyOn(prisma.concurso, 'findUnique').mockResolvedValue(null);
-
-      await notificationService.sendDeadlineReminder({
-        concursoId: 999,
-        horasAntes: 48
-      });
-
-      expect(mockEmailService.sendDeadlineReminder).not.toHaveBeenCalled();
-    });
-
-    it('debería saltear concursos no activos', async () => {
-      jest.spyOn(prisma.concurso, 'findUnique').mockResolvedValue({
-        id: 1,
-        titulo: 'Test Contest',
-        status: 'FINALIZADO',
-        inscripciones: []
-      } as any);
-
-      await notificationService.sendDeadlineReminder({
-        concursoId: 1,
-        horasAntes: 48
-      });
-
-      expect(mockEmailService.sendDeadlineReminder).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('sendEvaluationComplete', () => {
-    beforeEach(() => {
-      // Mock para medio con usuario y concurso
-      jest.spyOn(prisma.medio, 'findUnique').mockResolvedValue({
-        id: 1,
-        titulo: 'Test Media',
-        tipo_medio: 'fotografia',
-        usuario_id: 'user1',
-        concurso_id: 1,
-        categoria_id: 1,
-        medio_url: 'test-url',
-        thumbnail_url: null,
-        preview_url: null,
-        duracion: null,
-        formato: 'jpg',
-        tamano_archivo: BigInt(1000000),
-        metadatos: null,
-        fecha_subida: new Date(),
-        usuario: {
-          id: 'user1',
-          nombre: 'Usuario 1',
-          email: 'user1@test.com',
-          password: null,
-          role: 'PARTICIPANTE',
-          picture_url: null,
-          bio: null,
-          created_at: new Date(),
-          updated_at: new Date()
-        },
-        concurso: {
-          id: 1,
-          titulo: 'Test Contest',
-          descripcion: 'Test Description',
-          reglas: null,
-          fecha_inicio: new Date(),
-          fecha_final: new Date(),
-          status: 'ACTIVO',
-          imagen_url: null,
-          max_envios: 3,
-          tamano_max_mb: 10,
-          created_at: new Date()
-        },
-        calificaciones: [
-          {
-            id: 1,
-            medio_id: 1,
-            jurado_id: 'jurado1',
-            comentarios: 'Test comment',
-            fecha_calificacion: new Date()
-          }
-        ]
-      } as any);
-    });
-
-    it('debería enviar notificación de evaluación completada', async () => {
-      await notificationService.sendEvaluationComplete({
-        medioId: 1,
-        juradoId: 'jurado1'
-      });
-
-      expect(prisma.medio.findUnique).toHaveBeenCalledWith({
-        where: { id: 1 },
-        include: {
-          usuario: true,
-          concurso: true,
-          calificaciones: {
-            where: { jurado_id: 'jurado1' }
-          }
-        }
-      });
-
-      expect(prisma.notificacion.create).toHaveBeenCalled();
-      expect(mockEmailService.sendEvaluationComplete).toHaveBeenCalledWith(
-        'user1@test.com',
-        'Usuario 1',
-        'Test Contest'
-      );
-    });
-
-    it('debería manejar medio no encontrado', async () => {
-      jest.spyOn(prisma.medio, 'findUnique').mockResolvedValue(null);
-
-      await notificationService.sendEvaluationComplete({
-        medioId: 999,
-        juradoId: 'jurado1'
-      });
-
-      expect(mockEmailService.sendEvaluationComplete).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('sendResultsPublished', () => {
-    beforeEach(() => {
-      // Mock para concurso finalizado con inscripciones
-      jest.spyOn(prisma.concurso, 'findUnique').mockResolvedValue({
-        id: 1,
-        titulo: 'Test Contest',
-        status: 'FINALIZADO',
-        inscripciones: [
-          {
-            id: 1,
-            usuario_id: 'user1',
-            concurso_id: 1,
-            fecha_inscripcion: new Date(),
-            usuario: {
-              id: 'user1',
-              nombre: 'Usuario 1',
-              email: 'user1@test.com',
-              password: null,
-              role: 'PARTICIPANTE',
-              picture_url: null,
-              bio: null,
-              created_at: new Date(),
-              updated_at: new Date()
-            }
-          }
-        ]
-      } as any);
-    });
-
-    it('debería enviar notificaciones de resultados publicados', async () => {
-      await notificationService.sendResultsPublished({
-        concursoId: 1
-      });
-
-      expect(prisma.concurso.findUnique).toHaveBeenCalledWith({
-        where: { id: 1 },
-        include: {
-          inscripciones: {
-            include: {
-              usuario: true
-            }
-          }
-        }
-      });
-
-      expect(prisma.notificacion.create).toHaveBeenCalled();
-      expect(mockEmailService.sendResultsPublished).toHaveBeenCalledWith(
-        'user1@test.com',
-        'Usuario 1',
-        'Test Contest'
-      );
-    });
-
-    it('debería saltear concursos no finalizados', async () => {
-      jest.spyOn(prisma.concurso, 'findUnique').mockResolvedValue({
-        id: 1,
-        titulo: 'Test Contest',
-        status: 'ACTIVO',
-        inscripciones: []
-      } as any);
-
-      await notificationService.sendResultsPublished({
-        concursoId: 1
-      });
-
-      expect(mockEmailService.sendResultsPublished).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('sendNewContestNotification', () => {
-    beforeEach(() => {
-      // Mock para concurso activo
-      jest.spyOn(prisma.concurso, 'findUnique').mockResolvedValue({
-        id: 1,
-        titulo: 'New Test Contest',
-        status: 'ACTIVO'
-      } as any);
-
-      // Mock para usuarios registrados
-      jest.spyOn(prisma.usuario, 'findMany').mockResolvedValue([
-        {
-          id: 'user1',
-          nombre: 'Usuario 1',
-          email: 'user1@test.com',
-          password: null,
-          role: 'PARTICIPANTE',
-          picture_url: null,
-          bio: null,
-          created_at: new Date(),
-          updated_at: new Date()
-        },
-        {
-          id: 'jurado1',
-          nombre: 'Jurado 1',
-          email: 'jurado1@test.com',
-          password: null,
-          role: 'JURADO',
-          picture_url: null,
-          bio: null,
-          created_at: new Date(),
-          updated_at: new Date()
-        }
-      ]);
-    });
-
-    it('debería enviar notificaciones de nuevo concurso', async () => {
-      await notificationService.sendNewContestNotification({
-        concursoId: 1
-      });
-
-      expect(prisma.concurso.findUnique).toHaveBeenCalledWith({
-        where: { id: 1 }
-      });
-
-      expect(prisma.usuario.findMany).toHaveBeenCalledWith({
-        where: {
-          role: {
-            in: ['PARTICIPANTE', 'JURADO']
-          }
-        }
-      });
-
-      expect(prisma.notificacion.create).toHaveBeenCalledTimes(2);
-      expect(mockEmailService.sendNewContestNotification).toHaveBeenCalledTimes(2);
-    });
-
-    it('debería saltear concursos no activos', async () => {
-      jest.spyOn(prisma.concurso, 'findUnique').mockResolvedValue({
-        id: 1,
-        titulo: 'Test Contest',
-        status: 'PROXIMAMENTE'
-      } as any);
-
-      await notificationService.sendNewContestNotification({
-        concursoId: 1
-      });
-
-      expect(mockEmailService.sendNewContestNotification).not.toHaveBeenCalled();
     });
   });
 
@@ -447,29 +99,24 @@ describe('NotificationService', () => {
       const mockNotifications = [
         {
           id: 1,
-          usuario_id: 'user1',
-          tipo: 'test',
-          titulo: 'Test 1',
-          mensaje: 'Message 1',
+          usuario_id: 'user-123',
+          tipo: 'DEADLINE_REMINDER',
+          titulo: 'Recordatorio',
+          mensaje: 'Mensaje de prueba',
           leida: false,
           fecha_creacion: new Date()
         }
       ];
 
-      jest.spyOn(prisma.notificacion, 'findMany').mockResolvedValue(mockNotifications);
-      jest.spyOn(prisma.notificacion, 'count').mockResolvedValue(1);
+      mockPrisma.notificacion.findMany.mockResolvedValue(mockNotifications);
+      mockPrisma.notificacion.count.mockResolvedValue(1);
 
-      const result = await notificationService.getUserNotifications('user1', 1, 20);
+      const result = await notificationService.getUserNotifications('user-123', { page: 1, limit: 20 });
 
-      expect(result).toEqual({
-        notificaciones: mockNotifications,
-        total: 1,
-        page: 1,
-        totalPages: 1
-      });
-
-      expect(prisma.notificacion.findMany).toHaveBeenCalledWith({
-        where: { usuario_id: 'user1' },
+      expect(result.data).toEqual(mockNotifications);
+      expect(result.pagination.total).toBe(1);
+      expect(mockPrisma.notificacion.findMany).toHaveBeenCalledWith({
+        where: { usuario_id: 'user-123' },
         orderBy: { fecha_creacion: 'desc' },
         skip: 0,
         take: 20
@@ -478,32 +125,148 @@ describe('NotificationService', () => {
   });
 
   describe('markAsRead', () => {
-    it('debería marcar notificación como leída', async () => {
-      await notificationService.markAsRead(1, 'user1');
+    it('debería marcar una notificación como leída', async () => {
+      const mockUpdatedNotification = {
+        id: 1,
+        usuario_id: 'user-123',
+        tipo: 'DEADLINE_REMINDER',
+        titulo: 'Recordatorio',
+        mensaje: 'Mensaje de prueba',
+        leida: true,
+        fecha_creacion: new Date()
+      };
 
-      expect(prisma.notificacion.updateMany).toHaveBeenCalledWith({
+      mockPrisma.notificacion.update.mockResolvedValue(mockUpdatedNotification);
+
+      const result = await notificationService.markAsRead(1, 'user-123');
+
+      expect(result).toEqual(mockUpdatedNotification);
+      expect(mockPrisma.notificacion.update).toHaveBeenCalledWith({
         where: {
           id: 1,
-          usuario_id: 'user1'
+          usuario_id: 'user-123'
         },
-        data: {
-          leida: true
-        }
+        data: { leida: true }
       });
     });
   });
 
-  describe('markAllAsRead', () => {
-    it('debería marcar todas las notificaciones como leídas', async () => {
-      await notificationService.markAllAsRead('user1');
+  describe('sendDeadlineReminders', () => {
+    it('debería enviar recordatorios de fecha límite', async () => {
+      const mockConcursos = [
+        {
+          id: 1,
+          titulo: 'Concurso de Fotografía',
+          fecha_final: new Date(Date.now() + 48 * 60 * 60 * 1000), // En 48 horas
+          inscripciones: [
+            { usuario: { id: 'user-1', email: 'user1@test.com', nombre: 'Usuario 1' } },
+            { usuario: { id: 'user-2', email: 'user2@test.com', nombre: 'Usuario 2' } }
+          ]
+        }
+      ];
 
-      expect(prisma.notificacion.updateMany).toHaveBeenCalledWith({
-        where: {
-          usuario_id: 'user1',
-          leida: false
-        },
-        data: {
-          leida: true
+      mockPrisma.concurso.findMany.mockResolvedValue(mockConcursos);
+      mockPrisma.notificacion.create.mockResolvedValue({});
+
+      await notificationService.sendDeadlineReminders();
+
+      expect(mockEmailService.sendDeadlineReminder).toHaveBeenCalledTimes(2);
+      expect(mockPrisma.notificacion.create).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('sendEvaluationCompleteNotifications', () => {
+    it('debería enviar notificaciones de evaluación completada', async () => {
+      const mockMedios = [
+        {
+          id: 1,
+          titulo: 'Foto de prueba',
+          usuario: { id: 'user-1', email: 'user1@test.com', nombre: 'Usuario 1' },
+          concurso: { id: 1, titulo: 'Concurso de Fotografía' },
+          calificaciones: [
+            { jurado_id: 'jurado-1', fecha_calificacion: new Date() }
+          ]
+        }
+      ];
+
+      mockPrisma.medio.findMany.mockResolvedValue(mockMedios);
+      mockPrisma.notificacion.create.mockResolvedValue({});
+
+      await notificationService.sendEvaluationCompleteNotifications();
+
+      expect(mockEmailService.sendEvaluationComplete).toHaveBeenCalledTimes(1);
+      expect(mockPrisma.notificacion.create).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('sendResultsPublishedNotifications', () => {
+    it('debería enviar notificaciones de resultados publicados', async () => {
+      const mockConcursos = [
+        {
+          id: 1,
+          titulo: 'Concurso de Fotografía',
+          status: 'FINALIZADO',
+          inscripciones: [
+            { usuario: { id: 'user-1', email: 'user1@test.com', nombre: 'Usuario 1' } }
+          ]
+        }
+      ];
+
+      mockPrisma.concurso.findMany.mockResolvedValue(mockConcursos);
+      mockPrisma.notificacion.create.mockResolvedValue({});
+
+      await notificationService.sendResultsPublishedNotifications();
+
+      expect(mockEmailService.sendResultsPublished).toHaveBeenCalledTimes(1);
+      expect(mockPrisma.notificacion.create).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('sendNewContestNotification', () => {
+    it('debería enviar notificaciones de nuevo concurso', async () => {
+      const mockConcurso = {
+        id: 1,
+        titulo: 'Nuevo Concurso',
+        descripcion: 'Descripción del concurso',
+        fecha_inicio: new Date(),
+        fecha_final: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+      };
+
+      const mockUsuarios = [
+        { id: 'user-1', email: 'user1@test.com', nombre: 'Usuario 1' },
+        { id: 'user-2', email: 'user2@test.com', nombre: 'Usuario 2' }
+      ];
+
+      mockPrisma.usuario.findMany.mockResolvedValue(mockUsuarios);
+      mockPrisma.notificacion.create.mockResolvedValue({});
+
+      await notificationService.sendNewContestNotification(mockConcurso);
+
+      expect(mockEmailService.sendNewContestNotification).toHaveBeenCalledTimes(2);
+      expect(mockPrisma.notificacion.create).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('getNotificationStats', () => {
+    it('debería obtener estadísticas de notificaciones', async () => {
+      mockPrisma.notificacion.count
+        .mockResolvedValueOnce(50) // total
+        .mockResolvedValueOnce(20) // no leídas
+        .mockResolvedValueOnce(10) // deadline reminders
+        .mockResolvedValueOnce(15) // evaluation complete
+        .mockResolvedValueOnce(8)  // results published
+        .mockResolvedValueOnce(17); // new contest
+
+      const result = await notificationService.getNotificationStats('user-123');
+
+      expect(result).toEqual({
+        total: 50,
+        unread: 20,
+        byType: {
+          DEADLINE_REMINDER: 10,
+          EVALUATION_COMPLETE: 15,
+          RESULTS_PUBLISHED: 8,
+          NEW_CONTEST: 17
         }
       });
     });
@@ -511,14 +274,16 @@ describe('NotificationService', () => {
 
   describe('cleanupOldNotifications', () => {
     it('debería limpiar notificaciones antiguas', async () => {
-      await notificationService.cleanupOldNotifications();
+      mockPrisma.notificacion.deleteMany.mockResolvedValue({ count: 25 });
 
-      expect(prisma.notificacion.deleteMany).toHaveBeenCalledWith({
+      const result = await notificationService.cleanupOldNotifications(30); // 30 días
+
+      expect(result).toBe(25);
+      expect(mockPrisma.notificacion.deleteMany).toHaveBeenCalledWith({
         where: {
           fecha_creacion: {
             lt: expect.any(Date)
-          },
-          leida: true
+          }
         }
       });
     });

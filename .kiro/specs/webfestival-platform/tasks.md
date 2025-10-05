@@ -286,18 +286,13 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
     - _Requisitos: 12.1, 12.2, 12.3, 12.4, 15.2_
 
   - [x] 8.3 Integración con redes sociales
-
-
-
-
-
     - Implementar generación de enlaces compartibles
     - Crear integración con APIs de Facebook, Instagram, Twitter, LinkedIn
     - Implementar Open Graph tags para previews
     - _Requisitos: 11.1, 11.2, 11.3, 11.4_
 
 - [ ] 9. Testing y documentación del API
-  - [ ] 9.1 Tests unitarios y de integración
+  - [x] 9.1 Tests unitarios y de integración
     - Crear tests para servicios de autenticación
     - Implementar tests para APIs principales de concursos
     - Crear tests para integración con Immich

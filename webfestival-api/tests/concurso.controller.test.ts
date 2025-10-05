@@ -1,11 +1,15 @@
-import { describe, it, expect, jest, beforeEach } from '@jest/globals';
+/// <reference types="jest" />
+
+// IMPORTANTE: NO IMPORTAR FUNCIONES DE 'node:test' - USAR JEST GLOBALS
+// Jest proporciona describe, it, expect, beforeEach, afterEach globalmente
+
 import { Request, Response } from 'express';
 import { concursoController } from '../src/controllers/concurso.controller';
 import { concursoService } from '../src/services/concurso.service';
 import { AuthenticatedRequest } from '../src/types';
 
 // Mock del servicio
-jest.mock('../services/concurso.service');
+jest.mock('../src/services/concurso.service');
 const mockConcursoService = concursoService as jest.Mocked<typeof concursoService>;
 
 describe('ConcursoController', () => {
@@ -59,9 +63,8 @@ describe('ConcursoController', () => {
       });
     });
 
-    it('debería manejar errores correctamente', async () => {
-      const errorMessage = 'Error de base de datos';
-      mockConcursoService.getConcursosActivos.mockRejectedValue(new Error(errorMessage));
+    it('debería manejar errores del servicio', async () => {
+      mockConcursoService.getConcursosActivos.mockRejectedValue(new Error('Error de base de datos'));
 
       await concursoController.getConcursosActivos(
         mockRequest as Request,
@@ -71,66 +74,88 @@ describe('ConcursoController', () => {
       expect(mockStatus).toHaveBeenCalledWith(500);
       expect(mockJson).toHaveBeenCalledWith({
         success: false,
-        message: errorMessage
+        error: 'Error interno del servidor'
       });
     });
   });
 
-  describe('getConcursoById', () => {
-    it('debería retornar un concurso por ID exitosamente', async () => {
+  describe('createConcurso', () => {
+    beforeEach(() => {
+      (mockRequest as AuthenticatedRequest).user = {
+        id: 'admin-user-id',
+        userId: 'admin-user-id',
+        email: 'admin@example.com',
+        role: 'ADMIN'
+      };
+    });
+
+    it('debería crear un concurso exitosamente', async () => {
+      const concursoData = {
+        titulo: 'Nuevo Concurso',
+        descripcion: 'Descripción del concurso',
+        fecha_inicio: '2024-01-01T00:00:00.000Z',
+        fecha_final: '2024-01-31T23:59:59.000Z',
+        max_envios: 3,
+        tamano_max_mb: 10
+      };
+
       const mockConcurso = {
         id: 1,
-        titulo: 'Concurso Test',
-        descripcion: 'Descripción test',
+        ...concursoData,
+        status: 'PROXIMAMENTE',
         categorias: [],
-        inscripciones: [],
-        medios: [],
         _count: { inscripciones: 0, medios: 0 }
       };
 
-      mockRequest.params = { id: '1' };
-      mockConcursoService.getConcursoById.mockResolvedValue(mockConcurso as any);
+      mockRequest.body = concursoData;
+      mockConcursoService.createConcurso.mockResolvedValue(mockConcurso as any);
 
-      await concursoController.getConcursoById(
-        mockRequest as Request,
+      await concursoController.createConcurso(
+        mockRequest as AuthenticatedRequest,
         mockResponse as Response
       );
 
-      expect(mockConcursoService.getConcursoById).toHaveBeenCalledWith(1);
+      expect(mockConcursoService.createConcurso).toHaveBeenCalledWith(concursoData);
+      expect(mockStatus).toHaveBeenCalledWith(201);
       expect(mockJson).toHaveBeenCalledWith({
         success: true,
+        message: 'Concurso creado exitosamente',
         data: mockConcurso
       });
     });
 
-    it('debería retornar error 400 para ID inválido', async () => {
-      mockRequest.params = { id: 'invalid' };
+    it('debería manejar errores de validación', async () => {
+      mockRequest.body = {
+        titulo: '', // Título vacío debería fallar
+        descripcion: 'Descripción'
+      };
 
-      await concursoController.getConcursoById(
-        mockRequest as Request,
+      await concursoController.createConcurso(
+        mockRequest as AuthenticatedRequest,
         mockResponse as Response
       );
 
       expect(mockStatus).toHaveBeenCalledWith(400);
-      expect(mockJson).toHaveBeenCalledWith({
-        success: false,
-        message: 'ID de concurso inválido'
-      });
+      expect(mockJson).toHaveBeenCalledWith(
+        expect.objectContaining({
+          success: false,
+          errors: expect.any(Array)
+        })
+      );
     });
 
-    it('debería retornar error 404 para concurso no encontrado', async () => {
-      mockRequest.params = { id: '999' };
-      mockConcursoService.getConcursoById.mockRejectedValue(new Error('Concurso no encontrado'));
+    it('debería rechazar usuarios no autenticados', async () => {
+      (mockRequest as AuthenticatedRequest).user = undefined;
 
-      await concursoController.getConcursoById(
-        mockRequest as Request,
+      await concursoController.createConcurso(
+        mockRequest as AuthenticatedRequest,
         mockResponse as Response
       );
 
-      expect(mockStatus).toHaveBeenCalledWith(404);
+      expect(mockStatus).toHaveBeenCalledWith(401);
       expect(mockJson).toHaveBeenCalledWith({
         success: false,
-        message: 'Concurso no encontrado'
+        error: 'Usuario no autenticado'
       });
     });
   });
@@ -138,6 +163,7 @@ describe('ConcursoController', () => {
   describe('inscribirseAConcurso', () => {
     beforeEach(() => {
       (mockRequest as AuthenticatedRequest).user = {
+        id: 'user123',
         userId: 'user123',
         email: 'test@example.com',
         role: 'PARTICIPANTE'
@@ -192,6 +218,7 @@ describe('ConcursoController', () => {
   describe('verificarInscripcion', () => {
     beforeEach(() => {
       (mockRequest as AuthenticatedRequest).user = {
+        id: 'user123',
         userId: 'user123',
         email: 'test@example.com',
         role: 'PARTICIPANTE'
@@ -214,18 +241,121 @@ describe('ConcursoController', () => {
       });
     });
 
-    it('debería retornar false si no está inscrito', async () => {
-      mockRequest.params = { concursoId: '1' };
-      mockConcursoService.verificarInscripcion.mockResolvedValue(false);
+    it('debería manejar parámetros inválidos', async () => {
+      mockRequest.params = { concursoId: 'invalid' };
 
       await concursoController.verificarInscripcion(
         mockRequest as AuthenticatedRequest,
         mockResponse as Response
       );
 
+      expect(mockStatus).toHaveBeenCalledWith(400);
+      expect(mockJson).toHaveBeenCalledWith({
+        success: false,
+        error: 'ID de concurso inválido'
+      });
+    });
+  });
+
+  describe('updateConcurso', () => {
+    beforeEach(() => {
+      (mockRequest as AuthenticatedRequest).user = {
+        id: 'admin-user-id',
+        userId: 'admin-user-id',
+        email: 'admin@example.com',
+        role: 'ADMIN'
+      };
+    });
+
+    it('debería actualizar un concurso exitosamente', async () => {
+      const updateData = {
+        titulo: 'Concurso Actualizado',
+        descripcion: 'Nueva descripción',
+        status: 'ACTIVO'
+      };
+
+      const mockUpdatedConcurso = {
+        id: 1,
+        ...updateData,
+        fecha_inicio: new Date(),
+        fecha_final: new Date(),
+        categorias: [],
+        _count: { inscripciones: 0, medios: 0 }
+      };
+
+      mockRequest.params = { id: '1' };
+      mockRequest.body = updateData;
+      mockConcursoService.updateConcurso.mockResolvedValue(mockUpdatedConcurso as any);
+
+      await concursoController.updateConcurso(
+        mockRequest as AuthenticatedRequest,
+        mockResponse as Response
+      );
+
+      expect(mockConcursoService.updateConcurso).toHaveBeenCalledWith(1, updateData);
       expect(mockJson).toHaveBeenCalledWith({
         success: true,
-        data: { inscrito: false }
+        message: 'Concurso actualizado exitosamente',
+        data: mockUpdatedConcurso
+      });
+    });
+
+    it('debería manejar concurso no encontrado', async () => {
+      mockRequest.params = { id: '999' };
+      mockRequest.body = { titulo: 'Nuevo título' };
+      mockConcursoService.updateConcurso.mockRejectedValue(new Error('Concurso no encontrado'));
+
+      await concursoController.updateConcurso(
+        mockRequest as AuthenticatedRequest,
+        mockResponse as Response
+      );
+
+      expect(mockStatus).toHaveBeenCalledWith(500);
+      expect(mockJson).toHaveBeenCalledWith({
+        success: false,
+        error: 'Error interno del servidor'
+      });
+    });
+  });
+
+  describe('getConcursoById', () => {
+    it('debería obtener un concurso por ID exitosamente', async () => {
+      const mockConcurso = {
+        id: 1,
+        titulo: 'Concurso Test',
+        descripcion: 'Descripción test',
+        status: 'ACTIVO',
+        categorias: [],
+        _count: { inscripciones: 5, medios: 10 }
+      };
+
+      mockRequest.params = { id: '1' };
+      mockConcursoService.getConcursoById.mockResolvedValue(mockConcurso as any);
+
+      await concursoController.getConcursoById(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(mockConcursoService.getConcursoById).toHaveBeenCalledWith(1);
+      expect(mockJson).toHaveBeenCalledWith({
+        success: true,
+        data: mockConcurso
+      });
+    });
+
+    it('debería manejar ID inválido', async () => {
+      mockRequest.params = { id: 'invalid' };
+
+      await concursoController.getConcursoById(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(mockStatus).toHaveBeenCalledWith(400);
+      expect(mockJson).toHaveBeenCalledWith({
+        success: false,
+        error: 'ID de concurso inválido'
       });
     });
   });

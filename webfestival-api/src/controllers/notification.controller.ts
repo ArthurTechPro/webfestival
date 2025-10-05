@@ -47,8 +47,8 @@ export class NotificationController {
       }
 
       const query = getUserNotificationsSchema.parse({
-        page: req.query.page ? parseInt(req.query.page as string) : 1,
-        limit: req.query.limit ? parseInt(req.query.limit as string) : 20
+        page: req.query['page'] ? parseInt(req.query['page'] as string) : 1,
+        limit: req.query['limit'] ? parseInt(req.query['limit'] as string) : 20
       });
 
       const result = await this.notificationService.getUserNotifications(
@@ -90,7 +90,7 @@ export class NotificationController {
         return;
       }
 
-      const notificationId = parseInt(req.params.id);
+      const notificationId = parseInt(req.params['id'] || '');
       if (isNaN(notificationId)) {
         res.status(400).json({ error: 'ID de notificación inválido' });
         return;

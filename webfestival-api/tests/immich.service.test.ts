@@ -267,7 +267,7 @@ describe('ImmichService', () => {
       expect(connectionInfo.isConnected).toBe(false);
       
       // Debería fallar al intentar usar métodos después de disconnect
-      await expect(immichService.checkHealth()).rejects.toThrow();
+      await expect(immichService.performHealthCheck()).rejects.toThrow();
     });
   });
 });

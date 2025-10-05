@@ -53,7 +53,7 @@ describe('Media Gallery API Routes', () => {
   describe('Media Service Configuration', () => {
     it('should have proper media validation config', () => {
       // Test que la configuración de validación está definida
-      const { MEDIA_VALIDATION_CONFIG } = require('../services/media.service');
+      const { MEDIA_VALIDATION_CONFIG } = require('../src/services/media.service');
       
       expect(MEDIA_VALIDATION_CONFIG).toBeDefined();
       expect(MEDIA_VALIDATION_CONFIG.fotografia).toBeDefined();
