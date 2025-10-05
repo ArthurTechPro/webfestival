@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
+import swaggerUi from 'swagger-ui-express';
 
 // Database configuration
 import { connectDatabase, disconnectDatabase } from './lib/prisma';
@@ -12,6 +13,9 @@ import { validateDatabaseConfig } from './config/database';
 
 // Immich configuration
 import { initializeImmich } from './middleware/immich.middleware';
+
+// Swagger configuration
+import { swaggerSpec } from './config/swagger';
 
 // Routes
 
@@ -49,6 +53,28 @@ app.use(cors({
 app.use(morgan('combined'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Swagger documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'WebFestival API Documentation',
+  customfavIcon: '/favicon.ico',
+  swaggerOptions: {
+    persistAuthorization: true,
+    displayRequestDuration: true,
+    docExpansion: 'none',
+    filter: true,
+    showExtensions: true,
+    showCommonExtensions: true,
+    tryItOutEnabled: true
+  }
+}));
+
+// Swagger JSON endpoint
+app.get('/api-docs.json', (_req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
 
 // Health check routes
 import healthRoutes from './routes/health';
@@ -115,6 +141,8 @@ if (process.env['NODE_ENV'] !== 'test') {
         console.log(`🖼️ Immich health: ${SERVER_URL}/health/immich`);
         console.log(`📊 Database stats: ${SERVER_URL}/health/database/stats`);
         console.log(`📡 API endpoint: ${SERVER_URL}/api/v1`);
+        console.log(`📚 API Documentation: ${SERVER_URL}/api-docs`);
+        console.log(`📄 Swagger JSON: ${SERVER_URL}/api-docs.json`);
         console.log(`🎯 Features: Multimedia contests, Dynamic criteria, Subscriptions, CMS, Social features`);
       });
     })
