@@ -26,22 +26,30 @@ export class StripeService {
    */
   async getOrCreateCustomer(userId: string, email: string, name?: string): Promise<Stripe.Customer> {
     try {
-      // Buscar cliente existente por metadata
+      // Buscar cliente existente por email
       const existingCustomers = await this.stripe.customers.list({
-        metadata: { user_id: userId },
+        email: email,
         limit: 1
       });
 
-      if (existingCustomers.data.length > 0) {
-        return existingCustomers.data[0];
+      // Verificar si algún cliente tiene el user_id correcto en metadata
+      for (const customer of existingCustomers.data) {
+        if (customer.metadata && customer.metadata['user_id'] === userId) {
+          return customer;
+        }
       }
 
-      // Crear nuevo cliente
-      const customer = await this.stripe.customers.create({
+      // Si no se encuentra, crear nuevo cliente
+      const customerData: any = {
         email,
-        name,
         metadata: { user_id: userId }
-      });
+      };
+
+      if (name) {
+        customerData.name = name;
+      }
+
+      const customer = await this.stripe.customers.create(customerData);
 
       return customer;
     } catch (error) {
@@ -162,7 +170,11 @@ export class StripeService {
   async updateSubscription(subscriptionId: string, newPriceId: string): Promise<Stripe.Subscription> {
     try {
       const subscription = await this.stripe.subscriptions.retrieve(subscriptionId);
-      
+
+      if (!subscription.items.data[0]) {
+        throw new Error('No se encontraron items en la suscripción');
+      }
+
       const updatedSubscription = await this.stripe.subscriptions.update(subscriptionId, {
         items: [{
           id: subscription.items.data[0].id,
@@ -236,7 +248,7 @@ export class StripeService {
 
       // Verificar el estado del pago
       const invoice = subscription.latest_invoice as Stripe.Invoice;
-      const paymentIntent = invoice.payment_intent as Stripe.PaymentIntent;
+      const paymentIntent = (invoice as any).payment_intent as Stripe.PaymentIntent;
 
       if (paymentIntent.status === 'succeeded') {
         // Crear suscripción en nuestra base de datos
@@ -244,8 +256,8 @@ export class StripeService {
           user_id: userId,
           plan_id: planId,
           status: 'active',
-          current_period_start: new Date(subscription.current_period_start * 1000),
-          current_period_end: new Date(subscription.current_period_end * 1000),
+          current_period_start: new Date((subscription as any).current_period_start * 1000),
+          current_period_end: new Date((subscription as any).current_period_end * 1000),
           stripe_subscription_id: subscription.id
         });
 
@@ -258,7 +270,7 @@ export class StripeService {
         return {
           success: false,
           requires_action: true,
-          client_secret: paymentIntent.client_secret || undefined,
+          client_secret: paymentIntent.client_secret || '',
           payment_intent_id: paymentIntent.id
         };
       } else {
@@ -286,18 +298,32 @@ export class StripeService {
   async generateInvoice(subscriptionId: string): Promise<Invoice> {
     try {
       const subscription = await this.stripe.subscriptions.retrieve(subscriptionId);
+
+      if (!subscription.latest_invoice) {
+        throw new Error('No se encontró factura para la suscripción');
+      }
+
       const invoice = await this.stripe.invoices.retrieve(subscription.latest_invoice as string);
 
-      return {
-        id: invoice.id,
+      const result: Invoice = {
+        id: invoice.id || 'unknown_invoice',
         subscription_id: subscriptionId,
-        amount: invoice.amount_paid / 100, // Convertir de centavos
+        amount: ((invoice as any).amount_paid || 0) / 100, // Convertir de centavos
         currency: invoice.currency.toUpperCase(),
         status: invoice.status as any,
-        created: new Date(invoice.created * 1000),
-        due_date: invoice.due_date ? new Date(invoice.due_date * 1000) : undefined,
-        pdf_url: invoice.invoice_pdf || undefined
+        created: new Date(invoice.created * 1000)
       };
+
+      // Agregar propiedades opcionales solo si existen
+      if ((invoice as any).due_date) {
+        result.due_date = new Date((invoice as any).due_date * 1000);
+      }
+
+      if ((invoice as any).invoice_pdf) {
+        result.pdf_url = (invoice as any).invoice_pdf;
+      }
+
+      return result;
     } catch (error) {
       console.error('Error al generar factura:', error);
       throw new Error('No se pudo generar la factura');
@@ -313,7 +339,7 @@ export class StripeService {
    */
   verifyWebhookSignature(payload: string, signature: string): Stripe.Event {
     try {
-      const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+      const endpointSecret = process.env['STRIPE_WEBHOOK_SECRET'];
       if (!endpointSecret) {
         throw new Error('STRIPE_WEBHOOK_SECRET no está configurado');
       }
@@ -414,21 +440,49 @@ export class StripeService {
   private async handlePaymentFailed(invoice: any): Promise<void> {
     try {
       console.log('Pago fallido para la factura:', invoice.id);
-      
+
       // Buscar la suscripción relacionada
       if (invoice.subscription) {
         const subscription = await this.stripe.subscriptions.retrieve(invoice.subscription);
-        const userSubscription = await subscriptionService.getUserSubscription(subscription.metadata?.user_id);
-        
-        if (userSubscription) {
-          await subscriptionService.updateUserSubscription(userSubscription.id, {
-            status: 'past_due'
-          });
-        }
+
+        // Importar dinámicamente para evitar dependencias circulares
+        const { paymentFailureHandlerService } = await import('./payment-failure-handler.service');
+
+        // Obtener información detallada del fallo
+        const attemptCount = invoice.attempt_count || 1;
+        const failureReason = this.extractFailureReason(invoice);
+
+        // Manejar el fallo de pago con el servicio inteligente de recuperación
+        await paymentFailureHandlerService.handleIntelligentPaymentFailure(
+          subscription.id,
+          invoice.id,
+          failureReason,
+          attemptCount
+        );
       }
     } catch (error) {
       console.error('Error al manejar fallo de pago:', error);
     }
+  }
+
+  /**
+   * Extrae la razón del fallo de pago desde la factura
+   */
+  private extractFailureReason(invoice: any): string {
+    // Intentar obtener la razón del último intento de pago
+    if (invoice.last_finalization_error) {
+      return invoice.last_finalization_error.code || 'unknown_error';
+    }
+
+    if (invoice.charge && invoice.charge.failure_code) {
+      return invoice.charge.failure_code;
+    }
+
+    if (invoice.charge && invoice.charge.outcome) {
+      return invoice.charge.outcome.reason || 'generic_decline';
+    }
+
+    return 'payment_failed';
   }
 }
 

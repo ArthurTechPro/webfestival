@@ -142,7 +142,7 @@ export class PayPalService {
     try {
       // Verificar si el token actual sigue siendo válido
       if (this.accessToken && this.accessToken.expires_at > new Date()) {
-        return this.accessToken;
+        return this.accessToken as PayPalAccessToken;
       }
 
       const auth = Buffer.from(`${this.clientId}:${this.clientSecret}`).toString('base64');
@@ -163,7 +163,7 @@ export class PayPalService {
         expires_at: new Date(Date.now() + (response.data.expires_in * 1000) - 60000) // 1 minuto de margen
       };
 
-      return this.accessToken;
+      return this.accessToken as PayPalAccessToken;
     } catch (error) {
       console.error('Error al obtener token de acceso de PayPal:', error);
       throw new Error('No se pudo obtener el token de acceso de PayPal');

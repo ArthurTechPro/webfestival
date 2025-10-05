@@ -2,6 +2,12 @@ import { Router } from 'express';
 import { subscriptionController } from '../controllers/subscription.controller';
 import { authenticateToken } from '../middleware/auth.middleware';
 import { requireRole } from '../middleware/role.middleware';
+import { 
+  webhookBodyParser, 
+  verifyStripeWebhook, 
+  verifyPayPalWebhook, 
+  logWebhook 
+} from '../middleware/webhook.middleware';
 
 const router = Router();
 
@@ -111,14 +117,23 @@ router.post('/confirm-paypal',
  * @desc Maneja webhooks de Stripe
  * @access Webhook
  */
-router.post('/webhooks/stripe', subscriptionController.handleStripeWebhook.bind(subscriptionController));
+router.post('/webhooks/stripe', 
+  webhookBodyParser,
+  logWebhook('stripe'),
+  verifyStripeWebhook,
+  subscriptionController.handleStripeWebhook.bind(subscriptionController)
+);
 
 /**
  * @route POST /api/subscriptions/webhooks/paypal
  * @desc Maneja webhooks de PayPal
  * @access Webhook
  */
-router.post('/webhooks/paypal', subscriptionController.handlePayPalWebhook.bind(subscriptionController));
+router.post('/webhooks/paypal', 
+  logWebhook('paypal'),
+  verifyPayPalWebhook,
+  subscriptionController.handlePayPalWebhook.bind(subscriptionController)
+);
 
 // ============================================================================
 // RUTAS DE ADMINISTRACIÓN

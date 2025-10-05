@@ -257,15 +257,20 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
 
 - [ ] 7. Sistema de suscripciones y monetización
   - [x] 7.1 APIs de gestión de suscripciones
-
-
     - Crear endpoints para obtener planes disponibles y características
     - Implementar API para suscripción y upgrade de planes
     - Crear endpoints para gestión de límites por plan (participación, uploads, funcionalidades)
     - Implementar API para tracking de uso y límites por usuario
     - _Requisitos: 36.1, 36.2, 36.3_
 
-  - [ ] 7.2 Integración con pasarelas de pago
+  - [x] 7.2 Integración con pasarelas de pago
+
+
+
+
+
+
+
     - Integrar Stripe para procesamiento de pagos y suscripciones
     - Implementar webhooks para manejo de eventos de pago
     - Crear sistema de facturación automática y renovaciones

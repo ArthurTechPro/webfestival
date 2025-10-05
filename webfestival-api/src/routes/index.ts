@@ -10,6 +10,7 @@ import cmsRoutes from './cms.routes';
 import interactionsRoutes from './interactions.routes';
 import newsletterRoutes from './newsletter.routes';
 import subscriptionRoutes from './subscription.routes';
+import billingRoutes from './billing.routes';
 
 const router = Router();
 
@@ -46,6 +47,9 @@ router.use('/', newsletterRoutes);
 // Rutas de suscripciones y monetización
 router.use('/subscriptions', subscriptionRoutes);
 
+// Rutas de facturación
+router.use('/billing', billingRoutes);
+
 // Health check route
 router.get('/health', (_req, res) => {
   res.json({
@@ -74,7 +78,8 @@ router.get('/', (_req, res) => {
       interactions: '/api/v1/interactions',
       newsletter: '/api/v1/newsletter',
       educational_content: '/api/v1/educational-content',
-      subscriptions: '/api/v1/subscriptions'
+      subscriptions: '/api/v1/subscriptions',
+      billing: '/api/v1/billing'
     }
   });
 });

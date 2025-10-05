@@ -25,7 +25,11 @@
     "verify-immich": "tsx src/scripts/verify-immich-connection.ts",
     "verify-media-gallery": "tsx src/scripts/verify-media-gallery-implementation.ts",
     "verify-calificacion-system": "tsx src/scripts/verify-calificacion-system.ts",
-    "test-newsletter": "tsx src/scripts/test-newsletter-implementation.ts"
+    "test-newsletter": "tsx src/scripts/test-newsletter-implementation.ts",
+    "payment-maintenance": "tsx src/scripts/payment-maintenance.ts",
+    "test-stripe": "tsx src/scripts/test-stripe-integration.ts",
+    "setup-webhooks": "tsx src/scripts/setup-stripe-webhooks.ts",
+    "test-payment-integration": "tsx src/scripts/test-payment-integration.ts"
   },
   "keywords": [
     "webfestival",
