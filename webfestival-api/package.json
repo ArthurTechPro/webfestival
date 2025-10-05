@@ -24,7 +24,8 @@
     "verify-auth": "tsx src/scripts/verify-auth-config.ts",
     "verify-immich": "tsx src/scripts/verify-immich-connection.ts",
     "verify-media-gallery": "tsx src/scripts/verify-media-gallery-implementation.ts",
-    "verify-calificacion-system": "tsx src/scripts/verify-calificacion-system.ts"
+    "verify-calificacion-system": "tsx src/scripts/verify-calificacion-system.ts",
+    "test-newsletter": "tsx src/scripts/test-newsletter-implementation.ts"
   },
   "keywords": [
     "webfestival",

@@ -8,6 +8,7 @@ import calificacionRoutes from './calificacion.routes';
 import juradoAsignacionRoutes from './jurado-asignacion.routes';
 import cmsRoutes from './cms.routes';
 import interactionsRoutes from './interactions.routes';
+import newsletterRoutes from './newsletter.routes';
 
 const router = Router();
 
@@ -38,6 +39,9 @@ router.use('/cms', cmsRoutes);
 // Rutas de interacciones unificadas
 router.use('/interactions', interactionsRoutes);
 
+// Rutas de newsletter y contenido educativo
+router.use('/', newsletterRoutes);
+
 // Health check route
 router.get('/health', (_req, res) => {
   res.json({
@@ -63,7 +67,9 @@ router.get('/', (_req, res) => {
       calificaciones: '/api/v1/calificaciones',
       jurado_asignaciones: '/api/v1/jurado-asignaciones',
       cms: '/api/v1/cms',
-      interactions: '/api/v1/interactions'
+      interactions: '/api/v1/interactions',
+      newsletter: '/api/v1/newsletter',
+      educational_content: '/api/v1/educational-content'
     }
   });
 });

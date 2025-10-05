@@ -246,7 +246,7 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
       - Permisos granulares por roles (público, autenticado, CONTENT_ADMIN)
     - _Requisitos: 28.1, 28.2, 28.3, 28.4, 31.1, 31.2, 31.3, 31.4_
 
-  - [-] 6.4 APIs del newsletter y contenido educativo
+  - [x] 6.4 APIs del newsletter y contenido educativo
     - Crear endpoints para suscripción y confirmación
     - Implementar API para gestión de suscriptores
     - Crear servicio para envío de digest semanal con contenido dinámico
@@ -257,6 +257,10 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
 
 - [ ] 7. Sistema de suscripciones y monetización
   - [ ] 7.1 APIs de gestión de suscripciones
+
+
+
+
     - Crear endpoints para obtener planes disponibles y características
     - Implementar API para suscripción y upgrade de planes
     - Crear endpoints para gestión de límites por plan (participación, uploads, funcionalidades)
