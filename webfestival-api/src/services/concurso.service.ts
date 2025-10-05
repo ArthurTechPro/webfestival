@@ -1,5 +1,6 @@
 import { PrismaClient, StatusConcurso } from '@prisma/client';
 import { CreateConcursoDto, UpdateConcursoDto, ConcursoFilters } from '../schemas/concurso.schemas';
+import { getNotificationService } from './notification.service';
 
 const prisma = new PrismaClient();
 
@@ -190,6 +191,15 @@ export class ConcursoService {
 
   // Actualizar un concurso (solo ADMIN)
   async updateConcurso(id: number, data: UpdateConcursoDto) {
+    // Obtener el estado anterior del concurso
+    const concursoAnterior = await prisma.concurso.findUnique({
+      where: { id }
+    });
+
+    if (!concursoAnterior) {
+      throw new Error('Concurso no encontrado');
+    }
+
     const updateData: any = {};
 
     if (data.titulo !== undefined) updateData.titulo = data.titulo;
@@ -215,6 +225,28 @@ export class ConcursoService {
         }
       }
     });
+
+    // Enviar notificaciones automáticas según cambios de estado
+    try {
+      const notificationService = getNotificationService(prisma);
+
+      // Si el concurso cambió a ACTIVO, notificar nuevo concurso
+      if (data.status === 'ACTIVO' && concursoAnterior.status !== 'ACTIVO') {
+        await notificationService.sendNewContestNotification({
+          concursoId: id
+        });
+      }
+
+      // Si el concurso cambió a FINALIZADO, notificar resultados publicados
+      if (data.status === 'FINALIZADO' && concursoAnterior.status !== 'FINALIZADO') {
+        await notificationService.sendResultsPublished({
+          concursoId: id
+        });
+      }
+    } catch (notificationError) {
+      console.error('Error enviando notificaciones automáticas:', notificationError);
+      // No fallar la operación principal por error de notificación
+    }
 
     return concurso;
   }

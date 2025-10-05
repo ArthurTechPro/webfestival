@@ -1,5 +1,6 @@
 import { PrismaClient, TipoMedio } from '@prisma/client';
 import { criteriosService } from './criterios.service';
+import { getNotificationService } from './notification.service';
 
 const prisma = new PrismaClient();
 
@@ -147,6 +148,18 @@ export class CalificacionService {
 
       return nuevaCalificacion;
     });
+
+    // Enviar notificación automática de evaluación completada
+    try {
+      const notificationService = getNotificationService(prisma);
+      await notificationService.sendEvaluationComplete({
+        medioId: data.medio_id,
+        juradoId: juradoId
+      });
+    } catch (notificationError) {
+      console.error('Error enviando notificación de evaluación completada:', notificationError);
+      // No fallar la operación principal por error de notificación
+    }
 
     // Retornar calificación completa
     return await this.getCalificacionById(calificacion.id);

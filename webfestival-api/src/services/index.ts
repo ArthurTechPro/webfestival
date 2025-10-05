@@ -6,3 +6,4 @@ export * from './media.service';
 export * from './immich.service';
 export * from './newsletter.service';
 export * from './email.service';
+export * from './social-media.service';

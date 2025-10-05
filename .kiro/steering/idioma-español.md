@@ -24,37 +24,76 @@ inclusion: always
 
 ## Generación de Documentación Técnica
 - **SIEMPRE crear documentación en la carpeta `docs/`** para servicios y componentes importantes
-- **Generar archivos README numerados** con formato descriptivo: `[numero]-[descripcion]-README.md`
-- **Estructura de documentación obligatoria:**
-  ```
-  proyecto/
-  ├── docs/
-  │   ├── 01-email-service-README.md
-  │   ├── 02-auth-service-README.md
-  │   ├── 03-payment-integration-README.md
-  │   └── api-documentation.md
-  ├── src/
-  └── tests/
-  ```
+- **NUNCA documentar detalles de implementación en archivos de tareas** (`tasks.md`)
+- **Los archivos de tareas deben mantener solo información esencial** de la tarea completada
+- **La documentación detallada va en `docs/`** con archivos numerados según la tarea
 
-### Convenciones para Archivos README Numerados
-- **Formato de nombres**: `[numero]-[descripcion-kebab-case]-README.md`
+### Estructura de Documentación Obligatoria
+```
+proyecto/
+├── docs/
+│   ├── [numero-tarea]-[descripcion-principal]-README.md
+│   ├── [numero-tarea]-[descripcion-api]-README.md
+│   ├── [numero-tarea]-[descripcion-deployment]-README.md
+│   └── [numero-tarea]-[descripcion-integration]-README.md
+├── src/
+└── tests/
+```
+
+### Convenciones para Archivos de Documentación
+- **Formato de nombres**: `[numero-tarea]-[descripcion-kebab-case]-README.md`
 - **Ejemplos correctos**:
-  - `01-email-service-README.md`
-  - `02-authentication-system-README.md`
-  - `03-payment-gateway-integration-README.md`
-- **Contenido obligatorio en cada README**:
-  - Descripción del servicio/componente
-  - Configuración necesaria
-  - Ejemplos de uso
-  - Troubleshooting
-  - Referencias y enlaces
+  - `8-2-notification-system-README.md` (documentación principal)
+  - `8-2-notification-api-README.md` (documentación de API)
+  - `8-2-notification-deployment-README.md` (configuración y despliegue)
+  - `8-2-notification-integration-README.md` (integración frontend)
+
+### Contenido Obligatorio por Tipo de Documentación
+**Documentación Principal (`-README.md`):**
+- Descripción general del sistema/servicio
+- Arquitectura y componentes
+- Configuración básica
+- Ejemplos de uso
+- Testing y troubleshooting
+
+**Documentación de API (`-api-README.md`):**
+- Todos los endpoints con ejemplos
+- Parámetros y respuestas detalladas
+- Códigos de error y soluciones
+- Ejemplos de integración con JavaScript/frameworks
+
+**Documentación de Despliegue (`-deployment-README.md`):**
+- Configuración de variables de entorno
+- Instrucciones para diferentes entornos
+- Docker, Kubernetes, PM2
+- Monitoreo, logs y métricas
+
+**Documentación de Integración (`-integration-README.md`):**
+- Componentes frontend listos para usar
+- Ejemplos con React, Vue, Angular
+- WebSocket y notificaciones push
+- Estilos CSS y configuración
+
+### Actualización de Archivos de Tareas
+- **En `tasks.md` solo marcar como completado** con ✅
+- **Agregar referencia a la documentación** generada
+- **NO incluir detalles de implementación** en el archivo de tareas
+- **Ejemplo correcto en tasks.md**:
+  ```markdown
+  - [x] 8.2 Implementar notificaciones automáticas
+    - Sistema completo implementado con 4 tipos de notificaciones
+    - API con 10 endpoints y automatización completa
+    - Documentación completa en docs/8-2-notification-*-README.md
+    - _Requisitos: 12.1, 12.2, 12.3, 12.4, 15.2_
+  ```
 
 ### Cuándo Generar Documentación
 - **Siempre** al implementar un nuevo servicio
 - **Siempre** al crear integraciones con APIs externas
 - **Siempre** al implementar funcionalidades complejas
 - **Siempre** al completar tareas de especificaciones técnicas
+- **Generar mínimo 2 archivos**: principal y API
+- **Para sistemas complejos**: agregar deployment e integration
 
 ## Mensajes de Error y Logs
 - Mensajes de error personalizados en español
@@ -107,18 +146,4 @@ inclusion: always
 
 import { MiServicio } from '../src/services/mi-servicio';
 ```
-
-## Instrucciones Adicionales para Futuras Iteraciones
-- **Siempre verificar** que los archivos de test no contengan importaciones de `node:test`
-- **Verificar ubicación correcta** de archivos de test en carpeta `tests/` (no en `src/`)
-- **Generar documentación obligatoria** en `docs/` para cada servicio implementado
-- **Crear README numerado** con formato `[numero]-[descripcion]-README.md`
-- **Documentar claramente** las razones técnicas detrás de las decisiones de configuración
-- **Mantener consistencia** en el uso de Jest vs otras herramientas de testing
-- **Agregar comentarios preventivos** en código sensible a modificaciones automáticas
-- **Mover archivos de test** si se encuentran en ubicaciones incorrectas (ej: `src/tests/` → `tests/`)
-- **Verificar que existe documentación** antes de marcar una tarea como completada
-- **NUNCA usar autofix automático** en archivos de test - revisar manualmente todas las importaciones
-- **Recrear archivos de test completamente** si el autofix contamina con importaciones de `node:test`
-- **Verificar después de cada edición** que no aparezcan importaciones no deseadas
 

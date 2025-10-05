@@ -11,6 +11,8 @@ import interactionsRoutes from './interactions.routes';
 import newsletterRoutes from './newsletter.routes';
 import subscriptionRoutes from './subscription.routes';
 import billingRoutes from './billing.routes';
+import notificationRoutes from './notification.routes';
+import socialMediaRoutes from './social-media.routes';
 
 const router = Router();
 
@@ -50,6 +52,12 @@ router.use('/subscriptions', subscriptionRoutes);
 // Rutas de facturación
 router.use('/billing', billingRoutes);
 
+// Rutas de notificaciones
+router.use('/notifications', notificationRoutes);
+
+// Rutas de redes sociales
+router.use('/social-media', socialMediaRoutes);
+
 // Health check route
 router.get('/health', (_req, res) => {
   res.json({
@@ -79,7 +87,9 @@ router.get('/', (_req, res) => {
       newsletter: '/api/v1/newsletter',
       educational_content: '/api/v1/educational-content',
       subscriptions: '/api/v1/subscriptions',
-      billing: '/api/v1/billing'
+      billing: '/api/v1/billing',
+      notifications: '/api/v1/notifications',
+      social_media: '/api/v1/social-media'
     }
   });
 });
