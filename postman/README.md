@@ -4,6 +4,14 @@ Esta carpeta contiene colecciones completas de Postman para probar todos los end
 
 ## 📋 Colecciones Disponibles
 
+### 🎯 Colección Maestra (Recomendada)
+- **`WebFestival-Master-Collection.postman_collection.json`**
+  - **Colección unificada "Web Festival"** con toda la API organizada
+  - Quick Start con 7 pasos básicos
+  - Todas las funcionalidades organizadas por módulos
+  - Scripts automáticos para guardar tokens
+  - Variables compartidas entre todos los endpoints
+
 ### 🔐 Autenticación y Usuarios
 - **`WebFestival-API-Auth.postman_collection.json`**
   - Login, registro, refresh tokens
@@ -105,20 +113,28 @@ El servidor estará disponible en: `http://localhost:3001`
 
 ### 2. Importar en Postman
 
-#### Opción A: Importar Todo (Recomendado)
+#### Opción A: Colección Maestra (Más Fácil - Recomendado)
+1. **Abre Postman**
+2. **Haz clic en "Import"** en la esquina superior izquierda
+3. **Importa estos 2 archivos**:
+   - `WebFestival-Master-Collection.postman_collection.json` (Colección completa)
+   - `WebFestival-Development.postman_environment.json` (Entorno de desarrollo)
+4. **¡Listo!** Tendrás toda la API organizada en una sola colección "Web Festival"
+
+#### Opción B: Importar Todo (Para usuarios avanzados)
 1. **Abre Postman**
 2. **Haz clic en "Import"** en la esquina superior izquierda
 3. **Selecciona "Upload Files"** o arrastra toda la carpeta `postman/`
 4. **Importa todos los archivos JSON** de una vez:
-   - Todas las colecciones (12 archivos)
+   - Todas las colecciones (12 archivos individuales)
    - El entorno de desarrollo (`WebFestival-Development.postman_environment.json`)
 
-#### Opción B: Importar Selectivamente
-Si solo necesitas ciertas funcionalidades:
+#### Opción C: Importar Selectivamente
+Si solo necesitas ciertas funcionalidades específicas:
 - **Básico**: Auth + Health + Workspace
 - **Concursos**: Auth + Concursos + Media + Criterios
 - **CMS**: Auth + CMS + Interactions + Newsletter
-- **Completo**: Todas las colecciones
+- **Completo**: Colección Maestra (recomendado)
 
 ### 3. Configurar Entorno de Desarrollo
 
@@ -157,9 +173,9 @@ Crea un nuevo entorno con estas variables:
 
 ### 4. Flujo de Inicio Rápido (Quick Start)
 
-#### 🎯 Opción 1: Usar la Colección Workspace (Más Fácil)
-1. **Abre la colección** "WebFestival API - Complete Workspace"
-2. **Ejecuta la carpeta** "🚀 Quick Start - Flujo Completo"
+#### 🎯 Opción 1: Usar la Colección Maestra (Más Fácil)
+1. **Abre la colección** "Web Festival"
+2. **Ejecuta la carpeta** "🚀 Quick Start"
 3. **Ejecuta los requests en orden**:
    - Health Check → Verificar servidor
    - Registrar Usuario → Crear cuenta de prueba

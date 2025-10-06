@@ -1,0 +1,1404 @@
+{
+	"info": {
+		"_postman_id": "webfestival-master-collection",
+		"name": "Web Festival",
+		"description": "Colección maestra completa de la API WebFestival - Plataforma de concursos multimedia",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "webfestival-api"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{access_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3001/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "server_url",
+			"value": "http://localhost:3001",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "refresh_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "admin_token",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "🚀 Quick Start",
+			"item": [
+				{
+					"name": "1. Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{server_url}}/health",
+							"host": ["{{server_url}}"],
+							"path": ["health"]
+						},
+						"description": "Verificar que el servidor esté funcionando correctamente"
+					},
+					"response": []
+				},
+				{
+					"name": "2. Registrar Usuario",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"test@webfestival.com\",\n  \"password\": \"TestPassword123!\",\n  \"nombre\": \"Usuario de Prueba\",\n  \"bio\": \"Usuario creado para testing de la API\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "register"]
+						},
+						"description": "Registrar nuevo usuario de prueba"
+					},
+					"response": []
+				},
+				{
+					"name": "3. Login Usuario",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('access_token', response.data.accessToken);",
+									"    pm.environment.set('refresh_token', response.data.refreshToken);",
+									"    pm.environment.set('user_id', response.data.user.id);",
+									"    console.log('✅ Token guardado:', response.data.accessToken.substring(0, 20) + '...');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"test@webfestival.com\",\n  \"password\": \"TestPassword123!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "login"]
+						},
+						"description": "Hacer login y guardar token automáticamente"
+					},
+					"response": []
+				},
+				{
+					"name": "4. Login Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('admin_token', response.data.accessToken);",
+									"    console.log('✅ Admin token guardado');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@webfestival.com\",\n  \"password\": \"admin123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "login"]
+						},
+						"description": "Login como administrador"
+					},
+					"response": []
+				},
+				{
+					"name": "5. Obtener Perfil",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/auth/me",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "me"]
+						},
+						"description": "Verificar que la autenticación funciona"
+					},
+					"response": []
+				},
+				{
+					"name": "6. Ver Concursos Activos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/concursos/activos",
+							"host": ["{{base_url}}"],
+							"path": ["concursos", "activos"]
+						},
+						"description": "Obtener lista de concursos disponibles"
+					},
+					"response": []
+				},
+				{
+					"name": "7. Ver Documentación Swagger",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{server_url}}/api-docs.json",
+							"host": ["{{server_url}}"],
+							"path": ["api-docs.json"]
+						},
+						"description": "Obtener especificación OpenAPI completa"
+					},
+					"response": []
+				}
+			],
+			"description": "Flujo básico de 7 pasos para verificar que todo funciona correctamente"
+		},
+		{
+			"name": "🔐 Autenticación y Usuarios",
+			"item": [
+				{
+					"name": "Registro y Login",
+					"item": [
+						{
+							"name": "Registrar Usuario",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"nuevo@webfestival.com\",\n  \"password\": \"MiPassword123!\",\n  \"nombre\": \"Nuevo Usuario\",\n  \"bio\": \"Fotógrafo aficionado interesado en concursos\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/auth/register",
+									"host": ["{{base_url}}"],
+									"path": ["auth", "register"]
+								},
+								"description": "Registrar nuevo usuario en la plataforma"
+							},
+							"response": []
+						},
+						{
+							"name": "Login",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"if (pm.response.code === 200) {",
+											"    const response = pm.response.json();",
+											"    pm.environment.set('access_token', response.data.accessToken);",
+											"    pm.environment.set('refresh_token', response.data.refreshToken);",
+											"    pm.environment.set('user_id', response.data.user.id);",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"test@webfestival.com\",\n  \"password\": \"TestPassword123!\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/auth/login",
+									"host": ["{{base_url}}"],
+									"path": ["auth", "login"]
+								},
+								"description": "Autenticación con email y contraseña"
+							},
+							"response": []
+						},
+						{
+							"name": "Refresh Token",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"refreshToken\": \"{{refresh_token}}\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/auth/refresh",
+									"host": ["{{base_url}}"],
+									"path": ["auth", "refresh"]
+								},
+								"description": "Renovar token de acceso usando refresh token"
+							},
+							"response": []
+						},
+						{
+							"name": "Logout",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/auth/logout",
+									"host": ["{{base_url}}"],
+									"path": ["auth", "logout"]
+								},
+								"description": "Cerrar sesión del usuario"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Gestión de Perfil",
+					"item": [
+						{
+							"name": "Obtener Perfil",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/auth/me",
+									"host": ["{{base_url}}"],
+									"path": ["auth", "me"]
+								},
+								"description": "Obtener información del usuario autenticado"
+							},
+							"response": []
+						},
+						{
+							"name": "Actualizar Perfil",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"nombre\": \"Usuario Actualizado\",\n  \"bio\": \"Fotógrafo profesional especializado en retratos urbanos\",\n  \"picture_url\": \"https://example.com/avatar.jpg\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/users/profile",
+									"host": ["{{base_url}}"],
+									"path": ["users", "profile"]
+								},
+								"description": "Actualizar información del perfil"
+							},
+							"response": []
+						},
+						{
+							"name": "Cambiar Contraseña",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"currentPassword\": \"TestPassword123!\",\n  \"newPassword\": \"NuevaPassword123!\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/auth/change-password",
+									"host": ["{{base_url}}"],
+									"path": ["auth", "change-password"]
+								},
+								"description": "Cambiar contraseña del usuario"
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"description": "Endpoints para autenticación, registro y gestión de usuarios"
+		},
+		{
+			"name": "🏆 Concursos y Participación",
+			"item": [
+				{
+					"name": "Gestión de Concursos",
+					"item": [
+						{
+							"name": "Ver Concursos Activos",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/concursos/activos",
+									"host": ["{{base_url}}"],
+									"path": ["concursos", "activos"]
+								},
+								"description": "Obtener lista de concursos disponibles para inscripción"
+							},
+							"response": []
+						},
+						{
+							"name": "Ver Concursos Finalizados",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/concursos/finalizados",
+									"host": ["{{base_url}}"],
+									"path": ["concursos", "finalizados"]
+								},
+								"description": "Obtener concursos con resultados publicados"
+							},
+							"response": []
+						},
+						{
+							"name": "Ver Detalles de Concurso",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/concursos/1",
+									"host": ["{{base_url}}"],
+									"path": ["concursos", "1"]
+								},
+								"description": "Obtener información detallada de un concurso específico"
+							},
+							"response": []
+						},
+						{
+							"name": "Crear Concurso (Admin)",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{admin_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"titulo\": \"Concurso de Fotografía Urbana 2025\",\n  \"descripcion\": \"Captura la esencia de la vida urbana en tus fotografías. Muestra la belleza, el caos y la humanidad de nuestras ciudades.\",\n  \"reglas\": \"1. Solo fotografías originales\\n2. Máximo 3 envíos por participante\\n3. Resolución mínima 1920x1080\\n4. Formato JPEG o PNG\\n5. Sin marcas de agua\",\n  \"fecha_inicio\": \"2025-01-15T00:00:00Z\",\n  \"fecha_final\": \"2025-03-15T23:59:59Z\",\n  \"max_envios\": 3,\n  \"tamano_max_mb\": 10\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/concursos",
+									"host": ["{{base_url}}"],
+									"path": ["concursos"]
+								},
+								"description": "Crear nuevo concurso (requiere permisos de administrador)"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Inscripciones",
+					"item": [
+						{
+							"name": "Inscribirse a Concurso",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"concursoId\": 1\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/concursos/inscripcion",
+									"host": ["{{base_url}}"],
+									"path": ["concursos", "inscripcion"]
+								},
+								"description": "Inscribirse a un concurso disponible"
+							},
+							"response": []
+						},
+						{
+							"name": "Ver Mis Inscripciones",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/concursos/mis-inscripciones",
+									"host": ["{{base_url}}"],
+									"path": ["concursos", "mis-inscripciones"]
+								},
+								"description": "Obtener lista de concursos en los que estoy inscrito"
+							},
+							"response": []
+						},
+						{
+							"name": "Verificar Inscripción",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/concursos/1/verificar-inscripcion",
+									"host": ["{{base_url}}"],
+									"path": ["concursos", "1", "verificar-inscripcion"]
+								},
+								"description": "Verificar si estoy inscrito en un concurso específico"
+							},
+							"response": []
+						},
+						{
+							"name": "Cancelar Inscripción",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/concursos/inscripcion/1",
+									"host": ["{{base_url}}"],
+									"path": ["concursos", "inscripcion", "1"]
+								},
+								"description": "Cancelar inscripción a un concurso"
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"description": "Gestión de concursos, inscripciones y participación"
+		},
+		{
+			"name": "🎬 Medios Multimedia",
+			"item": [
+				{
+					"name": "Configuración y Validación",
+					"item": [
+						{
+							"name": "Obtener Configuración de Validación",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/media/validation-config",
+									"host": ["{{base_url}}"],
+									"path": ["media", "validation-config"]
+								},
+								"description": "Obtener configuración de validación para diferentes tipos de medios"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Subida de Medios",
+					"item": [
+						{
+							"name": "Generar URL de Subida - Fotografía",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"titulo\": \"Atardecer en la Ciudad\",\n  \"tipo_medio\": \"fotografia\",\n  \"categoria_id\": 1,\n  \"formato\": \"image/jpeg\",\n  \"tamaño_archivo\": 3145728\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/media/contests/1/upload-url",
+									"host": ["{{base_url}}"],
+									"path": ["media", "contests", "1", "upload-url"]
+								},
+								"description": "Generar URL segura para subida de fotografía"
+							},
+							"response": []
+						},
+						{
+							"name": "Generar URL de Subida - Video",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"titulo\": \"Documental Urbano\",\n  \"tipo_medio\": \"video\",\n  \"categoria_id\": 2,\n  \"formato\": \"video/mp4\",\n  \"tamaño_archivo\": 52428800\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/media/contests/1/upload-url",
+									"host": ["{{base_url}}"],
+									"path": ["media", "contests", "1", "upload-url"]
+								},
+								"description": "Generar URL segura para subida de video"
+							},
+							"response": []
+						},
+						{
+							"name": "Procesar Subida Completada",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"uploadId\": \"upload_123456\",\n  \"immichAssetId\": \"asset_789012\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/media/contests/1/process-upload",
+									"host": ["{{base_url}}"],
+									"path": ["media", "contests", "1", "process-upload"]
+								},
+								"description": "Procesar subida completada y crear registro en base de datos"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Galerías Públicas",
+					"item": [
+						{
+							"name": "Galería de Ganadores",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/media/gallery/winners?tipo_medio=fotografia&page=1&limit=12",
+									"host": ["{{base_url}}"],
+									"path": ["media", "gallery", "winners"],
+									"query": [
+										{
+											"key": "tipo_medio",
+											"value": "fotografia"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "12"
+										}
+									]
+								},
+								"description": "Ver galería pública de medios ganadores"
+							},
+							"response": []
+						},
+						{
+							"name": "Medios Destacados",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/media/gallery/featured?limit=6",
+									"host": ["{{base_url}}"],
+									"path": ["media", "gallery", "featured"],
+									"query": [
+										{
+											"key": "limit",
+											"value": "6"
+										}
+									]
+								},
+								"description": "Obtener medios destacados para página principal"
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"description": "Gestión de medios multimedia: subida, validación y galerías"
+		},
+		{
+			"name": "📊 Criterios y Evaluación",
+			"item": [
+				{
+					"name": "Criterios por Tipo de Medio",
+					"item": [
+						{
+							"name": "Criterios para Fotografía",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/criterios/tipo/fotografia",
+									"host": ["{{base_url}}"],
+									"path": ["criterios", "tipo", "fotografia"]
+								},
+								"description": "Obtener criterios específicos para fotografía"
+							},
+							"response": []
+						},
+						{
+							"name": "Criterios para Video",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/criterios/tipo/video",
+									"host": ["{{base_url}}"],
+									"path": ["criterios", "tipo", "video"]
+								},
+								"description": "Obtener criterios específicos para video"
+							},
+							"response": []
+						},
+						{
+							"name": "Criterios Universales",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/criterios/universales",
+									"host": ["{{base_url}}"],
+									"path": ["criterios", "universales"]
+								},
+								"description": "Obtener criterios aplicables a todos los tipos de medios"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Calificaciones (Jurados)",
+					"item": [
+						{
+							"name": "Ver Asignaciones de Jurado",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/jurado-asignaciones/mis-asignaciones",
+									"host": ["{{base_url}}"],
+									"path": ["jurado-asignaciones", "mis-asignaciones"]
+								},
+								"description": "Ver categorías asignadas para evaluación"
+							},
+							"response": []
+						},
+						{
+							"name": "Calificar Medio",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"medioId\": 1,\n  \"calificaciones\": [\n    {\n      \"criterioId\": 1,\n      \"puntuacion\": 8.5,\n      \"comentarios\": \"Excelente composición y uso de la luz natural\"\n    },\n    {\n      \"criterioId\": 2,\n      \"puntuacion\": 9.0,\n      \"comentarios\": \"Creatividad excepcional en el enfoque\"\n    }\n  ],\n  \"comentarioGeneral\": \"Una fotografía muy bien ejecutada que demuestra dominio técnico y visión artística.\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/calificaciones",
+									"host": ["{{base_url}}"],
+									"path": ["calificaciones"]
+								},
+								"description": "Calificar un medio usando criterios dinámicos"
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"description": "Sistema de criterios dinámicos y evaluación por jurados"
+		},
+		{
+			"name": "💬 Interacciones Sociales",
+			"item": [
+				{
+					"name": "Likes",
+					"item": [
+						{
+							"name": "Dar Like",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"contenidoId\": 1,\n  \"tipoContenido\": \"blog_post\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/interactions/like",
+									"host": ["{{base_url}}"],
+									"path": ["interactions", "like"]
+								},
+								"description": "Dar like a cualquier tipo de contenido"
+							},
+							"response": []
+						},
+						{
+							"name": "Quitar Like",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/interactions/like?contenidoId=1&tipoContenido=blog_post",
+									"host": ["{{base_url}}"],
+									"path": ["interactions", "like"],
+									"query": [
+										{
+											"key": "contenidoId",
+											"value": "1"
+										},
+										{
+											"key": "tipoContenido",
+											"value": "blog_post"
+										}
+									]
+								},
+								"description": "Quitar like de contenido"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Comentarios",
+					"item": [
+						{
+							"name": "Crear Comentario",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"contenidoId\": 1,\n  \"tipoContenido\": \"blog_post\",\n  \"contenido\": \"¡Excelente artículo! Me ha sido muy útil para mejorar mis técnicas de fotografía urbana.\",\n  \"parentId\": null\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/interactions/comments",
+									"host": ["{{base_url}}"],
+									"path": ["interactions", "comments"]
+								},
+								"description": "Crear comentario en contenido"
+							},
+							"response": []
+						},
+						{
+							"name": "Obtener Comentarios",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/interactions/comments?contenidoId=1&tipoContenido=blog_post&page=1&limit=20",
+									"host": ["{{base_url}}"],
+									"path": ["interactions", "comments"],
+									"query": [
+										{
+											"key": "contenidoId",
+											"value": "1"
+										},
+										{
+											"key": "tipoContenido",
+											"value": "blog_post"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "20"
+										}
+									]
+								},
+								"description": "Obtener comentarios con filtros"
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"description": "Sistema de interacciones: likes, comentarios, reportes y moderación"
+		},
+		{
+			"name": "💳 Suscripciones y Pagos",
+			"item": [
+				{
+					"name": "Planes de Suscripción",
+					"item": [
+						{
+							"name": "Ver Planes Disponibles",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/subscriptions/plans",
+									"host": ["{{base_url}}"],
+									"path": ["subscriptions", "plans"]
+								},
+								"description": "Obtener todos los planes de suscripción disponibles"
+							},
+							"response": []
+						},
+						{
+							"name": "Ver Mi Suscripción",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/subscriptions/current",
+									"host": ["{{base_url}}"],
+									"path": ["subscriptions", "current"]
+								},
+								"description": "Obtener información de mi suscripción actual"
+							},
+							"response": []
+						},
+						{
+							"name": "Ver Uso y Límites",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/subscriptions/usage",
+									"host": ["{{base_url}}"],
+									"path": ["subscriptions", "usage"]
+								},
+								"description": "Ver uso actual y límites del plan"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Gestión de Suscripciones",
+					"item": [
+						{
+							"name": "Suscribirse a Plan",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"planId\": \"profesional\",\n  \"paymentMethodId\": \"pm_test_card_visa\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/subscriptions/subscribe",
+									"host": ["{{base_url}}"],
+									"path": ["subscriptions", "subscribe"]
+								},
+								"description": "Suscribirse a un plan de pago"
+							},
+							"response": []
+						},
+						{
+							"name": "Cambiar Plan",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"newPlanId\": \"premium\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/subscriptions/change-plan",
+									"host": ["{{base_url}}"],
+									"path": ["subscriptions", "change-plan"]
+								},
+								"description": "Cambiar a un plan diferente"
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"description": "Sistema de suscripciones, planes y gestión de pagos"
+		},
+		{
+			"name": "🔔 Notificaciones",
+			"item": [
+				{
+					"name": "Gestión Personal",
+					"item": [
+						{
+							"name": "Ver Mis Notificaciones",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/notifications?page=1&limit=20&leidas=false",
+									"host": ["{{base_url}}"],
+									"path": ["notifications"],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "20"
+										},
+										{
+											"key": "leidas",
+											"value": "false"
+										}
+									]
+								},
+								"description": "Obtener mis notificaciones con filtros"
+							},
+							"response": []
+						},
+						{
+							"name": "Marcar como Leída",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"notificationId\": 1\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/notifications/mark-read",
+									"host": ["{{base_url}}"],
+									"path": ["notifications", "mark-read"]
+								},
+								"description": "Marcar notificación específica como leída"
+							},
+							"response": []
+						},
+						{
+							"name": "Ver Preferencias",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/notifications/preferences",
+									"host": ["{{base_url}}"],
+									"path": ["notifications", "preferences"]
+								},
+								"description": "Obtener preferencias de notificación"
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"description": "Sistema de notificaciones automáticas y preferencias"
+		},
+		{
+			"name": "📧 Newsletter y Contenido Educativo",
+			"item": [
+				{
+					"name": "Newsletter",
+					"item": [
+						{
+							"name": "Suscribirse al Newsletter",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"suscriptor@ejemplo.com\",\n  \"nombre\": \"Juan Pérez\",\n  \"intereses\": [\"fotografia\", \"video\"]\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/newsletter/subscribe",
+									"host": ["{{base_url}}"],
+									"path": ["newsletter", "subscribe"]
+								},
+								"description": "Suscribirse al newsletter con intereses específicos"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Contenido Educativo",
+					"item": [
+						{
+							"name": "Contenido de Fotografía",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/educational-content/fotografia?nivel=principiante&page=1&limit=10",
+									"host": ["{{base_url}}"],
+									"path": ["educational-content", "fotografia"],
+									"query": [
+										{
+											"key": "nivel",
+											"value": "principiante"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										}
+									]
+								},
+								"description": "Obtener contenido educativo de fotografía"
+							},
+							"response": []
+						},
+						{
+							"name": "Recomendaciones Personalizadas",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/educational-content/recommendations?limit=5",
+									"host": ["{{base_url}}"],
+									"path": ["educational-content", "recommendations"],
+									"query": [
+										{
+											"key": "limit",
+											"value": "5"
+										}
+									]
+								},
+								"description": "Obtener recomendaciones personalizadas"
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"description": "Newsletter y sistema de contenido educativo"
+		},
+		{
+			"name": "📝 Sistema CMS",
+			"item": [
+				{
+					"name": "Gestión de Contenido",
+					"item": [
+						{
+							"name": "Ver Contenido Público",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/cms/contenido?estado=PUBLICADO&page=1&limit=10",
+									"host": ["{{base_url}}"],
+									"path": ["cms", "contenido"],
+									"query": [
+										{
+											"key": "estado",
+											"value": "PUBLICADO"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										}
+									]
+								},
+								"description": "Obtener contenido publicado"
+							},
+							"response": []
+						},
+						{
+							"name": "Buscar Contenido",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/cms/search?q=fotografía&tipo=blog_post&page=1&limit=10",
+									"host": ["{{base_url}}"],
+									"path": ["cms", "search"],
+									"query": [
+										{
+											"key": "q",
+											"value": "fotografía"
+										},
+										{
+											"key": "tipo",
+											"value": "blog_post"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										}
+									]
+								},
+								"description": "Búsqueda avanzada de contenido"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Analytics",
+					"item": [
+						{
+							"name": "Métricas Generales",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/cms/analytics/overview?period=30d",
+									"host": ["{{base_url}}"],
+									"path": ["cms", "analytics", "overview"],
+									"query": [
+										{
+											"key": "period",
+											"value": "30d"
+										}
+									]
+								},
+								"description": "Obtener métricas generales del CMS"
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"description": "Sistema de gestión de contenido y analytics"
+		},
+		{
+			"name": "🌐 Redes Sociales",
+			"item": [
+				{
+					"name": "Compartir Contenido",
+					"item": [
+						{
+							"name": "Generar Enlaces de Compartir",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"medioId\": 1\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/social-media/share-links",
+									"host": ["{{base_url}}"],
+									"path": ["social-media", "share-links"]
+								},
+								"description": "Generar enlaces para compartir medio ganador"
+							},
+							"response": []
+						},
+						{
+							"name": "Ver Medio Público",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/social-media/public/media/1/mi-foto-ganadora",
+									"host": ["{{base_url}}"],
+									"path": ["social-media", "public", "media", "1", "mi-foto-ganadora"]
+								},
+								"description": "Acceso público a medio compartido"
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"description": "Integración con redes sociales y compartir contenido"
+		},
+		{
+			"name": "🏥 Health y Monitoreo",
+			"item": [
+				{
+					"name": "Health Checks",
+					"item": [
+						{
+							"name": "Health Check General",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{server_url}}/health",
+									"host": ["{{server_url}}"],
+									"path": ["health"]
+								},
+								"description": "Verificar estado general del servidor"
+							},
+							"response": []
+						},
+						{
+							"name": "Estado de Base de Datos",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{server_url}}/health/database",
+									"host": ["{{server_url}}"],
+									"path": ["health", "database"]
+								},
+								"description": "Verificar conexión a PostgreSQL"
+							},
+							"response": []
+						},
+						{
+							"name": "Estado de Immich",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{server_url}}/health/immich",
+									"host": ["{{server_url}}"],
+									"path": ["health", "immich"]
+								},
+								"description": "Verificar conexión con servidor Immich"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Información del Sistema",
+					"item": [
+						{
+							"name": "Información de la API",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/",
+									"host": ["{{base_url}}"],
+									"path": [""]
+								},
+								"description": "Obtener información general de la API"
+							},
+							"response": []
+						},
+						{
+							"name": "Especificación OpenAPI",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{server_url}}/api-docs.json",
+									"host": ["{{server_url}}"],
+									"path": ["api-docs.json"]
+								},
+								"description": "Obtener especificación OpenAPI completa"
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"description": "Health checks, monitoreo y información del sistema"
+		}
+	]
+}

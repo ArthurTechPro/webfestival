@@ -1,0 +1,25 @@
+{
+	"workspace": {
+		"id": "webfestival-workspace",
+		"name": "Web Festival",
+		"description": "Workspace completo para la API WebFestival - Plataforma de concursos multimedia",
+		"type": "personal",
+		"collections": [
+			{
+				"id": "webfestival-master-collection",
+				"name": "Web Festival",
+				"uid": "webfestival-master-collection"
+			}
+		],
+		"environments": [
+			{
+				"id": "webfestival-dev-environment",
+				"name": "WebFestival Development",
+				"uid": "webfestival-dev-environment"
+			}
+		],
+		"globals": [],
+		"createdAt": "2025-10-05T12:00:00.000Z",
+		"updatedAt": "2025-10-05T12:00:00.000Z"
+	}
+}
