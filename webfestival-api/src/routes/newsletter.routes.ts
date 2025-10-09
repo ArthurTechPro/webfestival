@@ -9,9 +9,58 @@ const router = Router();
 // ============================================================================
 
 /**
- * @route POST /api/newsletter/subscribe
- * @desc Suscribirse al newsletter
- * @access Público
+ * @swagger
+ * /newsletter/subscribe:
+ *   post:
+ *     tags: [Newsletter]
+ *     summary: Suscribirse al newsletter
+ *     description: Permite suscribirse al newsletter semanal con intereses específicos
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - nombre
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Email del suscriptor
+ *                 example: "usuario@ejemplo.com"
+ *               nombre:
+ *                 type: string
+ *                 description: Nombre del suscriptor
+ *                 example: "Juan Pérez"
+ *               intereses:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   enum: [fotografia, video, audio, corto_cine]
+ *                 description: Tipos de contenido de interés
+ *                 example: ["fotografia", "video"]
+ *     responses:
+ *       201:
+ *         description: Suscripción creada exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Suscripción creada. Revisa tu email para confirmar."
+ *       409:
+ *         description: Email ya suscrito
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.post('/subscribe', newsletterController.subscribeToNewsletter.bind(newsletterController));
 
@@ -83,9 +132,73 @@ router.get('/popular-content', authenticateToken, newsletterController.getPopula
 router.post('/educational-content', authenticateToken, newsletterController.createEducationalContent.bind(newsletterController));
 
 /**
- * @route GET /api/educational-content
- * @desc Obtener contenido educativo con filtros
- * @access Público
+ * @swagger
+ * /educational-content:
+ *   get:
+ *     tags: [Newsletter]
+ *     summary: Obtener contenido educativo
+ *     description: Obtiene contenido educativo filtrado por tipo de medio y nivel
+ *     parameters:
+ *       - in: query
+ *         name: tipoMedio
+ *         schema:
+ *           type: string
+ *           enum: [fotografia, video, audio, corto_cine]
+ *         description: Tipo de medio
+ *       - in: query
+ *         name: nivel
+ *         schema:
+ *           type: string
+ *           enum: [principiante, intermedio, avanzado]
+ *         description: Nivel de dificultad
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Número de página
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 50
+ *           default: 10
+ *         description: Elementos por página
+ *     responses:
+ *       200:
+ *         description: Contenido educativo obtenido exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       titulo:
+ *                         type: string
+ *                       contenido:
+ *                         type: string
+ *                       tipoMedio:
+ *                         type: string
+ *                       nivel:
+ *                         type: string
+ *                       tiempoEstimadoLectura:
+ *                         type: integer
+ *                       fechaPublicacion:
+ *                         type: string
+ *                         format: date-time
+ *                 pagination:
+ *                   $ref: '#/components/schemas/PaginatedResponse/properties/pagination'
  */
 router.get('/educational-content', newsletterController.getEducationalContent.bind(newsletterController));
 

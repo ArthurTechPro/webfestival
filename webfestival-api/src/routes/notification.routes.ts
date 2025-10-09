@@ -10,11 +10,73 @@ const router = Router();
 // ============================================================================
 
 /**
- * @route GET /api/v1/notifications
- * @desc Obtener notificaciones del usuario autenticado
- * @access Privado (cualquier usuario autenticado)
- * @query page - Número de página (opcional, default: 1)
- * @query limit - Límite de resultados por página (opcional, default: 20, max: 100)
+ * @swagger
+ * /notifications:
+ *   get:
+ *     tags: [Notificaciones]
+ *     summary: Obtener notificaciones del usuario autenticado
+ *     description: Retorna las notificaciones del usuario con paginación y filtros opcionales
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Número de página
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 20
+ *         description: Límite de resultados por página
+ *       - in: query
+ *         name: leidas
+ *         schema:
+ *           type: boolean
+ *         description: Filtrar por estado de lectura (true=leídas, false=no leídas)
+ *     responses:
+ *       200:
+ *         description: Notificaciones obtenidas exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       tipo:
+ *                         type: string
+ *                         enum: [nuevo_concurso, resultados_publicados, recordatorio_evaluacion, newsletter]
+ *                       titulo:
+ *                         type: string
+ *                       mensaje:
+ *                         type: string
+ *                       leida:
+ *                         type: boolean
+ *                       fecha_creacion:
+ *                         type: string
+ *                         format: date-time
+ *                 pagination:
+ *                   $ref: '#/components/schemas/PaginatedResponse/properties/pagination'
+ *       401:
+ *         description: No autenticado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.get('/', 
   authenticateToken, 
@@ -22,10 +84,40 @@ router.get('/',
 );
 
 /**
- * @route PUT /api/v1/notifications/:id/read
- * @desc Marcar una notificación específica como leída
- * @access Privado (cualquier usuario autenticado)
- * @param id - ID de la notificación
+ * @swagger
+ * /notifications/{id}/read:
+ *   put:
+ *     tags: [Notificaciones]
+ *     summary: Marcar notificación como leída
+ *     description: Marca una notificación específica como leída
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID de la notificación
+ *     responses:
+ *       200:
+ *         description: Notificación marcada como leída
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ApiResponse'
+ *       404:
+ *         description: Notificación no encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       401:
+ *         description: No autenticado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.put('/:id/read', 
   authenticateToken, 
@@ -33,9 +125,40 @@ router.put('/:id/read',
 );
 
 /**
- * @route PUT /api/v1/notifications/read-all
- * @desc Marcar todas las notificaciones del usuario como leídas
- * @access Privado (cualquier usuario autenticado)
+ * @swagger
+ * /notifications/read-all:
+ *   put:
+ *     tags: [Notificaciones]
+ *     summary: Marcar todas las notificaciones como leídas
+ *     description: Marca todas las notificaciones del usuario como leídas
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Todas las notificaciones marcadas como leídas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Todas las notificaciones marcadas como leídas"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     updated:
+ *                       type: integer
+ *                       description: Número de notificaciones actualizadas
+ *       401:
+ *         description: No autenticado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.put('/read-all', 
   authenticateToken, 

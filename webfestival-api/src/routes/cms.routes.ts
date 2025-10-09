@@ -5,40 +5,176 @@ import { authenticateToken } from '../middleware/auth.middleware';
 const router = Router();
 
 /**
- * Rutas del sistema CMS unificado
- * Todas las rutas están protegidas por autenticación
- * Las rutas de escritura requieren permisos de CONTENT_ADMIN
+ * @swagger
+ * tags:
+ *   name: CMS
+ *   description: Sistema de gestión de contenido unificado con taxonomía, SEO y analytics
  */
 
-// ============================================================================
-// RUTAS PÚBLICAS (solo lectura)
-// ============================================================================
-
 /**
- * @route GET /api/cms/content
- * @desc Obtiene contenido con filtros y paginación
- * @access Public
- * @query {string} [tipo] - Tipo de contenido (pagina_estatica, blog_post, seccion_cms)
- * @query {string} [categoria] - Filtrar por categoría
- * @query {string} [etiqueta] - Filtrar por etiqueta
- * @query {string} [autor] - Filtrar por autor
- * @query {string} [estado] - Filtrar por estado (BORRADOR, PUBLICADO, ARCHIVADO, PROGRAMADO)
- * @query {string} [busqueda] - Búsqueda en título, contenido y resumen
- * @query {boolean} [activo] - Filtrar por contenido activo
- * @query {boolean} [destacado] - Filtrar por contenido destacado
- * @query {number} [page=1] - Página actual
- * @query {number} [limit=10] - Elementos por página
- * @query {string} [sort_by=created_at] - Campo para ordenar
- * @query {string} [sort_order=desc] - Orden (asc, desc)
+ * @swagger
+ * /cms/content:
+ *   get:
+ *     tags: [CMS]
+ *     summary: Obtener contenido con filtros
+ *     description: Obtiene contenido con filtros avanzados y paginación (público)
+ *     parameters:
+ *       - in: query
+ *         name: tipo
+ *         schema:
+ *           type: string
+ *           enum: [pagina_estatica, blog_post, seccion_cms]
+ *         description: Tipo de contenido
+ *       - in: query
+ *         name: categoria
+ *         schema:
+ *           type: string
+ *         description: Filtrar por categoría
+ *       - in: query
+ *         name: etiqueta
+ *         schema:
+ *           type: string
+ *         description: Filtrar por etiqueta
+ *       - in: query
+ *         name: autor
+ *         schema:
+ *           type: string
+ *         description: Filtrar por autor
+ *       - in: query
+ *         name: estado
+ *         schema:
+ *           type: string
+ *           enum: [BORRADOR, PUBLICADO, ARCHIVADO, PROGRAMADO]
+ *         description: Filtrar por estado
+ *       - in: query
+ *         name: busqueda
+ *         schema:
+ *           type: string
+ *         description: Búsqueda en título, contenido y resumen
+ *       - in: query
+ *         name: activo
+ *         schema:
+ *           type: boolean
+ *         description: Filtrar por contenido activo
+ *       - in: query
+ *         name: destacado
+ *         schema:
+ *           type: boolean
+ *         description: Filtrar por contenido destacado
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Página actual
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Elementos por página
+ *       - in: query
+ *         name: sort_by
+ *         schema:
+ *           type: string
+ *           default: created_at
+ *         description: Campo para ordenar
+ *       - in: query
+ *         name: sort_order
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: desc
+ *         description: Orden de clasificación
+ *     responses:
+ *       200:
+ *         description: Lista de contenido obtenida exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Contenido'
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     page: { type: integer }
+ *                     limit: { type: integer }
+ *                     total: { type: integer }
+ *                     totalPages: { type: integer }
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
  */
 router.get('/content', cmsController.getContent.bind(cmsController));
 
 /**
- * @route GET /api/cms/content/:slug
- * @desc Obtiene contenido por slug
- * @access Public
- * @param {string} slug - Slug único del contenido
- * @query {boolean} [include=true] - Incluir relaciones (autor, configuración, SEO, etc.)
+ * @swagger
+ * /cms/content/{slug}:
+ *   get:
+ *     tags: [CMS]
+ *     summary: Obtener contenido por slug
+ *     description: Obtiene contenido específico por su slug único
+ *     parameters:
+ *       - in: path
+ *         name: slug
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Slug único del contenido
+ *         example: "mi-articulo-blog"
+ *       - in: query
+ *         name: include
+ *         schema:
+ *           type: boolean
+ *           default: true
+ *         description: Incluir relaciones (autor, configuración, SEO, etc.)
+ *     responses:
+ *       200:
+ *         description: Contenido obtenido exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   allOf:
+ *                     - $ref: '#/components/schemas/Contenido'
+ *                     - type: object
+ *                       properties:
+ *                         autor:
+ *                           type: object
+ *                           properties:
+ *                             nombre: { type: string }
+ *                             picture_url: { type: string }
+ *                         configuracion:
+ *                           type: object
+ *                           properties:
+ *                             comentarios_habilitados: { type: boolean }
+ *                             compartir_habilitado: { type: boolean }
+ *                         seo:
+ *                           type: object
+ *                           properties:
+ *                             meta_title: { type: string }
+ *                             meta_description: { type: string }
+ *                             keywords: { type: array, items: { type: string } }
+ *                         metricas:
+ *                           type: object
+ *                           properties:
+ *                             vistas: { type: integer }
+ *                             likes: { type: integer }
+ *                             comentarios: { type: integer }
+ *                             shares: { type: integer }
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
  */
 router.get('/content/:slug', cmsController.getContentBySlug.bind(cmsController));
 
@@ -99,10 +235,104 @@ router.get('/content/:id/preview', authenticateToken, cmsController.previewConte
 // ============================================================================
 
 /**
- * @route POST /api/cms/content
- * @desc Crea nuevo contenido
- * @access Private (CONTENT_ADMIN)
- * @body {CreateContenido} - Datos del contenido a crear
+ * @swagger
+ * /cms/content:
+ *   post:
+ *     tags: [CMS]
+ *     summary: Crear nuevo contenido (Content Admin)
+ *     description: Crea nuevo contenido en el CMS (Solo Content Admin)
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - titulo
+ *               - contenido
+ *               - tipo
+ *             properties:
+ *               titulo:
+ *                 type: string
+ *                 description: Título del contenido
+ *                 example: "Mi nuevo artículo"
+ *               slug:
+ *                 type: string
+ *                 description: Slug único (se genera automáticamente si no se proporciona)
+ *                 example: "mi-nuevo-articulo"
+ *               contenido:
+ *                 type: string
+ *                 description: Contenido principal (HTML/Markdown)
+ *                 example: "<p>Este es el contenido del artículo...</p>"
+ *               resumen:
+ *                 type: string
+ *                 description: Resumen del contenido
+ *                 example: "Un breve resumen del artículo"
+ *               tipo:
+ *                 type: string
+ *                 enum: [blog_post, pagina_estatica, seccion_cms]
+ *                 description: Tipo de contenido
+ *                 example: "blog_post"
+ *               estado:
+ *                 type: string
+ *                 enum: [BORRADOR, PUBLICADO, ARCHIVADO, PROGRAMADO]
+ *                 default: BORRADOR
+ *                 description: Estado del contenido
+ *               fecha_publicacion:
+ *                 type: string
+ *                 format: date-time
+ *                 description: Fecha de publicación (para contenido programado)
+ *               imagen_destacada:
+ *                 type: string
+ *                 format: uri
+ *                 description: URL de la imagen destacada
+ *               categorias:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: Categorías del contenido
+ *                 example: ["tecnología", "web"]
+ *               etiquetas:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: Etiquetas del contenido
+ *                 example: ["javascript", "react", "tutorial"]
+ *               configuracion:
+ *                 type: object
+ *                 properties:
+ *                   comentarios_habilitados: { type: boolean, default: true }
+ *                   compartir_habilitado: { type: boolean, default: true }
+ *                   destacado: { type: boolean, default: false }
+ *               seo:
+ *                 type: object
+ *                 properties:
+ *                   meta_title: { type: string }
+ *                   meta_description: { type: string }
+ *                   keywords: { type: array, items: { type: string } }
+ *     responses:
+ *       201:
+ *         description: Contenido creado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: '#/components/schemas/Contenido'
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       409:
+ *         description: Slug ya existe
  */
 router.post('/content', authenticateToken, cmsController.createContent.bind(cmsController));
 

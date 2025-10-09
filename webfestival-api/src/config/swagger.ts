@@ -22,7 +22,7 @@ const swaggerDefinition: SwaggerDefinition = {
       description: 'Servidor de desarrollo'
     },
     {
-      url: 'https://api.webfestival.com/api/v1',
+      url: 'https://api.webfestival.art/api/v1',
       description: 'Servidor de producción'
     }
   ],
@@ -416,10 +416,6 @@ const swaggerDefinition: SwaggerDefinition = {
       description: 'Sistema de calificaciones y evaluaciones'
     },
     {
-      name: 'Jurados',
-      description: 'Gestión de jurados y asignaciones'
-    },
-    {
       name: 'CMS',
       description: 'Sistema de gestión de contenido'
     },
@@ -450,7 +446,11 @@ const swaggerDefinition: SwaggerDefinition = {
     {
       name: 'Sistema',
       description: 'Endpoints de sistema y salud'
-    }
+    },
+    {
+      name: 'Asignación de Jurados',
+      description: 'Sistema de asignación inteligente de jurados a categorías y concursos'
+    },
   ]
 };
 
@@ -458,8 +458,11 @@ const options = {
   definition: swaggerDefinition,
   apis: [
     './src/routes/*.ts',
+    './src/routes/**/*.ts',
     './src/controllers/*.ts',
-    './src/schemas/*.ts'
+    './src/controllers/**/*.ts',
+    './src/schemas/*.ts',
+    './src/schemas/**/*.ts'
   ]
 };
 

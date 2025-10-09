@@ -45,8 +45,8 @@ async function testServerStartup() {
         // 3. Verificar configuración de Swagger
         console.log('3. Verificando configuración de Swagger...');
         try {
-            if (swaggerSpec && swaggerSpec.info && swaggerSpec.info.title) {
-                console.log(`   ✅ Swagger configurado: ${swaggerSpec.info.title} v${swaggerSpec.info.version}`);
+            if (swaggerSpec && (swaggerSpec as any).info && (swaggerSpec as any).info.title) {
+                console.log(`   ✅ Swagger configurado: ${(swaggerSpec as any).info.title} v${(swaggerSpec as any).info.version}`);
             } else {
                 console.log('   ❌ Configuración de Swagger inválida');
                 return false;
