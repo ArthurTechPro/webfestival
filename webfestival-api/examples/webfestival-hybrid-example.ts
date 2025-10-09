@@ -1,7 +1,83 @@
 // 🎯 EJEMPLO REAL: CÓMO IMPLEMENTAR HÍBRIDO EN WEBFESTIVAL
 
 import { Request, Response, NextFunction } from 'express';
-import { ApiResponse, ApiError } from '@/types';
+import { Router } from 'express';
+
+// ✅ Definir tipos localmente para el ejemplo
+interface ApiResponse {
+  success: boolean;
+  data?: any;
+  message: string;
+}
+
+interface ApiError extends Error {
+  status?: number;
+}
+
+interface JWTPayload {
+  id: string;
+  userId: string;
+  email: string;
+  role: string;
+  iat?: number;
+  exp?: number;
+}
+
+interface User {
+  id: string;
+  email: string;
+  nombre: string;
+  role: string;
+  picture_url?: string;
+  bio?: string;
+}
+
+// ✅ Extender Request para incluir user
+declare global {
+  namespace Express {
+    interface Request {
+      user?: JWTPayload;
+    }
+  }
+}
+
+// ✅ Mock del authService para el ejemplo
+const authService = {
+  login: async (credentials: any) => ({ 
+    user: { 
+      id: '1', 
+      email: credentials.email, 
+      nombre: 'Usuario Test', 
+      role: 'PARTICIPANTE' 
+    }, 
+    tokens: { 
+      accessToken: 'mock_access_token', 
+      refreshToken: 'mock_refresh_token' 
+    } 
+  }),
+  register: async (userData: any) => ({ 
+    user: { 
+      id: '2', 
+      email: userData.email, 
+      nombre: userData.nombre, 
+      role: 'PARTICIPANTE' 
+    }, 
+    tokens: { 
+      accessToken: 'mock_access_token', 
+      refreshToken: 'mock_refresh_token' 
+    } 
+  }),
+  refreshToken: async (token: string) => ({ 
+    accessToken: 'new_mock_access_token', 
+    refreshToken: 'new_mock_refresh_token' 
+  }),
+  verifyAccessToken: async (token: string): Promise<JWTPayload> => ({ 
+    id: '1',
+    userId: '1', 
+    email: 'test@example.com',
+    role: 'PARTICIPANTE'
+  })
+};
 
 export class ModernAuthController {
   // ✅ FUNCIÓN TRADICIONAL para método principal (necesita binding)
@@ -50,7 +126,7 @@ export class ModernAuthController {
         throw error;
       }
 
-      const result = await this.authService.login({ email, password });
+      const result = await authService.login({ email, password });
       const responseData = formatLoginResponse(result.user, result.tokens);
 
       const response: ApiResponse = {
@@ -97,7 +173,7 @@ export class ModernAuthController {
         throw error;
       }
 
-      const result = await this.authService.register(userData);
+      const result = await authService.register(userData);
 
       res.status(201).json({
         success: true,
@@ -112,7 +188,7 @@ export class ModernAuthController {
   // ✅ PROPIEDAD CON FUNCIÓN DE FLECHA para callback/handler
   private handleTokenRefresh = async (refreshToken: string) => {
     try {
-      return await this.authService.refreshToken(refreshToken);
+      return await authService.refreshToken(refreshToken);
     } catch (error) {
       throw new Error('Token de refresh inválido');
     }
@@ -176,10 +252,11 @@ export const hybridAuthMiddleware = {
       const token = (req as any).token;
 
       if (!token || !isTokenValid(token)) {
-        return res.status(401).json({
+        res.status(401).json({
           success: false,
           message: 'Token inválido'
         });
+        return; // ✅ CORRECCIÓN: return sin valor
       }
 
       // Validar token con el servicio...

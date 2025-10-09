@@ -26,16 +26,14 @@ inclusion: always
 - **SIEMPRE crear documentación en la carpeta `docs/`** para servicios y componentes importantes
 - **NUNCA documentar detalles de implementación en archivos de tareas** (`tasks.md`)
 - **Los archivos de tareas deben mantener solo información esencial** de la tarea completada
-- **La documentación detallada va en `docs/`** con archivos numerados según la tarea
+
 
 ### Estructura de Documentación Obligatoria
 ```
 proyecto/
 ├── docs/
-│   ├── [numero-tarea]-[descripcion-principal]-README.md
 │   ├── [numero-tarea]-[descripcion-api]-README.md
-│   ├── [numero-tarea]-[descripcion-deployment]-README.md
-│   └── [numero-tarea]-[descripcion-integration]-README.md
+│   ├── [numero-tarea]-[descripcion-principal]-README.md
 ├── src/
 └── tests/
 ```
@@ -43,10 +41,8 @@ proyecto/
 ### Convenciones para Archivos de Documentación
 - **Formato de nombres**: `[numero-tarea]-[descripcion-kebab-case]-README.md`
 - **Ejemplos correctos**:
-  - `8-2-notification-system-README.md` (documentación principal)
-  - `8-2-notification-api-README.md` (documentación de API)
-  - `8-2-notification-deployment-README.md` (configuración y despliegue)
-  - `8-2-notification-integration-README.md` (integración frontend)
+  - `8-2-notification-system-README.md` (documentación principal,deployment)
+  - `8-2-notification-api-README.md` (documentación de API, Ejemplos)
 
 ### Contenido Obligatorio por Tipo de Documentación
 **Documentación Principal (`-README.md`):**
@@ -54,29 +50,18 @@ proyecto/
 - Arquitectura y componentes
 - Configuración básica
 - Ejemplos de uso
-- Testing y troubleshooting
 
 **Documentación de API (`-api-README.md`):**
 - Todos los endpoints con ejemplos
 - Parámetros y respuestas detalladas
 - Códigos de error y soluciones
 - Ejemplos de integración con JavaScript/frameworks
-
-**Documentación de Despliegue (`-deployment-README.md`):**
 - Configuración de variables de entorno
 - Instrucciones para diferentes entornos
-- Docker, Kubernetes, PM2
-- Monitoreo, logs y métricas
 
-**Documentación de Integración (`-integration-README.md`):**
-- Componentes frontend listos para usar
-- Ejemplos con React, Vue, Angular
-- WebSocket y notificaciones push
-- Estilos CSS y configuración
 
 ### Actualización de Archivos de Tareas
 - **En `tasks.md` solo marcar como completado** con ✅
-- **Agregar referencia a la documentación** generada
 - **NO incluir detalles de implementación** en el archivo de tareas
 - **Ejemplo correcto en tasks.md**:
   ```markdown
@@ -90,10 +75,6 @@ proyecto/
 ### Cuándo Generar Documentación
 - **Siempre** al implementar un nuevo servicio
 - **Siempre** al crear integraciones con APIs externas
-- **Siempre** al implementar funcionalidades complejas
-- **Siempre** al completar tareas de especificaciones técnicas
-- **Generar mínimo 2 archivos**: principal y API
-- **Para sistemas complejos**: agregar deployment e integration
 
 ## Mensajes de Error y Logs
 - Mensajes de error personalizados en español
@@ -126,6 +107,7 @@ proyecto/
 - **NUNCA crear archivos de test dentro de `src/`** o subcarpetas de `src/`
 - **Estructura correcta del proyecto:**
   ```
+  postman/
   proyecto/
   ├── src/
   │   ├── services/
