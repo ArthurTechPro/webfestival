@@ -1,0 +1,13 @@
+# Postman generated files
+*.postman_collection.json.backup
+*.postman_environment.json.backup
+
+# Newman reports
+newman/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Logs
+*.log

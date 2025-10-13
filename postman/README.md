@@ -40,6 +40,17 @@ Esta carpeta contiene colecciones completas de Postman para probar todos los end
   - Galerías públicas
   - Gestión de metadatos
 
+### 📤 Subida Completa de Archivos (NUEVO)
+- **`WebFestival-Upload-Complete.postman_collection.json`**
+  - **Flujo completo de 3 pasos** incluyendo subida real a Immich
+  - Ejemplos específicos para cada tipo de medio
+  - Scripts automáticos para capturar variables
+  - Guías paso a paso con instrucciones claras
+- **`EJEMPLOS-SUBIDA-ARCHIVOS-IMMICH.md`**
+  - **Documentación detallada** del proceso de subida
+  - Ejemplos de configuración de Postman
+  - Troubleshooting y solución de problemas
+
 ### 📝 Sistema CMS
 - **`WebFestival-API-CMS.postman_collection.json`**
   - Gestión de contenido
@@ -273,17 +284,12 @@ GET {{base_url}}/concursos/activos
    }
    ```
 
-5. **Generar URL de Subida**
-   ```http
-   POST {{base_url}}/media/contests/{{concurso_id}}/upload-url
-   {
-     "titulo": "Mi Fotografía Urbana",
-     "tipo_medio": "fotografia",
-     "categoria_id": 1,
-     "formato": "image/jpeg",
-     "tamaño_archivo": 2048576
-   }
-   ```
+5. **Subir Archivo Completo (3 pasos)**
+   - **Paso 1:** Generar URL de subida
+   - **Paso 2:** Subir archivo real a Immich
+   - **Paso 3:** Procesar subida completada
+   
+   **💡 Usa la colección `WebFestival-Upload-Complete.postman_collection.json` para el flujo completo**
 
 #### 💬 Flujo de Interacciones Sociales
 1. **Dar Like a Contenido**
@@ -402,6 +408,68 @@ El servidor estará disponible en: `http://localhost:3001`
 - **Swagger UI**: http://localhost:3001/api-docs
 - **API JSON**: http://localhost:3001/api-docs.json
 - **Health Check**: http://localhost:3001/health
+
+## 📤 Subida de Archivos a Immich
+
+### 🚀 Flujo Completo de Subida (3 Pasos)
+
+**IMPORTANTE:** La subida de archivos requiere 3 pasos específicos. Usa la colección `WebFestival-Upload-Complete.postman_collection.json` que incluye el proceso completo.
+
+#### Paso 1: Generar URL de Subida
+```http
+POST {{base_url}}/media/contests/{{concurso_id}}/upload-url
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "titulo": "Mi Fotografía",
+  "tipo_medio": "fotografia",
+  "categoria_id": 1,
+  "formato": "image/jpeg",
+  "tamaño_archivo": 2048576
+}
+```
+
+#### Paso 2: Subir Archivo Real a Immich
+```http
+POST {{upload_url}}
+x-api-key: {{immich_api_key}}
+Content-Type: multipart/form-data
+
+# Body: form-data
+# assetData: [FILE] - Seleccionar archivo
+# deviceAssetId: {{upload_id}}
+# deviceId: webfestival-api
+# fileCreatedAt: 2025-01-15T10:30:00.000Z
+# fileModifiedAt: 2025-01-15T10:30:00.000Z
+```
+
+#### Paso 3: Procesar Subida Completada
+```http
+POST {{base_url}}/media/contests/{{concurso_id}}/process-upload
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "uploadId": "{{upload_id}}",
+  "immichAssetId": "{{immich_asset_id}}"
+}
+```
+
+### 📋 Instrucciones Detalladas
+
+1. **Importa la colección:** `WebFestival-Upload-Complete.postman_collection.json`
+2. **Ejecuta el flujo:** Carpeta "🚀 Flujo Completo de Subida"
+3. **Selecciona archivo:** En el paso 2, selecciona un archivo real en Body > form-data > assetData
+4. **Sigue los logs:** Los scripts muestran instrucciones paso a paso
+
+### 📚 Documentación Completa
+
+Ver `EJEMPLOS-SUBIDA-ARCHIVOS-IMMICH.md` para:
+- Ejemplos detallados por tipo de medio
+- Configuración de variables de entorno
+- Troubleshooting y solución de problemas
+- Scripts de automatización
 
 ## 🧪 Ejemplos de Pruebas
 
