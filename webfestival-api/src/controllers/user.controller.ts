@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { userService } from '@/services/user.service';
+import { userService } from '../services/user.service';
 import { 
   updateProfileSchema,
   followUserSchema,
@@ -13,26 +13,83 @@ import {
   UpdateEspecializacionRequest,
   AsignarJuradoRequest,
   UserFiltersRequest
-} from '@/schemas/user.schemas';
-import { ApiResponse, ApiError } from '@/types';
+} from '../schemas/user.schemas';
+import { ApiResponse, ApiError } from '../types';
+
 
 export class UserController {
+  // ✅ FUNCIONES DE FLECHA para helpers y utilidades
+  private validateUserId = (id: string) => {
+    if (!id || id.trim().length === 0) {
+      const error = new Error('ID de usuario requerido') as ApiError;
+      error.status = 400;
+      throw error;
+    }
+    return id.trim();
+  };
+
+  private validateAuthenticatedUser = (req: Request) => {
+    if (!req.user) {
+      const error = new Error('Usuario no autenticado') as ApiError;
+      error.status = 401;
+      throw error;
+    }
+    return req.user;
+  };
+
+  private formatUserProfile = (user: any, isFollowing?: boolean) => ({
+    id: user.id,
+    nombre: user.nombre,
+    bio: user.bio,
+    picture_url: user.picture_url,
+    role: user.role,
+    created_at: user.created_at,
+    stats: {
+      concursos_participados: user.stats?.concursos_participados || 0,
+      medios_subidos: user.stats?.medios_subidos || 0,
+      seguidores: user.stats?.seguidores || 0,
+      siguiendo: user.stats?.siguiendo || 0
+    },
+    ...(isFollowing !== undefined && { is_following: isFollowing }),
+    ...(user.especializacion && { especializacion: user.especializacion })
+  });
+
+  private formatFollowResponse = (seguimiento: any) => ({
+    seguidor_id: seguimiento.seguidor_id,
+    seguido_id: seguimiento.seguido_id,
+    fecha_seguimiento: seguimiento.fecha_seguimiento,
+    seguido: {
+      nombre: seguimiento.seguido?.nombre,
+      picture_url: seguimiento.seguido?.picture_url
+    }
+  });
+
+  private validateFollowRequest = (seguidorId: string, seguidoId: string) => {
+    if (seguidorId === seguidoId) {
+      const error = new Error('No puedes seguirte a ti mismo') as ApiError;
+      error.status = 400;
+      throw error;
+    }
+  };
+
+  private logUserOperation = (operation: string, userId: string, details?: any) => {
+    console.log(`[USER_CONTROLLER] ${operation} - User: ${userId}`, details || '');
+  };
   /**
-   * Obtener perfil público de usuario
+   * ✅ FUNCIÓN TRADICIONAL para obtener perfil público de usuario
+   * Razón: Método principal que puede ser heredado y necesita binding correcto
    * GET /api/v1/users/:id/profile
    */
   async getUserProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id } = req.params;
-      
-      if (!id) {
-        const error = new Error('ID de usuario requerido') as ApiError;
-        error.status = 400;
-        throw error;
-      }
-
       const currentUserId = req.user?.userId;
-      const userProfile = await userService.getUserProfile(id, currentUserId);
+
+      // Usar helper de flecha para validación
+      const validatedId = this.validateUserId(id || '');
+      this.logUserOperation('GET_PROFILE', currentUserId || 'anonymous', { targetId: validatedId });
+
+      const userProfile = await userService.getUserProfile(validatedId, currentUserId);
 
       if (!userProfile) {
         const error = new Error('Usuario no encontrado') as ApiError;
@@ -40,9 +97,12 @@ export class UserController {
         throw error;
       }
 
+      // Usar helper de flecha para formateo
+      const formattedUser = this.formatUserProfile(userProfile);
+
       const response: ApiResponse = {
         success: true,
-        data: { user: userProfile },
+        data: { user: formattedUser },
         message: 'Perfil de usuario obtenido exitosamente'
       };
 
@@ -53,23 +113,26 @@ export class UserController {
   }
 
   /**
-   * Actualizar perfil del usuario actual
+   * ✅ FUNCIÓN TRADICIONAL para actualizar perfil del usuario
+   * Razón: Método principal que maneja lógica compleja y puede ser heredado
    * PUT /api/v1/users/profile
    */
   async updateProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      if (!req.user) {
-        const error = new Error('Usuario no autenticado') as ApiError;
-        error.status = 401;
-        throw error;
-      }
-
+      // Usar helper de flecha para validación
+      const user = this.validateAuthenticatedUser(req);
+      
       const validatedData = updateProfileSchema.parse(req.body) as UpdateProfileRequest;
-      const updatedUser = await userService.updateProfile(req.user.userId, validatedData);
+      this.logUserOperation('UPDATE_PROFILE', user.userId, { fieldsUpdated: Object.keys(validatedData) });
+
+      const updatedUser = await userService.updateProfile(user.userId, validatedData);
+
+      // Usar helper de flecha para formateo
+      const formattedUser = this.formatUserProfile(updatedUser);
 
       const response: ApiResponse = {
         success: true,
-        data: { user: updatedUser },
+        data: { user: formattedUser },
         message: 'Perfil actualizado exitosamente'
       };
 
@@ -80,23 +143,29 @@ export class UserController {
   }
 
   /**
-   * Seguir a un usuario
+   * ✅ FUNCIÓN TRADICIONAL para seguir a un usuario
+   * Razón: Método principal con lógica de negocio compleja
    * POST /api/v1/users/follow
    */
   async followUser(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      if (!req.user) {
-        const error = new Error('Usuario no autenticado') as ApiError;
-        error.status = 401;
-        throw error;
-      }
-
+      // Usar helper de flecha para validación
+      const user = this.validateAuthenticatedUser(req);
+      
       const validatedData = followUserSchema.parse(req.body) as FollowUserRequest;
-      const seguimiento = await userService.followUser(req.user.userId, validatedData.seguido_id);
+      
+      // Usar helper de flecha para validación de seguimiento
+      this.validateFollowRequest(user.userId, validatedData.seguido_id);
+      this.logUserOperation('FOLLOW_USER', user.userId, { targetId: validatedData.seguido_id });
+
+      const seguimiento = await userService.followUser(user.userId, validatedData.seguido_id);
+
+      // Usar helper de flecha para formateo
+      const formattedSeguimiento = this.formatFollowResponse(seguimiento);
 
       const response: ApiResponse = {
         success: true,
-        data: { seguimiento },
+        data: { seguimiento: formattedSeguimiento },
         message: 'Usuario seguido exitosamente'
       };
 

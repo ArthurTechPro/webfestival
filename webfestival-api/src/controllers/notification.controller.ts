@@ -1,7 +1,9 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { getNotificationService } from '../services/notification.service';
 import { prisma } from '../lib/prisma';
 import { z } from 'zod';
+
+import { ApiResponse, ApiError } from '../types';
 
 // Esquemas de validación
 const sendDeadlineReminderSchema = z.object({
@@ -24,113 +26,163 @@ const sendNewContestSchema = z.object({
 
 // Schema removido - no se usa en el código actual
 
-const getUserNotificationsSchema = z.object({
-  page: z.number().int().positive().default(1),
-  limit: z.number().int().positive().max(100).default(20)
-});
+// Schema removido - se usa sanitizeQueryParams en su lugar
 
 export class NotificationController {
   private notificationService = getNotificationService(prisma);
 
+  // ✅ FUNCIONES DE FLECHA para helpers y utilidades internas
+  private validateUserId = (userId: string | undefined): string => {
+    if (!userId) {
+      const error = new Error('Usuario no autenticado') as ApiError;
+      error.status = 401;
+      throw error;
+    }
+    return userId;
+  };
+
+  private validateNotificationId = (id: string): number => {
+    const numId = parseInt(id);
+    if (!id || isNaN(numId) || numId <= 0) {
+      const error = new Error('ID de notificación inválido') as ApiError;
+      error.status = 400;
+      throw error;
+    }
+    return numId;
+  };
+
+  private sanitizeQueryParams = (query: any) => ({
+    page: query.page ? Math.max(1, parseInt(query.page)) : 1,
+    limit: query.limit ? Math.min(100, Math.max(1, parseInt(query.limit))) : 20,
+    unreadOnly: query.unreadOnly === 'true'
+  });
+
+  private formatNotificationResponse = (notification: any) => ({
+    id: notification.id,
+    tipo: notification.tipo,
+    titulo: notification.titulo,
+    mensaje: notification.mensaje,
+    leida: notification.leida,
+    created_at: notification.created_at,
+    metadata: notification.metadata || {},
+    ...(notification.concurso && {
+      concurso: {
+        id: notification.concurso.id,
+        titulo: notification.concurso.titulo
+      }
+    }),
+    ...(notification.medio && {
+      medio: {
+        id: notification.medio.id,
+        titulo: notification.medio.titulo
+      }
+    })
+  });
+
+  private formatNotificationList = (notifications: any[]) => {
+    return notifications.map(notification => this.formatNotificationResponse(notification));
+  };
+
+  private logNotificationAction = (action: string, userId: string, notificationId?: number, metadata?: any) => {
+    console.log(`[NOTIFICATION_ACTION] ${action} - User: ${userId}${notificationId ? ` -> Notification: ${notificationId}` : ''} - ${new Date().toISOString()}`, metadata || '');
+  };
+
+  private createSuccessResponse = (data: any, message: string): ApiResponse => ({
+    success: true,
+    data,
+    message
+  });
+
+
+
   /**
-   * Obtener notificaciones del usuario autenticado
+   * ✅ FUNCIÓN TRADICIONAL para obtener notificaciones del usuario
+   * Razón: Método principal que puede ser heredado y necesita binding correcto
    * GET /api/v1/notifications
    */
-  async getUserNotifications(req: Request, res: Response): Promise<void> {
+  async getUserNotifications(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const userId = req.user?.id;
-      if (!userId) {
-        res.status(401).json({ error: 'Usuario no autenticado' });
-        return;
-      }
+      // Usar helper de flecha para validación
+      const userId = this.validateUserId(req.user?.id);
 
-      const query = getUserNotificationsSchema.parse({
-        page: req.query['page'] ? parseInt(req.query['page'] as string) : 1,
-        limit: req.query['limit'] ? parseInt(req.query['limit'] as string) : 20
-      });
+      // Usar helper de flecha para sanitización
+      const params = this.sanitizeQueryParams(req.query);
+
+      this.logNotificationAction('GET_NOTIFICATIONS', userId, undefined, params);
 
       const result = await this.notificationService.getUserNotifications(
         userId,
-        query.page,
-        query.limit
+        params.page,
+        params.limit
       );
 
-      res.json({
-        success: true,
-        data: result
-      });
-    } catch (error) {
-      console.error('Error obteniendo notificaciones:', error);
-      
-      if (error instanceof z.ZodError) {
-        res.status(400).json({
-          error: 'Datos de entrada inválidos',
-          details: error.errors
-        });
-        return;
-      }
+      // Formatear respuesta usando helper
+      const formattedNotifications = this.formatNotificationList(result.notificaciones || []);
 
-      res.status(500).json({
-        error: 'Error interno del servidor'
-      });
+      const response = this.createSuccessResponse(
+        {
+          notifications: formattedNotifications,
+          total: result.total,
+          page: result.page,
+          totalPages: result.totalPages
+        },
+        'Notificaciones obtenidas exitosamente'
+      );
+
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
     }
   }
 
   /**
-   * Marcar notificación como leída
+   * ✅ FUNCIÓN TRADICIONAL para marcar notificación como leída
+   * Razón: Método principal con lógica de negocio
    * PUT /api/v1/notifications/:id/read
    */
-  async markAsRead(req: Request, res: Response): Promise<void> {
+  async markAsRead(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const userId = req.user?.id;
-      if (!userId) {
-        res.status(401).json({ error: 'Usuario no autenticado' });
-        return;
-      }
+      // Usar helpers de flecha para validación
+      const userId = this.validateUserId(req.user?.id);
+      const notificationId = this.validateNotificationId(req.params['id'] || '');
 
-      const notificationId = parseInt(req.params['id'] || '');
-      if (isNaN(notificationId)) {
-        res.status(400).json({ error: 'ID de notificación inválido' });
-        return;
-      }
+      this.logNotificationAction('MARK_AS_READ', userId, notificationId);
 
       await this.notificationService.markAsRead(notificationId, userId);
 
-      res.json({
-        success: true,
-        message: 'Notificación marcada como leída'
-      });
+      const response = this.createSuccessResponse(
+        { notificationId, read: true },
+        'Notificación marcada como leída'
+      );
+
+      res.status(200).json(response);
     } catch (error) {
-      console.error('Error marcando notificación como leída:', error);
-      res.status(500).json({
-        error: 'Error interno del servidor'
-      });
+      next(error);
     }
   }
 
   /**
-   * Marcar todas las notificaciones como leídas
+   * ✅ FUNCIÓN TRADICIONAL para marcar todas las notificaciones como leídas
+   * Razón: Método principal con operación masiva
    * PUT /api/v1/notifications/read-all
    */
-  async markAllAsRead(req: Request, res: Response): Promise<void> {
+  async markAllAsRead(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const userId = req.user?.id;
-      if (!userId) {
-        res.status(401).json({ error: 'Usuario no autenticado' });
-        return;
-      }
+      // Usar helper de flecha para validación
+      const userId = this.validateUserId(req.user?.id);
+
+      this.logNotificationAction('MARK_ALL_AS_READ', userId);
 
       await this.notificationService.markAllAsRead(userId);
 
-      res.json({
-        success: true,
-        message: 'Todas las notificaciones marcadas como leídas'
-      });
+      const response = this.createSuccessResponse(
+        { success: true },
+        'Todas las notificaciones marcadas como leídas'
+      );
+
+      res.status(200).json(response);
     } catch (error) {
-      console.error('Error marcando todas las notificaciones como leídas:', error);
-      res.status(500).json({
-        error: 'Error interno del servidor'
-      });
+      next(error);
     }
   }
 
@@ -159,7 +211,7 @@ export class NotificationController {
       });
     } catch (error) {
       console.error('Error enviando recordatorios de fecha límite:', error);
-      
+
       if (error instanceof z.ZodError) {
         res.status(400).json({
           error: 'Datos de entrada inválidos',
@@ -195,7 +247,7 @@ export class NotificationController {
       });
     } catch (error) {
       console.error('Error enviando notificación de evaluación completada:', error);
-      
+
       if (error instanceof z.ZodError) {
         res.status(400).json({
           error: 'Datos de entrada inválidos',
@@ -231,7 +283,7 @@ export class NotificationController {
       });
     } catch (error) {
       console.error('Error enviando notificaciones de resultados:', error);
-      
+
       if (error instanceof z.ZodError) {
         res.status(400).json({
           error: 'Datos de entrada inválidos',
@@ -267,7 +319,7 @@ export class NotificationController {
       });
     } catch (error) {
       console.error('Error enviando notificaciones de nuevo concurso:', error);
-      
+
       if (error instanceof z.ZodError) {
         res.status(400).json({
           error: 'Datos de entrada inválidos',

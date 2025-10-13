@@ -119,6 +119,9 @@ export interface ApiResponse<T = any> {
   error?: string;
 }
 
+// Re-export everything for easier imports
+export * from './express';
+
 export interface PaginatedResponse<T> {
   data: T[];
   pagination: {

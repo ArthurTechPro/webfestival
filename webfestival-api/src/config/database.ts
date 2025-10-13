@@ -4,10 +4,10 @@ import { PrismaClient } from '@prisma/client';
 export const databaseConfig = {
   // URL de conexión desde variables de entorno
   url: process.env['DATABASE_URL'],
-  
+
   // Configuración de logging según el entorno
   logging: process.env['NODE_ENV'] === 'development' ? ['query', 'error', 'warn'] : ['error'],
-  
+
   // Configuración de pool de conexiones
   connectionPool: {
     min: 2,
@@ -19,7 +19,7 @@ export const databaseConfig = {
     reapIntervalMillis: 1000,
     createRetryIntervalMillis: 200,
   },
-  
+
   // Configuración de reintentos
   retry: {
     attempts: 3,
@@ -47,7 +47,7 @@ export async function getDatabaseInfo(prisma: PrismaClient) {
   try {
     const result = await prisma.$queryRaw<Array<{ version: string }>>`SELECT version()`;
     const version = result[0]?.version || 'Desconocida';
-    
+
     return {
       type: 'PostgreSQL',
       version: version.split(' ')[1] || 'Desconocida',

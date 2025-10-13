@@ -28,6 +28,8 @@
     "test-newsletter": "tsx src/scripts/test-newsletter-implementation.ts",
     "payment-maintenance": "tsx src/scripts/payment-maintenance.ts",
     "test-stripe": "tsx src/scripts/test-stripe-integration.ts",
+    "db:test": "node scripts/test-connection.js",
+    "db:fix": "node scripts/fix-db-connection.js",
     "setup-webhooks": "tsx src/scripts/setup-stripe-webhooks.ts",
     "test-payment-integration": "tsx src/scripts/test-payment-integration.ts",
     "test-email": "tsx src/scripts/test-email-service.ts",
