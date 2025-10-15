@@ -515,6 +515,217 @@ interface NewsletterMetrics {
 - Newsletter automático para suscriptores
 - Escalabilidad para nuevos tipos de contenido sin cambios de esquema
 
+### 12. Sistema de Temas Profesionales Extendido
+
+**Responsabilidades**:
+- Extensión del sistema de temas existente con opciones profesionales
+- Integración de paletas de colores corporativas basadas en referencias modernas
+- Componentes de interfaz con variantes profesionales y cinematográficas
+- Compatibilidad total con el sistema de temas actual
+
+#### Nuevos Temas Profesionales
+
+**Tema Looper**:
+Basado en el template de referencia Looper con enfoque profesional y corporativo.
+
+```typescript
+interface LooperTheme {
+  name: 'looper';
+  colors: {
+    primary: '#346CB0';      // Azul profesional Looper
+    secondary: '#f6f7f9';    // Gris claro corporativo
+    success: '#00A28A';      // Verde teal
+    info: '#0179A8';         // Azul información
+    warning: '#F7C46C';      // Amarillo suave
+    danger: '#EA6759';       // Rojo coral
+    light: '#f6f7f9';        // Fondo claro
+    dark: '#222230';         // Texto oscuro
+  };
+  typography: {
+    fontFamily: '"Fira Sans", -apple-system, BlinkMacSystemFont, sans-serif';
+    weights: {
+      normal: 400;
+      medium: 500;
+      semibold: 600;
+    };
+  };
+  components: {
+    buttons: 'professional';
+    cards: 'clean';
+    forms: 'corporate';
+    navigation: 'minimal';
+  };
+}
+```
+
+**Tema Corporate**:
+Inspirado en PollUnit.com con diseño limpio y minimalista.
+
+```typescript
+interface CorporateTheme {
+  name: 'corporate';
+  colors: {
+    primary: '#2563eb';      // Azul moderno
+    secondary: '#64748b';    // Gris slate
+    success: '#10b981';      // Verde esmeralda
+    info: '#0ea5e9';         // Azul cielo
+    warning: '#f59e0b';      // Ámbar
+    danger: '#ef4444';       // Rojo moderno
+    light: '#f8fafc';        // Fondo muy claro
+    dark: '#0f172a';         // Texto muy oscuro
+  };
+  typography: {
+    fontFamily: '"Inter", system-ui, sans-serif';
+    weights: {
+      normal: 400;
+      medium: 500;
+      semibold: 600;
+    };
+  };
+  components: {
+    buttons: 'minimal';
+    cards: 'flat';
+    forms: 'clean';
+    navigation: 'simple';
+  };
+}
+```
+
+#### Componentes con Variantes Profesionales
+
+**HeroProfessional**:
+Componente complementario al HeroCinematic existente, basado en landing-page.html.
+
+```typescript
+interface HeroProfessionalProps {
+  title: string;
+  subtitle?: string;
+  description?: string;
+  primaryAction?: {
+    text: string;
+    href: string;
+    variant?: 'primary' | 'secondary';
+  };
+  secondaryAction?: {
+    text: string;
+    href: string;
+  };
+  image?: string;
+  layout?: 'split' | 'centered' | 'minimal';
+  theme?: 'looper' | 'corporate' | 'auto';
+}
+
+const HeroProfessional: React.FC<HeroProfessionalProps> = ({
+  title,
+  subtitle,
+  description,
+  primaryAction,
+  secondaryAction,
+  image,
+  layout = 'split',
+  theme = 'auto'
+}) => {
+  // Implementación basada en template landing-page.html
+  // Layout de dos columnas con imagen y contenido
+  // Botones de call-to-action prominentes
+  // Adaptación automática al tema seleccionado
+};
+```
+
+**AuthFormProfessional**:
+Componente de autenticación basado en auth-signin-v2.html con diseño de dos paneles.
+
+```typescript
+interface AuthFormProfessionalProps {
+  mode: 'login' | 'register' | 'forgot-password';
+  onSubmit: (data: AuthFormData) => void;
+  loading?: boolean;
+  error?: string;
+  announcementContent?: {
+    title: string;
+    description: string;
+    action?: {
+      text: string;
+      href: string;
+    };
+    backgroundImage?: string;
+  };
+  theme?: 'looper' | 'corporate' | 'auto';
+}
+
+const AuthFormProfessional: React.FC<AuthFormProfessionalProps> = ({
+  mode,
+  onSubmit,
+  loading,
+  error,
+  announcementContent,
+  theme = 'auto'
+}) => {
+  // Implementación basada en auth-signin-v2.html
+  // Layout de dos paneles: formulario + panel promocional
+  // Campos grandes y botones prominentes
+  // Integración con sistema de autenticación existente
+};
+```
+
+#### Extensiones de Componentes Existentes
+
+**ButtonCinematic con Variantes Profesionales**:
+
+```typescript
+interface ButtonCinematicExtendedProps extends ButtonCinematicProps {
+  variant?: 'cinematic' | 'professional' | 'corporate' | 'minimal';
+  theme?: 'auto' | 'looper' | 'corporate';
+}
+
+// Nuevas variantes:
+// - professional: Botón limpio basado en tema Looper
+// - corporate: Botón minimalista estilo PollUnit
+// - minimal: Botón simple sin efectos especiales
+```
+
+**CardPremium con Estilos Corporativos**:
+
+```typescript
+interface CardPremiumExtendedProps extends CardPremiumProps {
+  variant?: 'glass' | 'neuro' | 'cinematic' | 'professional' | 'corporate' | 'clean';
+  theme?: 'auto' | 'looper' | 'corporate';
+}
+
+// Nuevas variantes:
+// - professional: Card limpia con sombras sutiles
+// - corporate: Card plana con bordes definidos
+// - clean: Card minimalista sin efectos especiales
+```
+
+#### Sistema de Adaptación Automática
+
+```typescript
+interface ThemeAdapter {
+  adaptComponent(
+    component: React.ComponentType,
+    currentTheme: Theme,
+    targetVariant: 'cinematic' | 'professional' | 'corporate'
+  ): React.ComponentType;
+  
+  getThemeVariables(theme: Theme): CSSVariables;
+  
+  applyThemeToExistingComponents(
+    theme: Theme,
+    preserveCinematicEffects: boolean
+  ): void;
+}
+
+interface CSSVariables {
+  '--wf-primary': string;
+  '--wf-secondary': string;
+  '--wf-font-family': string;
+  '--wf-border-radius': string;
+  '--wf-shadow': string;
+  '--wf-transition': string;
+}
+```
+
 ```typescript
 interface CMSService {
   // Gestión de contenido principal

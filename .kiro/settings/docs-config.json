@@ -1,0 +1,16 @@
+{
+  "docsPath": "docs/",
+  "conventions": {
+    "naming": "[numero-tarea]-[descripcion-kebab-case]-README.md",
+    "types": {
+      "main": "-README.md",
+      "api": "-api-README.md"
+    }
+  },
+  "language": "es",
+  "autoGenerate": true,
+  "templates": {
+    "main": "docs/templates/main-template.md",
+    "api": "docs/templates/api-template.md"
+  }
+}

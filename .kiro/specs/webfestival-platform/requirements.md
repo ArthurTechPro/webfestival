@@ -404,6 +404,30 @@ El sistema gestiona cuatro tipos de usuarios principales: participantes (artista
 
 ### Requisito 36
 
+**Historia de Usuario:** Como usuario de la aplicación, quiero tener acceso a temas de diseño profesionales adicionales basados en referencias modernas, para poder elegir entre el estilo actual y opciones más corporativas según mis preferencias.
+
+#### Criterios de Aceptación
+
+1. CUANDO accedo al selector de temas ENTONCES el sistema DEBERÁ mostrar los temas existentes más dos nuevos temas profesionales: "Looper" y "Corporate"
+2. CUANDO selecciono el tema "Looper" ENTONCES el sistema DEBERÁ aplicar la paleta de colores profesional (#346CB0, #f6f7f9) y tipografía Fira Sans basada en el template de referencia
+3. CUANDO selecciono el tema "Corporate" ENTONCES el sistema DEBERÁ aplicar un diseño limpio y minimalista inspirado en PollUnit.com
+4. CUANDO cambio entre temas ENTONCES el sistema DEBERÁ mantener toda la funcionalidad existente y componentes premium funcionando correctamente
+5. CUANDO uso los nuevos temas ENTONCES el sistema DEBERÁ adaptar automáticamente todos los componentes (botones, cards, modals, formularios) al estilo seleccionado
+
+### Requisito 37
+
+**Historia de Usuario:** Como desarrollador, quiero componentes de interfaz adicionales con variantes profesionales, para poder crear interfaces que se adapten tanto al estilo cinematográfico existente como a estilos corporativos.
+
+#### Criterios de Aceptación
+
+1. CUANDO uso componentes existentes ENTONCES el sistema DEBERÁ mantener todas las variantes cinematográficas actuales (glassmorphism, efectos premium, animaciones)
+2. CUANDO necesito variantes profesionales ENTONCES el sistema DEBERÁ proporcionar versiones corporativas de HeroCinematic, CardPremium, ButtonCinematic y ModalPremium
+3. CUANDO implemento formularios de autenticación ENTONCES el sistema DEBERÁ ofrecer tanto el LoginForm cinematográfico actual como una variante AuthFormProfessional basada en auth-signin-v2.html
+4. CUANDO creo landing pages ENTONCES el sistema DEBERÁ permitir usar tanto HeroCinematic como HeroProfessional basado en el template landing-page.html
+5. CUANDO desarrollo interfaces ENTONCES el sistema DEBERÁ permitir mezclar componentes cinematográficos y profesionales según las necesidades del proyectoación
+
+### Requisito 36
+
 **Historia de Usuario:** Como administrador del negocio, quiero implementar un sistema de planes de suscripción, para generar ingresos sostenibles y ofrecer funcionalidades premium a usuarios comprometidos.
 
 #### Criterios de Aceptación
