@@ -1,0 +1,257 @@
+// Clases Utilitarias SCSS - WebFestival
+// Utilidades CSS generadas automáticamente
+
+@import 'variables';
+@import 'mixins';
+
+// === UTILIDADES DE ESPACIADO ===
+
+// Generar clases de margin
+@each $key, $value in $spacing {
+  .m-#{$key} { margin: #{$value} !important; }
+  .mt-#{$key} { margin-top: #{$value} !important; }
+  .mr-#{$key} { margin-right: #{$value} !important; }
+  .mb-#{$key} { margin-bottom: #{$value} !important; }
+  .ml-#{$key} { margin-left: #{$value} !important; }
+  .mx-#{$key} { 
+    margin-left: #{$value} !important; 
+    margin-right: #{$value} !important; 
+  }
+  .my-#{$key} { 
+    margin-top: #{$value} !important; 
+    margin-bottom: #{$value} !important; 
+  }
+}
+
+// Generar clases de padding
+@each $key, $value in $spacing {
+  .p-#{$key} { padding: #{$value} !important; }
+  .pt-#{$key} { padding-top: #{$value} !important; }
+  .pr-#{$key} { padding-right: #{$value} !important; }
+  .pb-#{$key} { padding-bottom: #{$value} !important; }
+  .pl-#{$key} { padding-left: #{$value} !important; }
+  .px-#{$key} { 
+    padding-left: #{$value} !important; 
+    padding-right: #{$value} !important; 
+  }
+  .py-#{$key} { 
+    padding-top: #{$value} !important; 
+    padding-bottom: #{$value} !important; 
+  }
+}
+
+// === UTILIDADES DE LAYOUT ===
+
+// Display
+.d-none { display: none !important; }
+.d-block { display: block !important; }
+.d-inline { display: inline !important; }
+.d-inline-block { display: inline-block !important; }
+.d-flex { display: flex !important; }
+.d-inline-flex { display: inline-flex !important; }
+.d-grid { display: grid !important; }
+
+// Flexbox
+.flex-row { flex-direction: row !important; }
+.flex-column { flex-direction: column !important; }
+.flex-wrap { flex-wrap: wrap !important; }
+.flex-nowrap { flex-wrap: nowrap !important; }
+
+.justify-start { justify-content: flex-start !important; }
+.justify-center { justify-content: center !important; }
+.justify-end { justify-content: flex-end !important; }
+.justify-between { justify-content: space-between !important; }
+.justify-around { justify-content: space-around !important; }
+.justify-evenly { justify-content: space-evenly !important; }
+
+.items-start { align-items: flex-start !important; }
+.items-center { align-items: center !important; }
+.items-end { align-items: flex-end !important; }
+.items-stretch { align-items: stretch !important; }
+.items-baseline { align-items: baseline !important; }
+
+.self-start { align-self: flex-start !important; }
+.self-center { align-self: center !important; }
+.self-end { align-self: flex-end !important; }
+.self-stretch { align-self: stretch !important; }
+
+// Flex grow/shrink
+.flex-1 { flex: 1 1 0% !important; }
+.flex-auto { flex: 1 1 auto !important; }
+.flex-initial { flex: 0 1 auto !important; }
+.flex-none { flex: none !important; }
+
+.flex-grow { flex-grow: 1 !important; }
+.flex-grow-0 { flex-grow: 0 !important; }
+.flex-shrink { flex-shrink: 1 !important; }
+.flex-shrink-0 { flex-shrink: 0 !important; }
+
+// Gap
+.gap-0 { gap: 0 !important; }
+.gap-1 { gap: var(--space-1) !important; }
+.gap-2 { gap: var(--space-2) !important; }
+.gap-3 { gap: var(--space-3) !important; }
+.gap-4 { gap: var(--space-4) !important; }
+.gap-5 { gap: var(--space-5) !important; }
+.gap-6 { gap: var(--space-6) !important; }
+.gap-8 { gap: var(--space-8) !important; }
+
+// Position
+.position-static { position: static !important; }
+.position-relative { position: relative !important; }
+.position-absolute { position: absolute !important; }
+.position-fixed { position: fixed !important; }
+.position-sticky { position: sticky !important; }
+
+// === UTILIDADES DE TEXTO ===
+
+// Tamaños de fuente
+.text-xs { font-size: var(--font-size-xs) !important; }
+.text-sm { font-size: var(--font-size-sm) !important; }
+.text-base { font-size: var(--font-size-base) !important; }
+.text-lg { font-size: var(--font-size-lg) !important; }
+.text-xl { font-size: var(--font-size-xl) !important; }
+.text-2xl { font-size: var(--font-size-2xl) !important; }
+.text-3xl { font-size: var(--font-size-3xl) !important; }
+.text-4xl { font-size: var(--font-size-4xl) !important; }
+.text-5xl { font-size: var(--font-size-5xl) !important; }
+.text-6xl { font-size: var(--font-size-6xl) !important; }
+
+// Pesos de fuente
+.font-light { font-weight: var(--font-weight-light) !important; }
+.font-normal { font-weight: var(--font-weight-normal) !important; }
+.font-medium { font-weight: var(--font-weight-medium) !important; }
+.font-semibold { font-weight: var(--font-weight-semibold) !important; }
+.font-bold { font-weight: var(--font-weight-bold) !important; }
+.font-extrabold { font-weight: var(--font-weight-extrabold) !important; }
+
+// Alineación de texto
+.text-left { text-align: left !important; }
+.text-center { text-align: center !important; }
+.text-right { text-align: right !important; }
+.text-justify { text-align: justify !important; }
+
+// Transformación de texto
+.uppercase { text-transform: uppercase !important; }
+.lowercase { text-transform: lowercase !important; }
+.capitalize { text-transform: capitalize !important; }
+.normal-case { text-transform: none !important; }
+
+// Decoración de texto
+.underline { text-decoration: underline !important; }
+.line-through { text-decoration: line-through !important; }
+.no-underline { text-decoration: none !important; }
+
+// Utilidades de texto
+.truncate { @include truncate; }
+.text-ellipsis { text-overflow: ellipsis !important; }
+.text-clip { text-overflow: clip !important; }
+
+// Line clamp utilities
+.line-clamp-1 { @include line-clamp(1); }
+.line-clamp-2 { @include line-clamp(2); }
+.line-clamp-3 { @include line-clamp(3); }
+.line-clamp-4 { @include line-clamp(4); }
+.line-clamp-5 { @include line-clamp(5); }
+.line-clamp-6 { @include line-clamp(6); }
+
+// === UTILIDADES DE COLOR ===
+
+// Colores de texto
+.text-primary { color: var(--color-primary) !important; }
+.text-secondary { color: var(--color-secondary) !important; }
+.text-accent { color: var(--color-accent) !important; }
+.text-success { color: var(--color-success) !important; }
+.text-warning { color: var(--color-warning) !important; }
+.text-error { color: var(--color-error) !important; }
+.text-info { color: var(--color-info) !important; }
+
+.text-white { color: var(--color-white) !important; }
+.text-black { color: var(--color-black) !important; }
+.text-gray-50 { color: var(--color-gray-50) !important; }
+.text-gray-100 { color: var(--color-gray-100) !important; }
+.text-gray-200 { color: var(--color-gray-200) !important; }
+.text-gray-300 { color: var(--color-gray-300) !important; }
+.text-gray-400 { color: var(--color-gray-400) !important; }
+.text-gray-500 { color: var(--color-gray-500) !important; }
+.text-gray-600 { color: var(--color-gray-600) !important; }
+.text-gray-700 { color: var(--color-gray-700) !important; }
+.text-gray-800 { color: var(--color-gray-800) !important; }
+.text-gray-900 { color: var(--color-gray-900) !important; }
+
+// Colores de fondo
+.bg-primary { background-color: var(--color-primary) !important; }
+.bg-secondary { background-color: var(--color-secondary) !important; }
+.bg-accent { background-color: var(--color-accent) !important; }
+.bg-success { background-color: var(--color-success) !important; }
+.bg-warning { background-color: var(--color-warning) !important; }
+.bg-error { background-color: var(--color-error) !important; }
+.bg-info { background-color: var(--color-info) !important; }
+
+.bg-white { background-color: var(--color-white) !important; }
+.bg-black { background-color: var(--color-black) !important; }
+.bg-transparent { background-color: transparent !important; }
+
+// Gradientes
+.bg-gradient-hero { background: var(--gradient-hero) !important; }
+.bg-gradient-primary { background: var(--gradient-primary) !important; }
+.bg-gradient-text { background: var(--gradient-text) !important; }
+
+// Texto con gradiente
+.text-gradient { @include gradient-text; }
+
+// === UTILIDADES RESPONSIVE ===
+
+// Utilidades responsive manuales (evitando nombres que empiecen con números)
+@include min-width('sm') {
+  .sm\:d-none { display: none !important; }
+  .sm\:d-block { display: block !important; }
+  .sm\:d-flex { display: flex !important; }
+  .sm\:d-grid { display: grid !important; }
+}
+
+@include min-width('md') {
+  .md\:d-none { display: none !important; }
+  .md\:d-block { display: block !important; }
+  .md\:d-flex { display: flex !important; }
+  .md\:d-grid { display: grid !important; }
+}
+
+@include min-width('lg') {
+  .lg\:d-none { display: none !important; }
+  .lg\:d-block { display: block !important; }
+  .lg\:d-flex { display: flex !important; }
+  .lg\:d-grid { display: grid !important; }
+}
+
+@include min-width('xl') {
+  .xl\:d-none { display: none !important; }
+  .xl\:d-block { display: block !important; }
+  .xl\:d-flex { display: flex !important; }
+  .xl\:d-grid { display: grid !important; }
+}
+
+// === UTILIDADES DE ACCESIBILIDAD ===
+
+.sr-only { @include visually-hidden; }
+
+.focus\:outline-none:focus { outline: none !important; }
+.focus\:ring:focus { 
+  box-shadow: 0 0 0 3px rgba(52, 108, 176, 0.1) !important; 
+}
+
+// === UTILIDADES DE EFECTOS ===
+
+.glassmorphism { @include glassmorphism; }
+.glassmorphism-dark { @include glassmorphism-dark; }
+
+.transition { transition: var(--transition-all) !important; }
+.transition-none { transition: none !important; }
+.transition-fast { transition: var(--transition-fast) !important; }
+.transition-slow { transition: var(--transition-slow) !important; }
+
+// Hover effects
+.hover\:scale-105:hover { transform: scale(1.05) !important; }
+.hover\:scale-110:hover { transform: scale(1.1) !important; }
+.hover\:-translate-y-1:hover { transform: translateY(-0.25rem) !important; }
+.hover\:-translate-y-2:hover { transform: translateY(-0.5rem) !important; }

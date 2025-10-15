@@ -1,0 +1,367 @@
+// Card Component Styles - CSS Modules + SCSS
+@import '../../../styles/globals/variables';
+@import '../../../styles/globals/mixins';
+@import '../../../styles/globals/themes';
+
+// === BASE CARD ===
+.card {
+    @include card-base;
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition-all);
+
+    // Hover effect base
+    @include card-hover;
+}
+
+// === VARIANTES ===
+
+// Variante Default
+.default {
+    background: var(--theme-bg-secondary);
+    border: 1px solid var(--theme-border);
+    color: var(--theme-text-primary);
+}
+
+// Variante Clean (profesional)
+.clean {
+    background: var(--color-white);
+    border: 1px solid var(--color-gray-200);
+    box-shadow: var(--shadow-sm);
+
+    &:hover {
+        box-shadow: var(--shadow-md);
+        border-color: var(--color-gray-300);
+    }
+}
+
+// Variante Professional (Looper style)
+.professional {
+    background: var(--color-white);
+    border: 1px solid var(--color-gray-200);
+    box-shadow: var(--shadow-professional);
+
+    &:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
+        border-color: var(--color-primary);
+    }
+}
+
+// Variante Corporate
+.corporate {
+    background: var(--color-white);
+    border: 1px solid var(--color-gray-100);
+    box-shadow: var(--shadow-sm);
+
+    &:hover {
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-1px);
+    }
+}
+
+// Variante Glass (cinematográfica)
+.glass {
+    @include glassmorphism(0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--color-white);
+
+    &:hover {
+        @include glassmorphism(0.08);
+        border-color: rgba(74, 123, 200, 0.3);
+        box-shadow: var(--shadow-glass);
+        transform: translateY(-4px);
+    }
+}
+
+// Variante Minimal
+.minimal {
+    background: transparent;
+    border: 1px solid var(--theme-border);
+    box-shadow: none;
+
+    &:hover {
+        background: var(--theme-bg-secondary);
+        box-shadow: var(--shadow-sm);
+    }
+}
+
+// Variante Elevated
+.elevated {
+    background: var(--theme-bg-secondary);
+    border: none;
+    box-shadow: var(--shadow-lg);
+
+    &:hover {
+        box-shadow: var(--shadow-xl);
+        transform: translateY(-6px);
+    }
+}
+
+// Variante Outlined
+.outlined {
+    background: transparent;
+    border: 2px solid var(--color-primary);
+
+    &:hover {
+        background: rgba(52, 108, 176, 0.05);
+        border-color: var(--color-primary-dark);
+    }
+}
+
+// === TAMAÑOS ===
+.sm {
+    padding: var(--space-3);
+    border-radius: var(--border-radius-md);
+}
+
+.md {
+    padding: var(--space-4);
+    border-radius: var(--border-radius-lg);
+}
+
+.lg {
+    padding: var(--space-6);
+    border-radius: var(--border-radius-xl);
+}
+
+.xl {
+    padding: var(--space-8);
+    border-radius: var(--border-radius-2xl);
+}
+
+// === COMPONENTES INTERNOS ===
+
+.header {
+    margin-bottom: var(--space-4);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--theme-border);
+
+    &:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+}
+
+.title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--theme-text-primary);
+    margin: 0 0 var(--space-1) 0;
+    line-height: 1.3;
+}
+
+.subtitle {
+    font-size: var(--font-size-sm);
+    color: var(--theme-text-secondary);
+    margin: 0;
+    line-height: 1.4;
+}
+
+.body {
+    color: var(--theme-text-secondary);
+    line-height: 1.6;
+
+    p:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.footer {
+    margin-top: var(--space-4);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--theme-border);
+
+    &:first-child {
+        margin-top: 0;
+        padding-top: 0;
+        border-top: none;
+    }
+}
+
+.actions {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+
+    &.center {
+        justify-content: center;
+    }
+
+    &.end {
+        justify-content: flex-end;
+    }
+
+    &.between {
+        justify-content: space-between;
+    }
+
+    @include responsive('sm') {
+        flex-direction: column;
+
+        &.between {
+            align-items: stretch;
+        }
+    }
+}
+
+// === MEDIA CARD ===
+.mediaCard {
+    padding: 0;
+    overflow: hidden;
+
+    .media {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        display: block;
+    }
+
+    .content {
+        padding: var(--space-4);
+    }
+}
+
+// === INTERACTIVE CARD ===
+.interactive {
+    cursor: pointer;
+    user-select: none;
+
+    &:active {
+        transform: scale(0.98);
+    }
+}
+
+// === LOADING STATE ===
+.loading {
+    position: relative;
+    pointer-events: none;
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(2px);
+    }
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 24px;
+        height: 24px;
+        margin: -12px 0 0 -12px;
+        border: 2px solid var(--color-gray-300);
+        border-top: 2px solid var(--color-primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        z-index: 1;
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+// === ESTADOS ESPECIALES ===
+
+.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+.selected {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(52, 108, 176, 0.2);
+}
+
+.error {
+    border-color: var(--color-error);
+
+    &:hover {
+        border-color: var(--color-error);
+        box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1);
+    }
+}
+
+// === ADAPTACIÓN POR TEMA ===
+
+// Temas oscuros
+.clean,
+.professional,
+.corporate {
+    @include dark-themes {
+        background: var(--theme-bg-secondary);
+        border-color: var(--theme-border);
+        color: var(--theme-text-primary);
+    }
+}
+
+.header,
+.footer {
+    @include dark-themes {
+        border-color: var(--theme-border);
+    }
+}
+
+// === RESPONSIVE ===
+@include responsive('sm') {
+    .card {
+        margin-bottom: var(--space-4);
+    }
+
+    .actions {
+        gap: var(--space-3);
+    }
+
+    .mediaCard .media {
+        height: 150px;
+    }
+}
+
+// === GRID LAYOUT ===
+.cardGrid {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+
+    @include responsive('md') {
+        grid-template-columns: 1fr;
+        gap: var(--space-3);
+    }
+}
+
+// === MASONRY LAYOUT ===
+.cardMasonry {
+    columns: 3;
+    column-gap: var(--space-4);
+
+    .card {
+        break-inside: avoid;
+        margin-bottom: var(--space-4);
+    }
+
+    @include responsive('lg') {
+        columns: 2;
+    }
+
+    @include responsive('md') {
+        columns: 1;
+    }
+}

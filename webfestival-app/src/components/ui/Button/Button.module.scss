@@ -1,0 +1,302 @@
+// Button Component Styles - CSS Modules + SCSS
+@import '../../../styles/globals/variables';
+@import '../../../styles/globals/mixins';
+
+// === BASE BUTTON ===
+.button {
+  @include button-base;
+  
+  // Responsive behavior
+  @include responsive('sm') {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+// === TAMAÑOS ===
+.sm {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-size-sm);
+  gap: var(--space-1);
+}
+
+.md {
+  padding: var(--space-3) var(--space-6);
+  font-size: var(--font-size-base);
+  gap: var(--space-2);
+}
+
+.lg {
+  padding: var(--space-4) var(--space-8);
+  font-size: var(--font-size-lg);
+  gap: var(--space-3);
+}
+
+.xl {
+  padding: var(--space-5) var(--space-10);
+  font-size: var(--font-size-xl);
+  gap: var(--space-3);
+}
+
+// === VARIANTES ===
+
+// Variante Primary (por defecto)
+.primary {
+  background: var(--gradient-primary);
+  color: var(--color-white);
+  border: none;
+  
+  &:hover:not(:disabled) {
+    background: var(--color-primary-dark);
+    @include button-hover-professional;
+  }
+  
+  &:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow-sm);
+  }
+}
+
+// Variante Professional (Looper style)
+.professional {
+  background: var(--color-primary);
+  color: var(--color-white);
+  border: none;
+  box-shadow: var(--shadow-professional);
+  
+  &:hover:not(:disabled) {
+    background: var(--color-primary-dark);
+    @include button-hover-professional(var(--shadow-md));
+  }
+  
+  &:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow-sm);
+  }
+}
+
+// Variante Corporate
+.corporate {
+  background: var(--color-white);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  box-shadow: var(--shadow-sm);
+  
+  &:hover:not(:disabled) {
+    background: var(--color-primary);
+    color: var(--color-white);
+    @include button-hover-professional;
+  }
+  
+  &:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow-sm);
+  }
+}
+
+// Variante Glass (cinematográfica)
+.glass {
+  @include glassmorphism(0.1);
+  color: var(--color-white);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  
+  &:hover:not(:disabled) {
+    @include glassmorphism(0.15);
+    @include button-hover;
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+  
+  &:active {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-glass);
+  }
+}
+
+// Variante Minimal
+.minimal {
+  background: transparent;
+  color: var(--theme-text-primary);
+  border: 1px solid var(--theme-border);
+  
+  &:hover:not(:disabled) {
+    background: var(--theme-bg-secondary);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+  
+  &:active {
+    background: var(--color-gray-100);
+  }
+}
+
+// Variante Secondary
+.secondary {
+  background: var(--color-secondary);
+  color: var(--color-white);
+  border: none;
+  
+  &:hover:not(:disabled) {
+    background: #00896f; // Darker secondary
+    @include button-hover-professional;
+  }
+}
+
+// Variante Outline
+.outline {
+  background: transparent;
+  color: var(--color-primary);
+  border: 2px solid var(--color-primary);
+  
+  &:hover:not(:disabled) {
+    background: var(--color-primary);
+    color: var(--color-white);
+    @include button-hover-professional;
+  }
+}
+
+// Variante Ghost
+.ghost {
+  background: transparent;
+  color: var(--color-primary);
+  border: none;
+  
+  &:hover:not(:disabled) {
+    background: rgba(52, 108, 176, 0.1);
+    @include button-hover-professional(var(--shadow-sm));
+  }
+}
+
+// Variante Danger
+.danger {
+  background: var(--color-error);
+  color: var(--color-white);
+  border: none;
+  
+  &:hover:not(:disabled) {
+    background: #dc2626; // Darker red
+    @include button-hover-professional;
+  }
+}
+
+// === ESTADOS ===
+
+// Estado disabled
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+// Estado loading
+.loading {
+  position: relative;
+  color: transparent !important;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    margin: -8px 0 0 -8px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// === VARIANTES POR TEMA ===
+
+// Adaptación automática según tema activo
+[data-theme="cinematic"] .button.primary {
+  @extend .glass;
+}
+
+[data-theme="professional"] .button.primary {
+  @extend .professional;
+}
+
+[data-theme="corporate"] .button.primary {
+  @extend .corporate;
+}
+
+[data-theme="minimal"] .button.primary {
+  @extend .minimal;
+}
+
+// === ICONOS ===
+.withIcon {
+  .icon {
+    width: 1em;
+    height: 1em;
+    flex-shrink: 0;
+  }
+  
+  &.iconOnly {
+    padding: var(--space-3);
+    
+    &.sm {
+      padding: var(--space-2);
+    }
+    
+    &.lg {
+      padding: var(--space-4);
+    }
+    
+    &.xl {
+      padding: var(--space-5);
+    }
+  }
+}
+
+// === GRUPOS DE BOTONES ===
+.buttonGroup {
+  display: inline-flex;
+  
+  .button {
+    border-radius: 0;
+    
+    &:first-child {
+      border-top-left-radius: var(--border-radius-md);
+      border-bottom-left-radius: var(--border-radius-md);
+    }
+    
+    &:last-child {
+      border-top-right-radius: var(--border-radius-md);
+      border-bottom-right-radius: var(--border-radius-md);
+    }
+    
+    &:not(:last-child) {
+      border-right: none;
+    }
+  }
+}
+
+// === RESPONSIVE ADJUSTMENTS ===
+@include responsive('sm') {
+  .button {
+    &.sm {
+      padding: var(--space-2) var(--space-3);
+      font-size: var(--font-size-xs);
+    }
+    
+    &.md {
+      padding: var(--space-2-5) var(--space-4);
+      font-size: var(--font-size-sm);
+    }
+    
+    &.lg {
+      padding: var(--space-3) var(--space-5);
+      font-size: var(--font-size-base);
+    }
+  }
+}

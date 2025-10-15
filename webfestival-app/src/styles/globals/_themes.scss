@@ -1,0 +1,251 @@
+// Sistema de Temas SCSS - WebFestival
+// Definición de temas cinematográficos y profesionales
+
+@import 'variables';
+@import 'mixins';
+
+// === TEMA BASE ===
+:root {
+  // Variables que cambian por tema
+  --theme-bg-primary: var(--color-white);
+  --theme-bg-secondary: var(--color-gray-50);
+  --theme-text-primary: var(--color-gray-900);
+  --theme-text-secondary: var(--color-gray-600);
+  --theme-border: var(--color-gray-200);
+}
+
+// === TEMA CINEMATOGRÁFICO (DARK) ===
+[data-theme="cinematic"] {
+  --theme-bg-primary: #1a1a2e;
+  --theme-bg-secondary: #16213e;
+  --theme-text-primary: var(--color-white);
+  --theme-text-secondary: var(--color-gray-300);
+  --theme-border: rgba(255, 255, 255, 0.1);
+  
+  // Gradientes específicos
+  --gradient-bg: var(--gradient-hero);
+  --component-variant: 'glass';
+}
+
+// === TEMA PROFESIONAL (LOOPER) ===
+[data-theme="professional"] {
+  --theme-bg-primary: #f6f7f9;
+  --theme-bg-secondary: var(--color-white);
+  --theme-text-primary: var(--color-gray-900);
+  --theme-text-secondary: var(--color-gray-600);
+  --theme-border: var(--color-gray-200);
+  
+  // Colores específicos Looper
+  --color-primary: #346CB0;
+  --color-primary-dark: #2a5a96;
+  --color-primary-light: #4a7bc8;
+  --component-variant: 'professional';
+}
+
+// === TEMA CORPORATIVO ===
+[data-theme="corporate"] {
+  --theme-bg-primary: var(--color-white);
+  --theme-bg-secondary: var(--color-gray-50);
+  --theme-text-primary: var(--color-gray-900);
+  --theme-text-secondary: var(--color-gray-600);
+  --theme-border: var(--color-gray-200);
+  
+  // Colores más conservadores
+  --color-primary: #2563eb;
+  --color-primary-dark: #1d4ed8;
+  --color-primary-light: #3b82f6;
+  --component-variant: 'corporate';
+}
+
+// === TEMA MINIMAL ===
+[data-theme="minimal"] {
+  --theme-bg-primary: var(--color-white);
+  --theme-bg-secondary: #fafafa;
+  --theme-text-primary: #1a1a1a;
+  --theme-text-secondary: #666666;
+  --theme-border: #e0e0e0;
+  
+  // Colores minimalistas
+  --color-primary: #000000;
+  --color-primary-dark: #1a1a1a;
+  --color-primary-light: #333333;
+  --component-variant: 'minimal';
+}
+
+// === TEMA NEURO ===
+[data-theme="neuro"] {
+  --theme-bg-primary: #0a0a0a;
+  --theme-bg-secondary: #1a1a1a;
+  --theme-text-primary: #00ff88;
+  --theme-text-secondary: #88ffaa;
+  --theme-border: rgba(0, 255, 136, 0.2);
+  
+  // Colores neuro
+  --color-primary: #00ff88;
+  --color-primary-dark: #00cc6a;
+  --color-primary-light: #33ffaa;
+  --component-variant: 'neuro';
+}
+
+// === TEMA RETRO ===
+[data-theme="retro"] {
+  --theme-bg-primary: #2d1b69;
+  --theme-bg-secondary: #1a0f3d;
+  --theme-text-primary: #ff6b9d;
+  --theme-text-secondary: #c7ceea;
+  --theme-border: rgba(255, 107, 157, 0.2);
+  
+  // Colores retro
+  --color-primary: #ff6b9d;
+  --color-primary-dark: #e55a8a;
+  --color-primary-light: #ff8fb3;
+  --component-variant: 'retro';
+}
+
+// === TEMA OCEAN ===
+[data-theme="ocean"] {
+  --theme-bg-primary: #0f172a;
+  --theme-bg-secondary: #1e293b;
+  --theme-text-primary: #38bdf8;
+  --theme-text-secondary: #94a3b8;
+  --theme-border: rgba(56, 189, 248, 0.2);
+  
+  // Colores océano
+  --color-primary: #38bdf8;
+  --color-primary-dark: #0ea5e9;
+  --color-primary-light: #7dd3fc;
+  --component-variant: 'ocean';
+}
+
+// === TEMA SUNSET ===
+[data-theme="sunset"] {
+  --theme-bg-primary: #451a03;
+  --theme-bg-secondary: #7c2d12;
+  --theme-text-primary: #fed7aa;
+  --theme-text-secondary: #fdba74;
+  --theme-border: rgba(254, 215, 170, 0.2);
+  
+  // Colores sunset
+  --color-primary: #f97316;
+  --color-primary-dark: #ea580c;
+  --color-primary-light: #fb923c;
+  --component-variant: 'sunset';
+}
+
+// === TEMA FOREST ===
+[data-theme="forest"] {
+  --theme-bg-primary: #14532d;
+  --theme-bg-secondary: #166534;
+  --theme-text-primary: #bbf7d0;
+  --theme-text-secondary: #86efac;
+  --theme-border: rgba(187, 247, 208, 0.2);
+  
+  // Colores bosque
+  --color-primary: #22c55e;
+  --color-primary-dark: #16a34a;
+  --color-primary-light: #4ade80;
+  --component-variant: 'forest';
+}
+
+// === MIXINS DE TEMA ===
+
+// Mixin para aplicar estilos específicos por tema
+@mixin theme-styles($theme) {
+  [data-theme="#{$theme}"] & {
+    @content;
+  }
+}
+
+// Mixin para temas oscuros
+@mixin dark-themes {
+  [data-theme="cinematic"] &,
+  [data-theme="neuro"] &,
+  [data-theme="retro"] &,
+  [data-theme="ocean"] &,
+  [data-theme="sunset"] &,
+  [data-theme="forest"] & {
+    @content;
+  }
+}
+
+// Mixin para temas claros
+@mixin light-themes {
+  [data-theme="professional"] &,
+  [data-theme="corporate"] &,
+  [data-theme="minimal"] & {
+    @content;
+  }
+}
+
+// Mixin para temas claros
+@mixin light-themes {
+  [data-theme="professional"] &,
+  [data-theme="corporate"] &,
+  [data-theme="minimal"] & {
+    @content;
+  }
+}
+
+// === TRANSICIONES DE TEMA ===
+* {
+  transition: 
+    background-color var(--transition-base),
+    border-color var(--transition-base),
+    color var(--transition-base),
+    box-shadow var(--transition-base);
+}
+
+// === UTILIDADES DE TEMA ===
+
+// Clase para contenido que se adapta al tema
+.theme-adaptive {
+  background-color: var(--theme-bg-primary);
+  color: var(--theme-text-primary);
+  border-color: var(--theme-border);
+}
+
+// Clase para texto secundario
+.theme-text-secondary {
+  color: var(--theme-text-secondary);
+}
+
+// Clase para bordes temáticos
+.theme-border {
+  border-color: var(--theme-border);
+}
+
+// === COMPONENTES TEMÁTICOS ===
+
+// Botón que se adapta automáticamente al tema
+.theme-button {
+  @include button-base;
+  
+  // Variante por defecto (se adapta al tema)
+  background: var(--color-primary);
+  color: var(--color-white);
+  
+  &:hover {
+    background: var(--color-primary-dark);
+    
+    @include dark-themes {
+      @include button-hover;
+    }
+    
+    @include light-themes {
+      @include button-hover-professional;
+    }
+  }
+}
+
+// Card que se adapta al tema
+.theme-card {
+  @include card-base;
+  background: var(--theme-bg-secondary);
+  border: 1px solid var(--theme-border);
+  
+  @include dark-themes {
+    @include glassmorphism(0.05);
+  }
+  
+  @include card-hover;
+}

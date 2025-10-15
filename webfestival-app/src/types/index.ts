@@ -1,5 +1,8 @@
 // Tipos principales de la aplicación WebFestival
 
+// Re-exportar tipos de autenticación
+export * from './auth';
+
 export interface User {
   id: string;
   email: string;

@@ -1,68 +1,380 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+/* WebFestival - Sistema de Estilos Principal */
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+/* Importar Bootstrap 5.3+ como base */
+@import 'bootstrap/dist/css/bootstrap.min.css';
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* Importar sistema de estilos personalizado de WebFestival */
+@import './styles/variables.css';
+@import './styles/components.css';
+@import './styles/multimedia.css';
+@import './styles/animations.css';
+@import './styles/utilities.css';
+@import './styles/responsive.css';
+@import './styles/theme.css';
+@import './styles/minimal.css';
+@import './styles/hero-professional.css';
+@import './styles/auth-professional.css';
+@import './styles/auth-looper.css';
+@import './styles/landing-dark.css';
+@import './styles/professional-demo.css';
+
+/* === RESET Y BASE STYLES === */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  padding: 0;
+  font-family: var(--wf-font-family-sans);
+  font-size: var(--wf-text-base);
+  font-weight: var(--wf-font-normal);
+  line-height: 1.6;
+  color: var(--wf-text-primary);
+  background-color: var(--wf-bg-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* === TYPOGRAPHY BASE === */
+h1, h2, h3, h4, h5, h6 {
+  margin: 0 0 var(--wf-space-4) 0;
+  font-weight: var(--wf-font-semibold);
+  line-height: 1.2;
+  color: var(--wf-text-primary);
 }
 
 h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+  font-size: var(--wf-text-4xl);
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
+h2 {
+  font-size: var(--wf-text-3xl);
+}
+
+h3 {
+  font-size: var(--wf-text-2xl);
+}
+
+h4 {
+  font-size: var(--wf-text-xl);
+}
+
+h5 {
+  font-size: var(--wf-text-lg);
+}
+
+h6 {
+  font-size: var(--wf-text-base);
+}
+
+p {
+  margin: 0 0 var(--wf-space-4) 0;
+  color: var(--wf-text-secondary);
+}
+
+a {
+  color: var(--wf-primary);
+  text-decoration: none;
+  transition: color var(--wf-transition-fast);
+}
+
+a:hover {
+  color: var(--wf-primary-dark);
+  text-decoration: underline;
+}
+
+a:focus {
+  outline: 2px solid var(--wf-primary);
+  outline-offset: 2px;
+}
+
+/* === LISTAS === */
+ul, ol {
+  margin: 0 0 var(--wf-space-4) 0;
+  padding-left: var(--wf-space-6);
+}
+
+li {
+  margin-bottom: var(--wf-space-1);
+  color: var(--wf-text-secondary);
+}
+
+/* === CÓDIGO === */
+code {
+  font-family: var(--wf-font-family-mono);
+  font-size: 0.875em;
+  background-color: var(--wf-bg-secondary);
+  padding: var(--wf-space-1) var(--wf-space-2);
+  border-radius: var(--wf-border-radius-sm);
+  color: var(--wf-text-primary);
+}
+
+pre {
+  font-family: var(--wf-font-family-mono);
+  background-color: var(--wf-bg-secondary);
+  padding: var(--wf-space-4);
+  border-radius: var(--wf-border-radius);
+  overflow-x: auto;
+  margin: 0 0 var(--wf-space-4) 0;
+}
+
+pre code {
+  background: none;
+  padding: 0;
+}
+
+/* === IMÁGENES === */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* === TABLAS === */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 var(--wf-space-4) 0;
+}
+
+th, td {
+  padding: var(--wf-space-3);
+  text-align: left;
+  border-bottom: 1px solid var(--wf-border-light);
+}
+
+th {
+  font-weight: var(--wf-font-semibold);
+  color: var(--wf-text-primary);
+  background-color: var(--wf-bg-secondary);
+}
+
+/* === FORMULARIOS BASE === */
+input, textarea, select {
   font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  font-size: inherit;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+input:focus, textarea:focus, select:focus {
+  outline: none;
+}
+
+/* === SCROLLBAR PERSONALIZADA === */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--wf-bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--wf-border-color);
+  border-radius: var(--wf-border-radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--wf-text-muted);
+}
+
+/* === SELECCIÓN DE TEXTO === */
+::selection {
+  background-color: rgb(99 102 241 / 0.2);
+  color: var(--wf-text-primary);
+}
+
+::-moz-selection {
+  background-color: rgb(99 102 241 / 0.2);
+  color: var(--wf-text-primary);
+}
+
+/* === FOCUS VISIBLE === */
+:focus-visible {
+  outline: 2px solid var(--wf-primary);
+  outline-offset: 2px;
+}
+
+/* === SKIP LINK === */
+.wf-skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--wf-primary);
+  color: var(--wf-white);
+  padding: var(--wf-space-2) var(--wf-space-4);
+  text-decoration: none;
+  border-radius: var(--wf-border-radius);
+  z-index: var(--wf-z-tooltip);
+  transition: top var(--wf-transition-fast);
+}
+
+.wf-skip-link:focus {
+  top: 6px;
+}
+
+/* === LAYOUT PRINCIPAL PANTALLA COMPLETA === */
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+.wf-main-content {
+  flex: 1;
+  position: relative;
+}
+
+/* === BODY FULLSCREEN === */
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+/* === CONTENEDOR PRINCIPAL === */
+.App {
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+  background: var(--wf-bg-primary);
+}
+
+/* === CONTENEDOR COMPLETO === */
+.wf-container {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* === ANCHO COMPLETO === */
+.wf-w-full {
+  width: 100% !important;
+}
+
+.wf-max-w-none {
+  max-width: none !important;
+}
+
+/* === OVERRIDE DE BOOTSTRAP === */
+/* Personalizar componentes de Bootstrap con nuestras variables */
+.btn {
+  border-radius: var(--wf-border-radius);
+  font-weight: var(--wf-font-medium);
+  transition: all var(--wf-transition-fast);
+}
+
+.btn:focus {
+  box-shadow: 0 0 0 3px rgb(99 102 241 / 0.5);
+}
+
+.card {
+  border-radius: var(--wf-border-radius-lg);
+  box-shadow: var(--wf-shadow-sm);
+  transition: all var(--wf-transition-normal);
+}
+
+.card:hover {
+  box-shadow: var(--wf-shadow-md);
+  transform: translateY(-2px);
+}
+
+.form-control {
+  border-radius: var(--wf-border-radius);
+  transition: border-color var(--wf-transition-fast), box-shadow var(--wf-transition-fast);
+}
+
+.form-control:focus {
+  border-color: var(--wf-primary);
+  box-shadow: 0 0 0 3px rgb(99 102 241 / 0.1);
+}
+
+.modal-content {
+  border-radius: var(--wf-border-radius-xl);
+  box-shadow: var(--wf-shadow-xl);
+}
+
+.navbar {
+  box-shadow: var(--wf-shadow-sm);
+}
+
+/* === CLASES DE UTILIDAD ESPECÍFICAS DE WEBFESTIVAL === */
+.wf-brand-gradient {
+  background: linear-gradient(135deg, var(--wf-primary), var(--wf-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.wf-hero-section {
+  background: linear-gradient(135deg, var(--wf-primary), var(--wf-primary-dark));
+  color: var(--wf-white);
+  padding: var(--wf-space-20) 0;
+  text-align: center;
+}
+
+.wf-section {
+  padding: var(--wf-space-16) 0;
+}
+
+.wf-section-alt {
+  background-color: var(--wf-bg-secondary);
+}
+
+/* === TEMA OSCURO === */
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+[data-theme="dark"] .card {
+  background-color: var(--wf-bg-secondary);
+  border-color: var(--wf-border-color);
+}
+
+[data-theme="dark"] .form-control {
+  background-color: var(--wf-bg-secondary);
+  border-color: var(--wf-border-color);
+  color: var(--wf-text-primary);
+}
+
+[data-theme="dark"] .form-control::placeholder {
+  color: var(--wf-text-muted);
+}
+
+/* === PRINT STYLES === */
+@media print {
+  .wf-no-print,
+  .btn,
+  .navbar,
+  .modal,
+  .dropdown-menu {
+    display: none !important;
   }
-  a:hover {
-    color: #747bff;
+  
+  body {
+    font-size: 12pt;
+    line-height: 1.4;
+    color: #000 !important;
+    background: #fff !important;
   }
-  button {
-    background-color: #f9f9f9;
+  
+  .card {
+    break-inside: avoid;
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
   }
 }

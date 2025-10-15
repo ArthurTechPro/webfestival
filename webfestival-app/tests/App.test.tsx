@@ -19,9 +19,9 @@ describe('App Component', () => {
       )
     ).toBeInTheDocument();
 
-    // Verificar que el mensaje de configuración completada esté presente
+    // Verificar que el mensaje de autenticación implementada esté presente
     expect(
-      screen.getByText(/Configuración inicial completada!/)
+      screen.getByText(/Sistema de autenticación implementado!/)
     ).toBeInTheDocument();
   });
 
