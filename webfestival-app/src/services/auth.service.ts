@@ -17,11 +17,18 @@ class AuthService {
    * Iniciar sesión con credenciales
    */
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    const response = await apiService.post<AuthResponse>('/auth/login', credentials);
+    const response = await apiService.post<any>('/auth/login', credentials);
     
     if (response.success && response.data) {
-      this.setAuthData(response.data);
-      return response.data;
+      // Adaptar la estructura de respuesta del API
+      const authData: AuthResponse = {
+        user: response.data.user,
+        token: response.data.tokens.accessToken,
+        refreshToken: response.data.tokens.refreshToken
+      };
+      
+      this.setAuthData(authData);
+      return authData;
     }
     
     throw new Error(response.message || 'Error al iniciar sesión');
@@ -31,11 +38,18 @@ class AuthService {
    * Registrar nuevo usuario
    */
   async register(data: RegisterData): Promise<AuthResponse> {
-    const response = await apiService.post<AuthResponse>('/auth/register', data);
+    const response = await apiService.post<any>('/auth/register', data);
     
     if (response.success && response.data) {
-      this.setAuthData(response.data);
-      return response.data;
+      // Adaptar la estructura de respuesta del API
+      const authData: AuthResponse = {
+        user: response.data.user,
+        token: response.data.tokens.accessToken,
+        refreshToken: response.data.tokens.refreshToken
+      };
+      
+      this.setAuthData(authData);
+      return authData;
     }
     
     throw new Error(response.message || 'Error al registrar usuario');
@@ -117,13 +131,15 @@ class AuthService {
     }
 
     try {
-      const response = await apiService.post<{ token: string }>('/auth/refresh', {
+      const response = await apiService.post<any>('/auth/refresh', {
         refreshToken
       });
       
       if (response.success && response.data) {
-        this.setToken(response.data.token);
-        return response.data.token;
+        // Adaptar estructura de respuesta del API
+        const newToken = response.data.tokens?.accessToken || response.data.token;
+        this.setToken(newToken);
+        return newToken;
       }
       
       // Refresh token inválido

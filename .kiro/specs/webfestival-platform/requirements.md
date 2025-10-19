@@ -447,3 +447,15 @@ El sistema gestiona cuatro tipos de usuarios principales: participantes (artista
 2. CUANDO leo un artículo ENTONCES el sistema DEBERÁ mostrar contenido relacionado y sugerencias personalizadas
 3. CUANDO interactúo con el contenido ENTONCES el sistema DEBERÁ permitir comentarios, likes y compartir en redes sociales
 4. CUANDO me suscribo al newsletter ENTONCES el sistema DEBERÁ enviar digest semanal con contenido destacado y nuevos concursos
+### Re
+quisito 38
+
+**Historia de Usuario:** Como desarrollador del sistema, necesito implementar un sistema de estilos SCSS modular y escalable, para mantener consistencia visual, facilitar el mantenimiento y permitir la extensión eficiente de temas y componentes.
+
+#### Criterios de Aceptación
+
+1. CUANDO se estructura el sistema de estilos ENTONCES el sistema DEBERÁ usar arquitectura SCSS modular con archivos separados (_variables.scss, _mixins.scss, _themes.scss, _utilities.scss)
+2. CUANDO se definen temas ENTONCES el sistema DEBERÁ usar variables SCSS y mixins reutilizables para garantizar consistencia y facilitar cambios globales
+3. CUANDO se crean componentes ENTONCES el sistema DEBERÁ usar mixins SCSS parametrizables para efectos, animaciones y responsive design
+4. CUANDO se migran componentes existentes ENTONCES el sistema DEBERÁ mantener compatibilidad total con el hook useTheme y componentes ThemeSelector/ThemeToggle existentes
+5. CUANDO se compila el CSS ENTONCES el sistema DEBERÁ generar un archivo CSS optimizado eliminando código no utilizado y manteniendo rendimiento óptimo

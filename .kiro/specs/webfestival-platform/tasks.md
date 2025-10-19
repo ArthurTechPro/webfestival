@@ -287,14 +287,18 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
     - _Requisitos: 9.2, 23.1, 23.2_
 
   - [x] 11.3 Sistema de estilos y tema personalizado
-    - Sistema completo de estilos CSS implementado con 7 temas
-    - Componentes premium cinematográficos: HeroCinematic, CardPremium, ButtonCinematic
-    - Reproductores multimedia premium: VideoPlayerPremium, AudioPlayerPremium
-    - Sistema de animaciones cinematográficas y efectos glassmorphism
-    - Hook useTheme y componentes ThemeSelector/ThemeToggle funcionando
-    - Diseño responsive mobile-first completo
-    - _Documentado en: 11-3-sistema-estilos-README.md_
-    - _Requisitos: Sistema de estilos cinematográfico completo_
+
+    - Migrar del sistema CSS actual al sistema SCSS propuesto con arquitectura modular
+    - Implementar estructura SCSS con archivos separados: _variables.scss, _mixins.scss, _themes.scss, _utilities.scss
+    - Crear sistema de temas dinámico usando variables SCSS y mixins reutilizables
+    - Migrar componentes premium existentes (HeroCinematic, CardPremium, ButtonCinematic) al sistema SCSS
+    - Implementar reproductores multimedia premium usando mixins SCSS para consistencia
+    - Crear sistema de animaciones y efectos usando mixins SCSS parametrizables
+    - Mantener compatibilidad con hook useTheme y componentes ThemeSelector/ThemeToggle
+    - Optimizar diseño responsive usando mixins SCSS para breakpoints
+    - Eliminar archivos CSS individuales y consolidar en sistema SCSS unificado
+    - _Documentado en: 11-3-sistema-estilos-scss-README.md_
+    - _Requisitos: Sistema de estilos SCSS modular, escalable y mantenible_
 
 - [x] 11.4 Extensión con temas profesionales
   - [x] 11.4.1 Implementar nuevos temas Looper y Corporate

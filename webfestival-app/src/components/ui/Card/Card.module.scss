@@ -1,7 +1,7 @@
 // Card Component Styles - CSS Modules + SCSS
-@import '../../../styles/globals/variables';
-@import '../../../styles/globals/mixins';
-@import '../../../styles/globals/themes';
+@use '../../../styles/globals/variables' as *;
+@use '../../../styles/globals/mixins' as *;
+@use '../../../styles/globals/themes' as *;
 
 // === BASE CARD ===
 .card {
@@ -35,18 +35,7 @@
     }
 }
 
-// Variante Professional (Looper style)
-.professional {
-    background: var(--color-white);
-    border: 1px solid var(--color-gray-200);
-    box-shadow: var(--shadow-professional);
 
-    &:hover {
-        box-shadow: var(--shadow-md);
-        transform: translateY(-2px);
-        border-color: var(--color-primary);
-    }
-}
 
 // Variante Corporate
 .corporate {
@@ -74,17 +63,7 @@
     }
 }
 
-// Variante Minimal
-.minimal {
-    background: transparent;
-    border: 1px solid var(--theme-border);
-    box-shadow: none;
 
-    &:hover {
-        background: var(--theme-bg-secondary);
-        box-shadow: var(--shadow-sm);
-    }
-}
 
 // Variante Elevated
 .elevated {
@@ -304,7 +283,6 @@
 
 // Temas oscuros
 .clean,
-.professional,
 .corporate {
     @include dark-themes {
         background: var(--theme-bg-secondary);

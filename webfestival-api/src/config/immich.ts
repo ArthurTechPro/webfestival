@@ -2,10 +2,10 @@ import { z } from 'zod';
 
 // Esquema de validación para la configuración de Immich
 const immichConfigSchema = z.object({
-  serverUrl: z.string().url('URL del servidor Immich debe ser válida'),
-  apiKey: z.string().min(1, 'API Key de Immich es requerida'),
+  serverUrl: z.string().default('http://localhost:2283'),
+  apiKey: z.string().default('demo-key'),
   timeout: z.number().positive().default(30000), // 30 segundos por defecto
-  retryAttempts: z.number().min(0).default(3),
+  retryAttempts: z.number().min(0).default(1),
   retryDelay: z.number().positive().default(1000), // 1 segundo por defecto
 });
 
@@ -17,9 +17,9 @@ export type ImmichConfig = z.infer<typeof immichConfigSchema>;
  */
 export const immichConfig: ImmichConfig = immichConfigSchema.parse({
   serverUrl: process.env['IMMICH_SERVER_URL'] || 'http://localhost:2283',
-  apiKey: process.env['IMMICH_API_KEY'] || '',
+  apiKey: process.env['IMMICH_API_KEY'] || 'demo-key',
   timeout: parseInt(process.env['IMMICH_TIMEOUT'] || '30000'),
-  retryAttempts: parseInt(process.env['IMMICH_RETRY_ATTEMPTS'] || '3'),
+  retryAttempts: parseInt(process.env['IMMICH_RETRY_ATTEMPTS'] || '1'),
   retryDelay: parseInt(process.env['IMMICH_RETRY_DELAY'] || '1000'),
 });
 

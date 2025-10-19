@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { useTheme, useThemeInfo } from '../src/hooks/useTheme';
+import { useTheme } from '../src/hooks/useTheme';
 
 // Mock localStorage
 const localStorageMock = {
@@ -37,36 +37,27 @@ describe('Sistema de Temas Extendido', () => {
   });
 
   describe('useTheme hook', () => {
-    it('incluye los nuevos temas Looper y Corporate', () => {
+    it('incluye los temas Corporate, Cinematic y Retro', () => {
       const { result } = renderHook(() => useTheme());
       
-      // Verificar que el tema inicial es 'auto'
-      expect(result.current.theme).toBe('auto');
-      
-      // Probar cambio a tema Looper
-      act(() => {
-        result.current.setTheme('looper');
-      });
-      
-      expect(result.current.theme).toBe('looper');
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('webfestival-theme', 'looper');
-      
-      // Probar cambio a tema Corporate
-      act(() => {
-        result.current.setTheme('corporate');
-      });
-      
+      // Verificar que el tema inicial es 'corporate'
       expect(result.current.theme).toBe('corporate');
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('webfestival-theme', 'corporate');
-    });
-
-    it('valida correctamente los nuevos temas al cargar desde localStorage', () => {
-      // Simular tema Looper guardado
-      localStorageMock.getItem.mockReturnValue('looper');
       
-      const { result } = renderHook(() => useTheme());
+      // Probar cambio a tema Cinematic
+      act(() => {
+        result.current.setTheme('cinematic');
+      });
       
-      expect(result.current.theme).toBe('looper');
+      expect(result.current.theme).toBe('cinematic');
+      expect(localStorageMock.setItem).toHaveBeenCalledWith('webfestival-theme', 'cinematic');
+      
+      // Probar cambio a tema Retro
+      act(() => {
+        result.current.setTheme('retro');
+      });
+      
+      expect(result.current.theme).toBe('retro');
+      expect(localStorageMock.setItem).toHaveBeenCalledWith('webfestival-theme', 'retro');
     });
 
     it('valida correctamente el tema Corporate al cargar desde localStorage', () => {
@@ -78,68 +69,62 @@ describe('Sistema de Temas Extendido', () => {
       expect(result.current.theme).toBe('corporate');
     });
 
-    it('rechaza temas inválidos y usa auto por defecto', () => {
+    it('valida correctamente el tema Cinematic al cargar desde localStorage', () => {
+      // Simular tema Cinematic guardado
+      localStorageMock.getItem.mockReturnValue('cinematic');
+      
+      const { result } = renderHook(() => useTheme());
+      
+      expect(result.current.theme).toBe('cinematic');
+    });
+
+    it('rechaza temas inválidos y usa corporate por defecto', () => {
       localStorageMock.getItem.mockReturnValue('tema-inexistente');
       
       const { result } = renderHook(() => useTheme());
       
-      expect(result.current.theme).toBe('auto');
+      expect(result.current.theme).toBe('corporate');
     });
   });
 
-  describe('useThemeInfo hook', () => {
-    it('incluye información de los nuevos temas', () => {
-      const { result } = renderHook(() => useThemeInfo());
+  describe('Temas disponibles', () => {
+    it('incluye información de los 3 temas disponibles', () => {
+      const { result } = renderHook(() => useTheme());
       
-      const themeNames = result.current.themes.map(theme => theme.value);
+      // Verificar que tenemos exactamente 3 temas
+      expect(Object.keys(result.current.availableThemes)).toHaveLength(3);
       
-      // Verificar que incluye todos los temas, incluyendo los nuevos
-      expect(themeNames).toContain('looper');
-      expect(themeNames).toContain('corporate');
-      
-      // Verificar que hay 9 temas en total (7 existentes + 2 nuevos)
-      expect(result.current.themes).toHaveLength(9);
-      
-      // Verificar información específica del tema Looper
-      const looperTheme = result.current.themes.find(theme => theme.value === 'looper');
-      expect(looperTheme).toBeDefined();
-      expect(looperTheme?.label).toBe('Looper');
-      expect(looperTheme?.description).toBe('Diseño profesional corporativo');
+      // Verificar que incluye los temas correctos
+      expect(result.current.availableThemes).toHaveProperty('corporate');
+      expect(result.current.availableThemes).toHaveProperty('cinematic');
+      expect(result.current.availableThemes).toHaveProperty('retro');
       
       // Verificar información específica del tema Corporate
-      const corporateTheme = result.current.themes.find(theme => theme.value === 'corporate');
-      expect(corporateTheme).toBeDefined();
-      expect(corporateTheme?.label).toBe('Corporate');
-      expect(corporateTheme?.description).toBe('Estilo minimalista empresarial');
+      expect(result.current.availableThemes.corporate.displayName).toBe('Corporate');
+      expect(result.current.availableThemes.corporate.description).toBe('Estilo corporativo minimalista y elegante');
+      
+      // Verificar información específica del tema Cinematic
+      expect(result.current.availableThemes.cinematic.displayName).toBe('Cinematic Dark');
+      expect(result.current.availableThemes.cinematic.description).toBe('Tema oscuro cinematográfico con efectos glassmorphism');
     });
 
-    it('mantiene todos los temas existentes', () => {
-      const { result } = renderHook(() => useThemeInfo());
+    it('mantiene solo los 3 temas seleccionados', () => {
+      const { result } = renderHook(() => useTheme());
       
-      const themeNames = result.current.themes.map(theme => theme.value);
+      const themeNames = Object.keys(result.current.availableThemes);
       
-      // Verificar que todos los temas originales siguen presentes
-      expect(themeNames).toContain('auto');
-      expect(themeNames).toContain('light');
-      expect(themeNames).toContain('dark');
-      expect(themeNames).toContain('festival');
-      expect(themeNames).toContain('professional');
-      expect(themeNames).toContain('artistic');
-      expect(themeNames).toContain('cinematic');
+      // Verificar que solo tenemos los 3 temas que queremos
+      expect(themeNames).toEqual(['corporate', 'cinematic', 'retro']);
+      expect(themeNames).not.toContain('professional');
+      expect(themeNames).not.toContain('minimal');
+      expect(themeNames).not.toContain('neuro');
+      expect(themeNames).not.toContain('ocean');
+      expect(themeNames).not.toContain('sunset');
+      expect(themeNames).not.toContain('forest');
     });
   });
 
   describe('Aplicación de temas al DOM', () => {
-    it('aplica correctamente el atributo data-theme para Looper', () => {
-      const { result } = renderHook(() => useTheme());
-      
-      act(() => {
-        result.current.setTheme('looper');
-      });
-      
-      expect(document.documentElement.getAttribute('data-theme')).toBe('looper');
-    });
-
     it('aplica correctamente el atributo data-theme para Corporate', () => {
       const { result } = renderHook(() => useTheme());
       
@@ -150,30 +135,34 @@ describe('Sistema de Temas Extendido', () => {
       expect(document.documentElement.getAttribute('data-theme')).toBe('corporate');
     });
 
-    it('no aplica atributo data-theme para tema auto', () => {
+    it('aplica correctamente el atributo data-theme para Cinematic', () => {
       const { result } = renderHook(() => useTheme());
       
-      // Cambiar a un tema específico primero
       act(() => {
-        result.current.setTheme('looper');
+        result.current.setTheme('cinematic');
       });
       
-      // Luego cambiar a auto
+      expect(document.documentElement.getAttribute('data-theme')).toBe('cinematic');
+    });
+
+    it('aplica correctamente el atributo data-theme para Retro', () => {
+      const { result } = renderHook(() => useTheme());
+      
       act(() => {
-        result.current.setTheme('auto');
+        result.current.setTheme('retro');
       });
       
-      expect(document.documentElement.getAttribute('data-theme')).toBeNull();
+      expect(document.documentElement.getAttribute('data-theme')).toBe('retro');
     });
   });
 
-  describe('Compatibilidad con temas existentes', () => {
-    it('mantiene funcionalidad de todos los temas existentes', () => {
+  describe('Funcionalidad de los temas', () => {
+    it('mantiene funcionalidad de los 3 temas disponibles', () => {
       const { result } = renderHook(() => useTheme());
       
-      const temasExistentes = ['light', 'dark', 'festival', 'professional', 'artistic', 'cinematic'];
+      const temasDisponibles = ['corporate', 'cinematic', 'retro'];
       
-      temasExistentes.forEach(tema => {
+      temasDisponibles.forEach(tema => {
         act(() => {
           result.current.setTheme(tema as any);
         });

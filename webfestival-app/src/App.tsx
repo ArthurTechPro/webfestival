@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './contexts/AuthContext';
 import { useTheme } from './hooks/useTheme';
@@ -31,6 +31,7 @@ import ProfessionalComponentsDemoSimple from './pages/ProfessionalComponentsDemo
 import ModernComponentsDemo from './pages/ModernComponentsDemo';
 import { LandingPage } from './components/pages/Landing';
 
+
 // Crear instancia de QueryClient para TanStack Query
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -42,13 +43,16 @@ const queryClient = new QueryClient({
 });
 
 // Componente principal simple y elegante
-const HomePage = () => (
+const HomePage = () => {
+  const navigate = useNavigate();
+  
+  return (
   <div className="wf-w-full wf-min-h-screen wf-bg-gradient-to-br wf-from-gray-900 wf-to-black wf-pt-16">
     {/* Hero simple de pantalla completa */}
     <div className="wf-w-full wf-min-h-screen wf-flex wf-items-center wf-justify-center wf-px-6">
       <div className="wf-text-center wf-max-w-4xl">
         <h1 className="wf-text-6xl wf-md:text-7xl wf-font-bold wf-text-white wf-mb-6">
-          WebFestival 2024
+          WebFestival 2025
         </h1>
         <h2 className="wf-text-2xl wf-md:text-3xl wf-text-primary wf-mb-8">
           Festival Internacional de Multimedia
@@ -62,7 +66,7 @@ const HomePage = () => (
           <Button
             variant="primary"
             size="lg"
-            onClick={() => window.location.href = '/login'}
+            onClick={() => navigate('/login')}
           >
             Iniciar Sesión
           </Button>
@@ -70,7 +74,7 @@ const HomePage = () => (
           <Button
             variant="outline"
             size="lg"
-            onClick={() => window.location.href = '/register'}
+            onClick={() => navigate('/register')}
           >
             Registrarse
           </Button>
@@ -78,7 +82,7 @@ const HomePage = () => (
           <Button
             variant="ghost"
             size="lg"
-            onClick={() => window.location.href = '/showcase'}
+            onClick={() => navigate('/showcase')}
           >
             Ver Demo Premium
           </Button>
@@ -88,7 +92,7 @@ const HomePage = () => (
           <Button
             variant="secondary"
             size="md"
-            onClick={() => window.location.href = '/modern-demo'}
+            onClick={() => navigate('/modern-demo')}
           >
             ✨ Nuevo Sistema CSS Modules
           </Button>
@@ -131,20 +135,30 @@ const HomePage = () => (
       </div>
     </section>
   </div>
-);
+  );
+};
 
 // Componente wrapper con tema
 const AppContent = () => {
   const { theme } = useTheme();
+  const location = useLocation();
+  
+  // Páginas donde no se debe mostrar el Navbar
+  const hideNavbarRoutes = ['/login', '/register', '/forgot-password', '/reset-password'];
+  const shouldHideNavbar = hideNavbarRoutes.includes(location.pathname);
   
   return (
     <div className="App wf-min-h-screen" data-theme={theme}>
-      {/* Selector de tema flotante */}
-      <div className="wf-fixed wf-top-4 wf-right-4 wf-z-50">
-        <ThemeSelector showLabel={false} position="fixed" />
-      </div>
+      {/* Selector de tema flotante - solo en páginas que no son de auth */}
+      {!shouldHideNavbar && (
+        <div className="wf-fixed wf-bottom-4 wf-left-4 wf-z-50">
+          <ThemeSelector showLabel={false} position="fixed" compact={true} />
+        </div>
+      )}
       
-      <Navbar />
+      {/* Navbar - solo en páginas que no son de auth */}
+      {!shouldHideNavbar && <Navbar />}
+      
       <main className="wf-main-content">
         <Routes>
               {/* Rutas públicas */}
@@ -240,6 +254,8 @@ const AppContent = () => {
               <Route path="/content-admin/analytics" element={<ProtectedRoute requiredRoles={['CONTENT_ADMIN']}><div className="container py-5"><h1>Analytics de Contenido (Próximamente)</h1></div></ProtectedRoute>} />
         </Routes>
       </main>
+      
+
     </div>
   );
 };

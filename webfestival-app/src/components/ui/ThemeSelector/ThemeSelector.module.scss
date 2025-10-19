@@ -1,7 +1,7 @@
 // Theme Selector Styles - CSS Modules + SCSS
-@import '../../../styles/globals/variables';
-@import '../../../styles/globals/mixins';
-@import '../../../styles/globals/themes';
+@use '../../../styles/globals/variables' as *;
+@use '../../../styles/globals/mixins' as *;
+@use '../../../styles/globals/themes' as *;
 
 // === CONTAINER ===
 .themeSelector {

@@ -10,25 +10,26 @@ describe('App Component', () => {
     render(<App />);
 
     // Verificar que el título principal esté presente
-    expect(screen.getByText('WebFestival App')).toBeInTheDocument();
+    expect(screen.getByText(/La Plataforma Definitiva para/)).toBeInTheDocument();
 
     // Verificar que la descripción esté presente
     expect(
-      screen.getByText(
-        'Plataforma de concursos multimedia para artistas creativos'
-      )
+      screen.getByText(/Conecta artistas creativos, jurados profesionales/)
     ).toBeInTheDocument();
 
-    // Verificar que el mensaje de autenticación implementada esté presente
-    expect(
-      screen.getByText(/Sistema de autenticación implementado!/)
-    ).toBeInTheDocument();
+    // Verificar que el selector de tema esté presente
+    expect(screen.getByLabelText('Selector de tema')).toBeInTheDocument();
   });
 
-  it('muestra la URL del API configurada', () => {
+  it('muestra el selector de tema en la posición correcta', () => {
     render(<App />);
 
-    // Verificar que se muestre la URL del API
-    expect(screen.getByText(/API URL configurada:/)).toBeInTheDocument();
+    // Verificar que el selector de tema esté presente
+    const themeSelector = screen.getByLabelText('Selector de tema');
+    expect(themeSelector).toBeInTheDocument();
+    
+    // Verificar que el contenedor del selector tenga las clases correctas para posición inferior izquierda
+    const selectorContainer = themeSelector.closest('.wf-fixed.wf-bottom-4.wf-left-4');
+    expect(selectorContainer).toBeInTheDocument();
   });
 });

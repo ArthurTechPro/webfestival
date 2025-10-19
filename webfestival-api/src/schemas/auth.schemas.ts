@@ -29,6 +29,8 @@ export const registerSchema = z.object({
   bio: z.string()
     .max(500, 'La biografía no puede exceder 500 caracteres')
     .optional()
+    .or(z.literal(''))
+    .or(z.null())
 });
 
 // Esquema para refresh token

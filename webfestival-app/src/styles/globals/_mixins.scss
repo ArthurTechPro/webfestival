@@ -1,44 +1,75 @@
 // Mixins Reutilizables SCSS - WebFestival
 // Colección de mixins para efectos y patrones comunes
 
-@import 'variables';
+@use 'sass:map';
+@use 'variables' as *;
 
 // === MIXINS DE RESPONSIVE ===
 @mixin responsive($breakpoint) {
-  @if map-has-key($breakpoints, $breakpoint) {
-    $value: map-get($breakpoints, $breakpoint);
-    
-    @if $breakpoint == 'xs' {
-      @media (max-width: #{$value - 1px}) { @content; }
-    } @else if $breakpoint == 'sm' {
-      @media (max-width: #{$value - 1px}) { @content; }
-    } @else if $breakpoint == 'md' {
-      @media (max-width: #{$value - 1px}) { @content; }
-    } @else if $breakpoint == 'lg' {
-      @media (min-width: #{$value}) { @content; }
-    } @else if $breakpoint == 'xl' {
-      @media (min-width: #{$value}) { @content; }
-    } @else if $breakpoint == '2xl' {
-      @media (min-width: #{$value}) { @content; }
+  @if map.has-key($breakpoints, $breakpoint) {
+    $value: map.get($breakpoints, $breakpoint);
+
+    @if $breakpoint =='xs' {
+      @media (max-width: #{$value - 1px}) {
+        @content;
+      }
     }
-  } @else {
+
+    @else if $breakpoint =='sm' {
+      @media (max-width: #{$value - 1px}) {
+        @content;
+      }
+    }
+
+    @else if $breakpoint =='md' {
+      @media (max-width: #{$value - 1px}) {
+        @content;
+      }
+    }
+
+    @else if $breakpoint =='lg' {
+      @media (min-width: #{$value}) {
+        @content;
+      }
+    }
+
+    @else if $breakpoint =='xl' {
+      @media (min-width: #{$value}) {
+        @content;
+      }
+    }
+
+    @else if $breakpoint =='2xl' {
+      @media (min-width: #{$value}) {
+        @content;
+      }
+    }
+  }
+
+  @else {
     @warn "Breakpoint '#{$breakpoint}' no existe. Usa: xs, sm, md, lg, xl, 2xl";
   }
 }
 
 // Mixin para mobile-first
 @mixin min-width($breakpoint) {
-  @if map-has-key($breakpoints, $breakpoint) {
-    $value: map-get($breakpoints, $breakpoint);
-    @media (min-width: #{$value}) { @content; }
+  @if map.has-key($breakpoints, $breakpoint) {
+    $value: map.get($breakpoints, $breakpoint);
+
+    @media (min-width: #{$value}) {
+      @content;
+    }
   }
 }
 
 // Mixin para desktop-first
 @mixin max-width($breakpoint) {
-  @if map-has-key($breakpoints, $breakpoint) {
-    $value: map-get($breakpoints, $breakpoint);
-    @media (max-width: #{$value - 1px}) { @content; }
+  @if map.has-key($breakpoints, $breakpoint) {
+    $value: map.get($breakpoints, $breakpoint);
+
+    @media (max-width: #{$value - 1px}) {
+      @content;
+    }
   }
 }
 
@@ -134,7 +165,7 @@
   max-width: $max-width;
   margin: 0 auto;
   padding: 0 var(--space-md);
-  
+
   @include min-width('lg') {
     padding: 0 var(--space-lg);
   }
@@ -166,13 +197,13 @@
   font-family: var(--font-primary);
   font-size: var(--font-size-base);
   transition: var(--transition-all);
-  
+
   &:focus {
     outline: none;
     border-color: var(--color-primary);
     box-shadow: 0 0 0 3px rgba(52, 108, 176, 0.1);
   }
-  
+
   &::placeholder {
     color: var(--color-gray-400);
   }
@@ -194,7 +225,7 @@
   cursor: pointer;
   transition: var(--transition-all);
   text-decoration: none;
-  
+
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
@@ -306,7 +337,7 @@
   @media (prefers-color-scheme: dark) {
     @content;
   }
-  
+
   [data-theme="dark"] & {
     @content;
   }
@@ -317,7 +348,7 @@
   @media (prefers-color-scheme: light) {
     @content;
   }
-  
+
   [data-theme="light"] & {
     @content;
   }

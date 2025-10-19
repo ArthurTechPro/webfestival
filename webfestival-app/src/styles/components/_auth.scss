@@ -1,0 +1,892 @@
+// === COMPONENTES DE AUTENTICACIÓN ===
+// Sistema SCSS modular y minimalista para login y registro
+
+// === VARIABLES LOCALES ===
+$auth-bg-primary: rgba(255, 255, 255, 0.05);
+$auth-bg-secondary: rgba(255, 255, 255, 0.1);
+$auth-border: rgba(255, 255, 255, 0.15);
+$auth-text-primary: rgba(255, 255, 255, 0.95);
+$auth-text-secondary: rgba(255, 255, 255, 0.7);
+$auth-text-muted: rgba(255, 255, 255, 0.5);
+
+// === MIXINS ESPECÍFICOS ===
+@mixin auth-glass-effect {
+  background: $auth-bg-secondary;
+  backdrop-filter: blur(20px);
+  border: 1px solid $auth-border;
+  border-radius: 12px;
+}
+
+@mixin auth-input-focus {
+  outline: none;
+  border-color: var(--theme-primary, #346CB0);
+  box-shadow: 0 0 0 3px rgba(52, 108, 176, 0.15);
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+@mixin auth-button-hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+// === DISEÑO MODERNO CON GRADIENTES ===
+.wf-auth-modern {
+  min-height: 100vh;
+  background: var(--gradient-hero);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+
+  // Para resoluciones mayores a 1366px, centrar el contenedor fijo
+  @media (min-width: 1367px) {
+    padding: 2rem;
+  }
+
+  // Para resoluciones de 1366x768 y menores, padding específico: 3rem lados y arriba, 6rem abajo
+  @media (max-width: 1366px) and (min-width: 769px) {
+    padding: 3rem 3rem 6rem 3rem;
+  }
+
+  // Para móviles, padding mínimo
+  @media (max-width: 480px) {
+    padding: 0.5rem;
+    align-items: flex-start;
+    padding-top: 2rem;
+  }
+}
+
+.wf-auth-container {
+  width: 100%;
+  max-width: 1200px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  display: flex;
+  min-height: 600px;
+
+  // Para resoluciones mayores a 1366px, mantener tamaño fijo como 1366x768
+  @media (min-width: 1367px) {
+    width: 1200px;
+    max-width: 1200px;
+    min-height: 600px;
+  }
+
+  // Para resoluciones de 1366x768 y menores (excepto móviles)
+  @media (max-width: 1366px) and (min-width: 769px) {
+    width: calc(100% - 6rem);
+    max-width: calc(100% - 6rem);
+    min-height: calc(100vh - 9rem);
+    border-radius: 20px;
+  }
+
+  // Para tablets
+  @media (max-width: 768px) and (min-width: 481px) {
+    max-width: 600px;
+    min-height: auto;
+    flex-direction: column;
+    border-radius: 16px;
+    margin: 1rem;
+  }
+
+  // Para móviles - solo mostrar formulario
+  @media (max-width: 480px) {
+    max-width: none;
+    width: calc(100% - 2rem);
+    margin: 1rem;
+    border-radius: 12px;
+    flex-direction: column;
+  }
+}
+
+// === PANEL DE BIENVENIDA ===
+.wf-auth-welcome-panel {
+  flex: 1;
+  background: linear-gradient(135deg,
+      #6b21a8 0%,
+      #2563eb 50%,
+      #ec4899 100%);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+
+  // Ocultar en móviles (solo mostrar formulario)
+  @media (max-width: 480px) {
+    display: none;
+  }
+  display: none;
+
+  @media (min-width: 1024px) {
+    display: flex;
+  }
+}
+
+.wf-auth-bg-shapes {
+  position: absolute;
+  inset: 0;
+
+  .wf-shape {
+    position: absolute;
+    border-radius: 50%;
+
+    &.wf-shape-1 {
+      top: -5rem;
+      left: -5rem;
+      width: 20rem;
+      height: 20rem;
+      background: rgba(59, 130, 246, 0.3);
+      filter: blur(40px);
+    }
+
+    &.wf-shape-2 {
+      top: 33%;
+      left: 25%;
+      width: 15rem;
+      height: 15rem;
+      background: rgba(147, 51, 234, 0.4);
+      filter: blur(30px);
+    }
+
+    &.wf-shape-3 {
+      bottom: 5rem;
+      right: 2.5rem;
+      width: 8rem;
+      height: 8rem;
+      background: rgba(244, 114, 182, 0.5);
+      filter: blur(20px);
+    }
+
+    &.wf-shape-4 {
+      bottom: 10rem;
+      left: 5rem;
+      width: 4rem;
+      height: 4rem;
+      background: rgba(34, 211, 238, 0.6);
+      filter: blur(0);
+    }
+
+    &.wf-shape-5 {
+      top: 50%;
+      right: 33%;
+      width: 10rem;
+      height: 10rem;
+      background: rgba(99, 102, 241, 0.25);
+      filter: blur(30px);
+    }
+
+    // Formas específicas para registro
+    &.wf-shape-register-1 {
+      top: -5rem;
+      right: -5rem;
+      width: 20rem;
+      height: 20rem;
+      background: rgba(244, 114, 182, 0.3);
+      filter: blur(40px);
+    }
+
+    &.wf-shape-register-2 {
+      top: 33%;
+      right: 25%;
+      width: 15rem;
+      height: 15rem;
+      background: rgba(99, 102, 241, 0.4);
+      filter: blur(30px);
+    }
+
+    &.wf-shape-register-3 {
+      bottom: 5rem;
+      left: 2.5rem;
+      width: 8rem;
+      height: 8rem;
+      background: rgba(59, 130, 246, 0.5);
+      filter: blur(20px);
+    }
+
+    &.wf-shape-register-4 {
+      bottom: 10rem;
+      right: 5rem;
+      width: 4rem;
+      height: 4rem;
+      background: rgba(34, 211, 238, 0.6);
+      filter: blur(0);
+    }
+
+    &.wf-shape-register-5 {
+      top: 50%;
+      left: 33%;
+      width: 10rem;
+      height: 10rem;
+      background: rgba(147, 51, 234, 0.25);
+      filter: blur(30px);
+    }
+  }
+}
+
+.wf-auth-welcome-content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 3rem;
+  color: white;
+  height: 100%;
+}
+
+.wf-auth-logo-modern {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  .wf-logo-circle {
+    width: 3rem;
+    height: 3rem;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+
+    .wf-logo-inner {
+      width: 2rem;
+      height: 2rem;
+      border: 2px solid white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .wf-logo-dot {
+        width: 1rem;
+        height: 1rem;
+        border: 1px solid white;
+        border-radius: 50%;
+      }
+    }
+  }
+
+  .wf-logo-text {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+}
+
+.wf-auth-welcome-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.5rem;
+
+  .wf-welcome-title {
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 1.1;
+    margin: 0;
+  }
+
+  .wf-welcome-subtitle {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    opacity: 0.9;
+    margin: 0;
+  }
+}
+
+.wf-auth-welcome-footer {
+  opacity: 0.75;
+  font-size: 0.875rem;
+}
+
+// === PANEL DE FORMULARIO ===
+.wf-auth-form-panel {
+  flex: 1;
+  padding: 3rem 4rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 600px;
+  background: #ffffff;
+
+  // Para resoluciones mayores a 1366px
+  @media (min-width: 1367px) {
+    padding: 3rem 4rem;
+    min-height: 600px;
+  }
+
+  // Para resoluciones de 1366x768 y menores
+  @media (max-width: 1366px) and (min-width: 769px) {
+    padding: 2rem 2.5rem;
+    min-height: calc(100vh - 9rem);
+  }
+
+  // Para tablets
+  @media (max-width: 768px) and (min-width: 481px) {
+    padding: 2rem;
+    min-height: auto;
+  }
+
+  @media (max-width: 480px) {
+    padding: 1.5rem;
+  }
+}
+
+.wf-auth-form-content {
+  max-width: 450px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  // Para resoluciones de 1366x768 y menores, usar más ancho
+  @media (max-width: 1366px) and (min-width: 769px) {
+    max-width: 500px;
+  }
+}
+
+.wf-auth-header {
+  margin-bottom: 2.5rem;
+  text-align: center;
+  width: 100%;
+
+  .wf-auth-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 1rem 0;
+    letter-spacing: -0.025em;
+  }
+
+  .wf-auth-subtitle {
+    color: #6b7280;
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+}
+
+.wf-auth-link {
+  color: #9333ea !important;
+  text-decoration: none !important;
+  font-weight: 500 !important;
+  transition: color 0.2s ease !important;
+
+  &:hover {
+    color: #7c3aed !important;
+  }
+}
+
+// === FORMULARIO MODERNO ===
+.wf-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  width: 100%;
+}
+
+.wf-form-group {
+  position: relative;
+  width: 100%;
+  margin-bottom: 0;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.wf-form-control-modern {
+  width: 100%;
+  padding: 1.125rem 1.5rem;
+  font-size: 1rem;
+  color: #1f2937;
+  background: #ffffff;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  outline: none;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
+
+  &::placeholder {
+    color: #6b7280;
+    font-size: 1rem;
+  }
+
+  &:focus {
+    border-color: #4a7bc8;
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(74, 123, 200, 0.15);
+    transform: translateY(-1px);
+  }
+
+  &:hover:not(:focus) {
+    border-color: #d1d5db;
+    background: #ffffff;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #f9fafb;
+  }
+}
+
+// Eliminar línea decorativa ya que ahora usamos bordes en los inputs
+
+.wf-password-group {
+  position: relative;
+
+  .wf-form-control-modern {
+    padding-right: 3.5rem;
+  }
+
+  .wf-password-toggle-modern {
+    position: absolute;
+    right: 1.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 0.5rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      color: #4a7bc8;
+      background: rgba(74, 123, 200, 0.1);
+    }
+
+    &:focus {
+      outline: 2px solid rgba(74, 123, 200, 0.3);
+      outline-offset: 2px;
+    }
+  }
+}
+
+.wf-form-error {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #dc2626;
+}
+
+// === BOTÓN PRINCIPAL MODERNO ===
+.wf-btn-modern {
+  width: 100%;
+  background: linear-gradient(135deg, #4a7bc8 0%, #346CB0 100%);
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0;
+  box-shadow: 0 3px 10px rgba(74, 123, 200, 0.3);
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, #346CB0 0%, #2a5a96 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(74, 123, 200, 0.4);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(74, 123, 200, 0.3);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .wf-btn-arrow {
+    font-size: 1.125rem;
+    transition: transform 0.2s ease;
+  }
+
+  &:hover:not(:disabled) .wf-btn-arrow {
+    transform: translateX(2px);
+  }
+}
+
+// === DIVISOR ===
+.wf-auth-divider {
+  position: relative;
+  margin: 1.5rem 0;
+  text-align: center;
+  width: 100%;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #e5e7eb, transparent);
+  }
+
+  span {
+    background: white;
+    padding: 0 1rem;
+    color: #6b7280;
+    font-size: 0.85rem;
+    position: relative;
+    z-index: 1;
+    font-weight: 500;
+  }
+}
+
+// === BOTONES SOCIALES ===
+.wf-social-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 0;
+  width: 100%;
+}
+
+.wf-btn-social {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border-radius: 10px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  transition: all 0.3s ease;
+
+  .wf-social-icon {
+    font-size: 1.125rem;
+  }
+
+  &.wf-btn-google {
+    background: #ffffff;
+    color: #1f2937;
+    border-color: #e5e7eb;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    &:hover {
+      background: #f9fafb;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  &.wf-btn-facebook {
+    background: #1877f2;
+    color: white;
+    border-color: #1877f2;
+
+    &:hover {
+      background: #166fe5;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(24, 119, 242, 0.3);
+    }
+  }
+
+  &:focus {
+    outline: 2px solid rgba(74, 123, 200, 0.3);
+    outline-offset: 2px;
+  }
+}
+
+// === ENLACES ADICIONALES ===
+.wf-auth-links {
+  text-align: center;
+  padding-top: 1.5rem;
+  width: 100%;
+}
+
+// === GRUPO DE TÉRMINOS ===
+.wf-terms-group {
+  margin-top: 0;
+  margin-bottom: 0;
+
+  .wf-custom-control {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: rgba(74, 123, 200, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(74, 123, 200, 0.1);
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(74, 123, 200, 0.08);
+      border-color: rgba(74, 123, 200, 0.2);
+    }
+
+    .wf-custom-control-input {
+      position: static;
+      width: 1.125rem;
+      height: 1.125rem;
+      margin-top: 0.125rem;
+      opacity: 1;
+      z-index: auto;
+      border: 2px solid #d1d5db;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+
+      &:checked {
+        background: linear-gradient(135deg, #4a7bc8 0%, #346CB0 100%);
+        border-color: #4a7bc8;
+      }
+
+      &:focus {
+        outline: 2px solid rgba(74, 123, 200, 0.3);
+        outline-offset: 2px;
+      }
+    }
+
+    .wf-custom-control-label {
+      position: static;
+      font-size: 0.875rem;
+      color: #4b5563;
+      line-height: 1.5;
+      padding-left: 0;
+      cursor: pointer;
+      flex: 1;
+
+      &::before,
+      &::after {
+        display: none;
+      }
+    }
+  }
+}
+
+// === ALERTAS ===
+.wf-alert {
+  padding: 0.875rem 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-size: 0.875rem;
+
+  &.wf-alert-danger {
+    background: linear-gradient(135deg,
+        rgba(239, 68, 68, 0.1) 0%,
+        rgba(220, 38, 38, 0.05) 100%);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: #dc2626;
+  }
+}
+
+// === UTILIDADES ===
+.wf-mb-4 {
+  margin-bottom: 1rem;
+}
+
+// === RESPONSIVE ===
+// Estas reglas ya están definidas en los componentes principales
+// Mantenemos solo para compatibilidad con estilos específicos
+
+// === RESPONSIVE ESPECÍFICO PARA MÓVILES ===
+@media (max-width: 480px) {
+  .wf-auth-modern {
+    padding: 0.5rem;
+    align-items: flex-start;
+    padding-top: 2rem;
+  }
+
+  .wf-auth-container {
+    border-radius: 12px;
+    margin: 0.5rem;
+    max-width: none;
+    width: calc(100% - 1rem);
+  }
+
+  .wf-auth-form-panel {
+    padding: 1.5rem;
+  }
+
+  .wf-auth-form-content {
+    max-width: none;
+  }
+
+  .wf-auth-header .wf-auth-title {
+    font-size: 1.5rem;
+  }
+
+  .wf-auth-form {
+    gap: 1rem;
+  }
+
+  .wf-btn-modern {
+    padding: 0.875rem 1.25rem;
+    font-size: 1rem;
+  }
+
+  .wf-btn-social {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .wf-auth-modern {
+    padding: 0.25rem;
+    padding-top: 1rem;
+  }
+
+  .wf-auth-container {
+    margin: 0.25rem;
+    width: calc(100% - 0.5rem);
+    border-radius: 12px;
+  }
+
+  .wf-auth-form-panel {
+    padding: 1.5rem;
+  }
+
+  .wf-auth-header {
+    margin-bottom: 1.5rem;
+
+    .wf-auth-title {
+      font-size: 1.5rem;
+    }
+
+    .wf-auth-subtitle {
+      font-size: 0.875rem;
+    }
+  }
+
+  .wf-auth-form {
+    gap: 1rem;
+  }
+
+  .wf-form-control-modern {
+    padding: 0.875rem 1rem;
+    font-size: 0.95rem;
+  }
+
+  .wf-password-group .wf-form-control-modern {
+    padding-right: 2.75rem;
+  }
+
+  .wf-password-toggle-modern {
+    right: 0.75rem;
+    font-size: 1rem;
+  }
+
+  .wf-terms-group {
+    .wf-custom-control {
+      align-items: flex-start;
+      padding: 0.75rem;
+
+      .wf-custom-control-input {
+        margin-top: 0.25rem;
+        flex-shrink: 0;
+      }
+
+      .wf-custom-control-label {
+        font-size: 0.8rem;
+      }
+    }
+  }
+}
+
+// === RESPONSIVE PARA PANTALLAS MUY PEQUEÑAS ===
+@media (max-width: 360px) {
+  .wf-auth-form-panel {
+    padding: 0.75rem;
+  }
+
+  .wf-auth-header .wf-auth-title {
+    font-size: 1.375rem;
+  }
+
+  .wf-form-control-modern {
+    padding: 0.75rem 0.875rem;
+  }
+
+  .wf-btn-modern {
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+  }
+
+  .wf-btn-social {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.85rem;
+
+    .wf-social-icon {
+      font-size: 1rem;
+    }
+  }
+}
+
+// === ANIMACIONES ===
+.wf-auth-container {
+  animation: slideInUp 0.6s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.wf-auth-welcome-content>* {
+  animation: fadeInLeft 0.8s ease-out;
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.wf-auth-form-content>* {
+  animation: fadeInRight 0.8s ease-out;
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

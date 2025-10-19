@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '../../ui/Button';
 import styles from './LandingPage.module.scss';
 
@@ -57,6 +58,7 @@ const stats: StatData[] = [
 
 // === COMPONENTE PRINCIPAL ===
 const LandingPage: React.FC = () => {
+  const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -122,7 +124,11 @@ const LandingPage: React.FC = () => {
             >
               Únete
             </a>
-            <Button variant="professional" size="sm">
+            <Button 
+              variant="professional" 
+              size="sm"
+              onClick={() => navigate('/login')}
+            >
               Iniciar Sesión
             </Button>
           </div>
@@ -153,16 +159,16 @@ const LandingPage: React.FC = () => {
             <Button 
               variant="professional" 
               size="lg"
-              onClick={() => scrollToSection('features')}
+              onClick={() => navigate('/register')}
             >
-              Explorar Características
+              Registrarse Gratis
             </Button>
             <Button 
               variant="outline" 
               size="lg"
-              onClick={() => scrollToSection('cta')}
+              onClick={() => navigate('/login')}
             >
-              Comenzar Ahora
+              Iniciar Sesión
             </Button>
           </div>
         </div>
@@ -216,10 +222,18 @@ const LandingPage: React.FC = () => {
             profesionales con evaluación especializada.
           </p>
           <div className={styles.heroActions}>
-            <Button variant="professional" size="lg">
+            <Button 
+              variant="professional" 
+              size="lg"
+              onClick={() => navigate('/register')}
+            >
               Registrarse Gratis
             </Button>
-            <Button variant="outline" size="lg">
+            <Button 
+              variant="outline" 
+              size="lg"
+              onClick={() => navigate('/showcase')}
+            >
               Ver Demo
             </Button>
           </div>

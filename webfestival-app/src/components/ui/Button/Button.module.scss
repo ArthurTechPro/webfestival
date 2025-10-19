@@ -1,6 +1,6 @@
 // Button Component Styles - CSS Modules + SCSS
-@import '../../../styles/globals/variables';
-@import '../../../styles/globals/mixins';
+@use '../../../styles/globals/variables' as *;
+@use '../../../styles/globals/mixins' as *;
 
 // === BASE BUTTON ===
 .button {
@@ -57,23 +57,7 @@
   }
 }
 
-// Variante Professional (Looper style)
-.professional {
-  background: var(--color-primary);
-  color: var(--color-white);
-  border: none;
-  box-shadow: var(--shadow-professional);
-  
-  &:hover:not(:disabled) {
-    background: var(--color-primary-dark);
-    @include button-hover-professional(var(--shadow-md));
-  }
-  
-  &:active {
-    transform: translateY(0);
-    box-shadow: var(--shadow-sm);
-  }
-}
+
 
 // Variante Corporate
 .corporate {
@@ -112,22 +96,7 @@
   }
 }
 
-// Variante Minimal
-.minimal {
-  background: transparent;
-  color: var(--theme-text-primary);
-  border: 1px solid var(--theme-border);
-  
-  &:hover:not(:disabled) {
-    background: var(--theme-bg-secondary);
-    border-color: var(--color-primary);
-    color: var(--color-primary);
-  }
-  
-  &:active {
-    background: var(--color-gray-100);
-  }
-}
+
 
 // Variante Secondary
 .secondary {
@@ -221,16 +190,8 @@
   @extend .glass;
 }
 
-[data-theme="professional"] .button.primary {
-  @extend .professional;
-}
-
 [data-theme="corporate"] .button.primary {
   @extend .corporate;
-}
-
-[data-theme="minimal"] .button.primary {
-  @extend .minimal;
 }
 
 // === ICONOS ===

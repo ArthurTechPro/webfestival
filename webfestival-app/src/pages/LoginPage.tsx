@@ -1,9 +1,9 @@
 import React from 'react';
-import LoginFormLooper from '../components/auth/LoginFormLooper';
+import LoginForm from '../components/auth/LoginForm';
 import PublicRoute from '../components/auth/PublicRoute';
 
 /**
- * Página de inicio de sesión estilo Looper v2 - Fullscreen
+ * Página de inicio de sesión
  * Diseño profesional de dos paneles a pantalla completa
  */
 const LoginPage: React.FC = () => {
@@ -19,7 +19,7 @@ const LoginPage: React.FC = () => {
 
   return (
     <PublicRoute>
-      <LoginFormLooper />
+      <LoginForm />
     </PublicRoute>
   );
 };

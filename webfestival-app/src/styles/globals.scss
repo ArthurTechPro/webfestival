@@ -2,16 +2,22 @@
 // Importa todos los archivos SCSS globales en el orden correcto
 
 // 1. Variables (deben ir primero)
-@import 'globals/variables';
+@use 'globals/variables' as *;
 
 // 2. Mixins (dependen de variables)
-@import 'globals/mixins';
+@use 'globals/mixins' as *;
 
 // 3. Temas (dependen de variables y mixins)
-@import 'globals/themes';
+@use 'globals/themes' as *;
 
 // 4. Utilidades (dependen de todo lo anterior)
-@import 'globals/utilities';
+@use 'globals/utilities' as *;
+
+// 5. Componentes modulares
+@use 'components/auth';
+
+// 6. Componentes temporales (serán migrados al sistema modular)
+@use 'globals/auth-components';
 
 // === RESET Y BASE STYLES ===
 

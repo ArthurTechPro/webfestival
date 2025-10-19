@@ -1446,3 +1446,407 @@ RUN npm run build
 EXPOSE 3000
 CMD ["npm", "start"]
 ```
+#
+# Sistema de Estilos SCSS Modular
+
+### Arquitectura SCSS
+
+El sistema de estilos migra de CSS individual a una arquitectura SCSS modular y escalable que facilita el mantenimiento, garantiza consistencia y permite extensión eficiente de temas y componentes.
+
+#### Estructura de Archivos SCSS
+
+```
+src/styles/
+├── globals.scss                 # Archivo principal que importa todos los módulos
+├── globals/
+│   ├── _variables.scss         # Variables globales (colores, tipografía, espaciado)
+│   ├── _mixins.scss           # Mixins reutilizables (animaciones, efectos, responsive)
+│   ├── _themes.scss           # Definición de temas dinámicos
+│   └── _utilities.scss        # Clases utilitarias y helpers
+└── components/                 # Estilos específicos de componentes (futuro)
+    ├── _buttons.scss
+    ├── _cards.scss
+    └── _forms.scss
+```
+
+#### Variables SCSS Centralizadas
+
+```scss
+// _variables.scss
+// === SISTEMA DE COLORES ===
+$color-primary: #6366f1;
+$color-primary-dark: #4f46e5;
+$color-primary-light: #818cf8;
+$color-secondary: #f59e0b;
+
+// === TIPOGRAFÍA ===
+$font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+$font-mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+
+// === ESPACIADO ===
+$space-1: 0.25rem;
+$space-2: 0.5rem;
+$space-3: 0.75rem;
+$space-4: 1rem;
+
+// === BREAKPOINTS ===
+$breakpoint-sm: 576px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 992px;
+$breakpoint-xl: 1200px;
+
+// === EFECTOS ===
+$border-radius: 0.25rem;
+$border-radius-lg: 0.5rem;
+$shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+$shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+$transition-fast: 150ms ease-in-out;
+$transition-normal: 300ms ease-in-out;
+```
+
+#### Mixins Reutilizables
+
+```scss
+// _mixins.scss
+// === RESPONSIVE DESIGN ===
+@mixin mobile-first($breakpoint) {
+  @media (min-width: $breakpoint) {
+    @content;
+  }
+}
+
+@mixin desktop-first($breakpoint) {
+  @media (max-width: $breakpoint - 1px) {
+    @content;
+  }
+}
+
+// === LAYOUT HELPERS ===
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-column-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin container($max-width: 1200px) {
+  width: 100%;
+  max-width: $max-width;
+  margin: 0 auto;
+  padding: 0 $space-4;
+  
+  @include mobile-first($breakpoint-lg) {
+    padding: 0 $space-6;
+  }
+}
+
+// === EFECTOS Y ANIMACIONES ===
+@mixin glassmorphism($opacity: 0.1) {
+  background: rgba(255, 255, 255, $opacity);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@mixin neumorphism($color: #f0f0f0) {
+  background: $color;
+  box-shadow: 
+    8px 8px 16px darken($color, 10%),
+    -8px -8px 16px lighten($color, 10%);
+}
+
+@mixin cinematic-glow($color: $color-primary) {
+  box-shadow: 0 0 20px rgba($color, 0.3);
+  transition: box-shadow $transition-normal;
+  
+  &:hover {
+    box-shadow: 0 0 30px rgba($color, 0.5);
+  }
+}
+
+// === ANIMACIONES ===
+@mixin fade-in($duration: $transition-normal) {
+  opacity: 0;
+  animation: fadeIn $duration ease-in-out forwards;
+}
+
+@mixin slide-up($duration: $transition-normal) {
+  transform: translateY(20px);
+  opacity: 0;
+  animation: slideUp $duration ease-out forwards;
+}
+
+@mixin scale-in($duration: $transition-normal) {
+  transform: scale(0.9);
+  opacity: 0;
+  animation: scaleIn $duration ease-out forwards;
+}
+
+// === KEYFRAMES ===
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+```
+
+#### Sistema de Temas Dinámico
+
+```scss
+// _themes.scss
+// === TEMA BASE ===
+:root {
+  // Colores principales usando variables SCSS
+  --theme-primary: #{$color-primary};
+  --theme-secondary: #{$color-secondary};
+  --theme-bg-primary: #{$color-white};
+  --theme-text-primary: #{$color-gray-900};
+}
+
+// === MIXIN PARA TEMAS ===
+@mixin theme($theme-name, $colors) {
+  [data-theme="#{$theme-name}"] {
+    @each $property, $value in $colors {
+      --theme-#{$property}: #{$value};
+    }
+  }
+}
+
+// === DEFINICIÓN DE TEMAS ===
+@include theme('dark', (
+  'bg-primary': $color-gray-900,
+  'bg-secondary': $color-gray-800,
+  'text-primary': $color-gray-100,
+  'text-secondary': $color-gray-300,
+  'border': $color-gray-700
+));
+
+@include theme('cinematic', (
+  'primary': #ff6b35,
+  'secondary': #f7931e,
+  'bg-primary': #0a0a0a,
+  'bg-secondary': #1a1a1a,
+  'text-primary': #ffffff,
+  'text-secondary': #cccccc
+));
+
+@include theme('professional', (
+  'primary': #346CB0,
+  'secondary': #5a9fd4,
+  'bg-primary': #f6f7f9,
+  'bg-secondary': #ffffff,
+  'text-primary': #2c3e50,
+  'text-secondary': #5a6c7d
+));
+
+@include theme('corporate', (
+  'primary': #2563eb,
+  'secondary': #64748b,
+  'bg-primary': #ffffff,
+  'bg-secondary': #f8fafc,
+  'text-primary': #0f172a,
+  'text-secondary': #475569
+));
+
+// === MIXINS PARA TEMAS ESPECÍFICOS ===
+@mixin dark-themes {
+  [data-theme="dark"],
+  [data-theme="cinematic"],
+  [data-theme="neon"] {
+    @content;
+  }
+}
+
+@mixin light-themes {
+  [data-theme="light"],
+  [data-theme="professional"],
+  [data-theme="corporate"] {
+    @content;
+  }
+}
+```
+
+#### Utilidades y Helpers
+
+```scss
+// _utilities.scss
+// === CLASES UTILITARIAS ===
+.container {
+  @include container;
+}
+
+.flex-center {
+  @include flex-center;
+}
+
+.flex-column-center {
+  @include flex-column-center;
+}
+
+// === EFECTOS PREMIUM ===
+.glass-effect {
+  @include glassmorphism;
+}
+
+.neuro-effect {
+  @include neumorphism;
+}
+
+.cinematic-glow {
+  @include cinematic-glow;
+}
+
+// === ANIMACIONES ===
+.fade-in {
+  @include fade-in;
+}
+
+.slide-up {
+  @include slide-up;
+}
+
+.scale-in {
+  @include scale-in;
+}
+
+// === RESPONSIVE UTILITIES ===
+.hidden-mobile {
+  @include desktop-first($breakpoint-md) {
+    display: none;
+  }
+}
+
+.hidden-desktop {
+  @include mobile-first($breakpoint-md) {
+    display: none;
+  }
+}
+
+// === SPACING UTILITIES ===
+@for $i from 1 through 8 {
+  .m-#{$i} { margin: #{$i * 0.25}rem; }
+  .p-#{$i} { padding: #{$i * 0.25}rem; }
+  .mt-#{$i} { margin-top: #{$i * 0.25}rem; }
+  .pt-#{$i} { padding-top: #{$i * 0.25}rem; }
+  .mb-#{$i} { margin-bottom: #{$i * 0.25}rem; }
+  .pb-#{$i} { padding-bottom: #{$i * 0.25}rem; }
+}
+```
+
+### Migración de Componentes Existentes
+
+#### Componentes Premium con SCSS
+
+Los componentes existentes (HeroCinematic, CardPremium, ButtonCinematic) se migran para usar el sistema SCSS:
+
+```scss
+// Ejemplo: ButtonCinematic migrado a SCSS
+.wf-btn-cinematic {
+  @include flex-center;
+  padding: $space-3 $space-6;
+  border-radius: $border-radius;
+  font-family: $font-primary;
+  font-weight: 600;
+  transition: $transition-normal;
+  cursor: pointer;
+  
+  // Variante cinematográfica
+  &.variant-cinematic {
+    @include cinematic-glow(var(--theme-primary));
+    background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
+    color: white;
+    
+    &:hover {
+      transform: translateY(-2px);
+    }
+  }
+  
+  // Variante profesional
+  &.variant-professional {
+    background: var(--theme-primary);
+    color: white;
+    box-shadow: $shadow-sm;
+    
+    &:hover {
+      background: var(--theme-primary-dark);
+      box-shadow: $shadow-md;
+    }
+  }
+  
+  // Variante corporativa
+  &.variant-corporate {
+    background: transparent;
+    border: 2px solid var(--theme-primary);
+    color: var(--theme-primary);
+    
+    &:hover {
+      background: var(--theme-primary);
+      color: white;
+    }
+  }
+  
+  // Responsive
+  @include mobile-first($breakpoint-md) {
+    padding: $space-4 $space-8;
+    font-size: 1.125rem;
+  }
+}
+```
+
+### Beneficios del Sistema SCSS
+
+1. **Modularidad**: Separación clara de responsabilidades en archivos específicos
+2. **Reutilización**: Mixins parametrizables para efectos y animaciones comunes
+3. **Mantenibilidad**: Variables centralizadas facilitan cambios globales
+4. **Escalabilidad**: Fácil extensión para nuevos temas y componentes
+5. **Consistencia**: Garantiza coherencia visual en toda la aplicación
+6. **Rendimiento**: Compilación optimizada elimina código no utilizado
+7. **Compatibilidad**: Mantiene total compatibilidad con sistema de temas existente
+
+### Integración con React
+
+El sistema SCSS se integra perfectamente con los componentes React existentes:
+
+```typescript
+// Ejemplo de uso en componente React
+import './styles/globals.scss';
+
+const ButtonCinematic: React.FC<ButtonProps> = ({ 
+  variant = 'cinematic', 
+  theme = 'auto',
+  children,
+  ...props 
+}) => {
+  const { currentTheme } = useTheme();
+  const effectiveTheme = theme === 'auto' ? currentTheme : theme;
+  
+  return (
+    <button 
+      className={`wf-btn-cinematic variant-${variant}`}
+      data-theme={effectiveTheme}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+};
+```
+
+Esta arquitectura SCSS proporciona una base sólida y escalable para el sistema de estilos de WebFestival, manteniendo la flexibilidad y potencia del sistema actual mientras mejora significativamente la organización y mantenibilidad del código.

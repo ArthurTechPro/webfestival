@@ -81,11 +81,23 @@ proyecto/
 - Logs de desarrollo pueden mantenerse en inglés para compatibilidad con herramientas
 - Documentación de APIs en español con ejemplos claros
 
-## Configuración de Tests y Jest
+## Configuración de Tests
+
+### Framework de Testing por Proyecto
+- **webfestival-api**: Jest (Node.js backend)
+- **webfestival-app**: Vitest (React frontend con Vite)
+
+### Configuración para Jest (Backend - webfestival-api)
 - **NUNCA importar funciones de 'node:test'** en archivos de test de Jest
 - Jest proporciona `describe`, `it`, `expect`, `beforeEach`, `afterEach` como funciones globales
 - Usar únicamente `/// <reference types="jest" />` para las definiciones de tipos
 - Agregar comentarios explicativos cuando sea necesario para evitar conflictos de autofix
+
+### Configuración para Vitest (Frontend - webfestival-app)
+- **Usar Vitest con React Testing Library** para componentes React
+- **Importar explícitamente** las funciones de testing: `import { describe, it, expect, vi, beforeEach } from 'vitest';`
+- **Configurar tipos de jest-dom** en `tests/setup.ts` para matchers como `toBeInTheDocument()`
+- **Estructura de archivos de test**: usar tanto `tests/` como `src/components/__tests__/` según convenga
 
 ### Manejo del Autofix de Kiro IDE
 - **CRÍTICO**: El autofix de Kiro IDE automáticamente agrega importaciones incorrectas de `node:test`
@@ -93,22 +105,14 @@ proyecto/
 - **Si aparecen importaciones de `node:test`**: eliminarlas inmediatamente y recrear el archivo si es necesario
 - **Síntomas del problema**: Errores "Cannot find name 'jest'" o "Duplicate identifier"
 - **Solución**: Recrear el archivo completo sin las importaciones problemáticas
-- **Prevención**: Agregar comentarios preventivos al inicio del archivo:
-  ```typescript
-  /// <reference types="jest" />
-  
-  // IMPORTANTE: NO IMPORTAR FUNCIONES DE 'node:test' - USAR JEST GLOBALS
-  // Jest proporciona describe, it, expect, beforeEach, afterEach globalmente
-  // El autofix de Kiro IDE puede agregar importaciones incorrectas - eliminarlas siempre
-  ```
 
 ### Ubicación de Archivos de Test
+
+**Para webfestival-api (Jest):**
 - **SIEMPRE colocar archivos de test en la carpeta `tests/`** por fuera de `src/`
-- **NUNCA crear archivos de test dentro de `src/`** o subcarpetas de `src/`
-- **Estructura correcta del proyecto:**
+- **Estructura correcta:**
   ```
-  postman/
-  proyecto/
+  webfestival-api/
   ├── src/
   │   ├── services/
   │   │   └── email.service.ts
@@ -117,9 +121,47 @@ proyecto/
       ├── email.service.test.ts
       └── setup.ts
   ```
-- **Razón técnica**: Separar código de producción de código de testing para mejor organización y builds
 
-### Ejemplo Correcto de Archivo de Test
+**Para webfestival-app (Vitest):**
+- **Usar tanto `tests/` como `src/components/__tests__/`** según el tipo de test
+- **Tests de componentes**: `src/components/__tests__/ComponentName.test.tsx`
+- **Tests de utilidades/hooks**: `tests/utilityName.test.ts`
+- **Estructura correcta:**
+  ```
+  webfestival-app/
+  ├── src/
+  │   ├── components/
+  │   │   └── auth/
+  │   │       ├── __tests__/
+  │   │       │   ├── LoginForm.test.tsx
+  │   │       │   └── RegisterForm.test.tsx
+  │   │       ├── LoginForm.tsx
+  │   │       └── RegisterForm.tsx
+  │   └── hooks/
+  └── tests/
+      ├── setup.ts
+      ├── theme.test.ts
+      └── routing.test.ts
+  ```
+
+### Configuración de Tipos para Testing
+
+**Para Vitest (webfestival-app):**
+```typescript
+// tests/setup.ts
+import '@testing-library/jest-dom';
+import { vi } from 'vitest';
+
+// Extender los matchers de Vitest con jest-dom
+import type { TestingLibraryMatchers } from '@testing-library/jest-dom/matchers';
+
+declare module 'vitest' {
+  interface Assertion<T = any> extends TestingLibraryMatchers<T, void> {}
+  interface AsymmetricMatchersContaining extends TestingLibraryMatchers<any, void> {}
+}
+```
+
+**Para Jest (webfestival-api):**
 ```typescript
 /// <reference types="jest" />
 

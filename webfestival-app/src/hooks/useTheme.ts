@@ -2,15 +2,9 @@ import { useState, useEffect, useCallback } from 'react';
 
 // === TIPOS ===
 export type ThemeName = 
-  | 'professional' 
   | 'corporate' 
-  | 'minimal' 
   | 'cinematic' 
-  | 'neuro' 
-  | 'retro' 
-  | 'ocean' 
-  | 'sunset' 
-  | 'forest';
+  | 'retro';
 
 export type ThemeCategory = 'professional' | 'cinematic';
 
@@ -26,28 +20,12 @@ export interface ThemeConfig {
 // === CONFIGURACIÓN DE TEMAS ===
 export const THEMES: Record<ThemeName, ThemeConfig> = {
   // Temas Profesionales
-  professional: {
-    name: 'professional',
-    displayName: 'Looper Professional',
-    category: 'professional',
-    description: 'Diseño profesional inspirado en Looper con colores corporativos',
-    primaryColor: '#346CB0',
-    isDark: false
-  },
   corporate: {
     name: 'corporate',
     displayName: 'Corporate',
     category: 'professional',
     description: 'Estilo corporativo minimalista y elegante',
     primaryColor: '#2563eb',
-    isDark: false
-  },
-  minimal: {
-    name: 'minimal',
-    displayName: 'Minimal',
-    category: 'professional',
-    description: 'Diseño minimalista y limpio',
-    primaryColor: '#000000',
     isDark: false
   },
   
@@ -60,14 +38,6 @@ export const THEMES: Record<ThemeName, ThemeConfig> = {
     primaryColor: '#4a7bc8',
     isDark: true
   },
-  neuro: {
-    name: 'neuro',
-    displayName: 'Neuro',
-    category: 'cinematic',
-    description: 'Estilo futurista con colores neón verdes',
-    primaryColor: '#00ff88',
-    isDark: true
-  },
   retro: {
     name: 'retro',
     displayName: 'Retro Wave',
@@ -75,36 +45,12 @@ export const THEMES: Record<ThemeName, ThemeConfig> = {
     description: 'Estilo retro synthwave con colores vibrantes',
     primaryColor: '#ff6b9d',
     isDark: true
-  },
-  ocean: {
-    name: 'ocean',
-    displayName: 'Ocean Deep',
-    category: 'cinematic',
-    description: 'Tema oceánico con tonos azules profundos',
-    primaryColor: '#38bdf8',
-    isDark: true
-  },
-  sunset: {
-    name: 'sunset',
-    displayName: 'Sunset',
-    category: 'cinematic',
-    description: 'Colores cálidos inspirados en el atardecer',
-    primaryColor: '#f97316',
-    isDark: true
-  },
-  forest: {
-    name: 'forest',
-    displayName: 'Forest',
-    category: 'cinematic',
-    description: 'Tema natural con tonos verdes del bosque',
-    primaryColor: '#22c55e',
-    isDark: true
   }
 };
 
 // === CONSTANTES ===
 const THEME_STORAGE_KEY = 'webfestival-theme';
-const DEFAULT_THEME: ThemeName = 'professional';
+const DEFAULT_THEME: ThemeName = 'corporate';
 
 // === HOOK PRINCIPAL ===
 export const useTheme = () => {
@@ -126,7 +72,7 @@ export const useTheme = () => {
 
         // 2. Detectar preferencia del sistema
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const systemTheme: ThemeName = prefersDark ? 'cinematic' : 'professional';
+        const systemTheme: ThemeName = prefersDark ? 'cinematic' : 'corporate';
         
         setThemeState(systemTheme);
         applyThemeToDocument(systemTheme);
@@ -151,7 +97,7 @@ export const useTheme = () => {
       // Solo cambiar si no hay tema guardado manualmente
       const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
       if (!savedTheme) {
-        const systemTheme: ThemeName = e.matches ? 'cinematic' : 'professional';
+        const systemTheme: ThemeName = e.matches ? 'cinematic' : 'corporate';
         setThemeState(systemTheme);
         applyThemeToDocument(systemTheme);
       }
@@ -202,7 +148,7 @@ export const useTheme = () => {
   // Alternar entre tema claro y oscuro
   const toggleTheme = useCallback(() => {
     const currentConfig = THEMES[theme];
-    const newTheme: ThemeName = currentConfig.isDark ? 'professional' : 'cinematic';
+    const newTheme: ThemeName = currentConfig.isDark ? 'corporate' : 'cinematic';
     setTheme(newTheme);
   }, [theme, setTheme]);
 
@@ -266,19 +212,13 @@ export const useComponentVariant = () => {
     if (currentThemeConfig.isDark) {
       switch (theme) {
         case 'cinematic': return 'glass';
-        case 'neuro': return 'neuro';
         case 'retro': return 'retro';
-        case 'ocean': return 'ocean';
-        case 'sunset': return 'sunset';
-        case 'forest': return 'forest';
         default: return 'glass';
       }
     } else {
       switch (theme) {
-        case 'professional': return 'professional';
         case 'corporate': return 'corporate';
-        case 'minimal': return 'minimal';
-        default: return 'professional';
+        default: return 'corporate';
       }
     }
   }, [theme, currentThemeConfig.isDark]);

@@ -4,98 +4,170 @@ import ThemeSelector from '../src/components/ui/ThemeSelector';
 
 // Mock del hook useTheme
 const mockSetTheme = vi.fn();
+const mockCurrentThemeConfig = {
+  name: 'corporate' as const,
+  displayName: 'Corporate',
+  category: 'professional' as const,
+  description: 'Estilo corporativo minimalista y elegante',
+  primaryColor: '#2563eb',
+  isDark: false
+};
+
 const mockUseTheme = {
-  theme: 'auto' as const,
+  theme: 'corporate' as const,
+  currentThemeConfig: mockCurrentThemeConfig,
   setTheme: mockSetTheme,
   toggleTheme: vi.fn(),
+  randomTheme: vi.fn(),
+  resetTheme: vi.fn(),
+  getThemesByCategory: vi.fn((category) => {
+    if (category === 'professional') {
+      return [{
+        name: 'corporate',
+        displayName: 'Corporate',
+        category: 'professional',
+        description: 'Estilo corporativo minimalista y elegante',
+        primaryColor: '#2563eb',
+        isDark: false
+      }];
+    } else if (category === 'cinematic') {
+      return [
+        {
+          name: 'cinematic',
+          displayName: 'Cinematic Dark',
+          category: 'cinematic',
+          description: 'Tema oscuro cinematográfico con efectos glassmorphism',
+          primaryColor: '#4a7bc8',
+          isDark: true
+        },
+        {
+          name: 'retro',
+          displayName: 'Retro Wave',
+          category: 'cinematic',
+          description: 'Estilo retro synthwave con colores vibrantes',
+          primaryColor: '#ff6b9d',
+          isDark: true
+        }
+      ];
+    }
+    return [];
+  }),
+  availableThemes: {
+    corporate: mockCurrentThemeConfig,
+    cinematic: {
+      name: 'cinematic',
+      displayName: 'Cinematic Dark',
+      category: 'cinematic',
+      description: 'Tema oscuro cinematográfico con efectos glassmorphism',
+      primaryColor: '#4a7bc8',
+      isDark: true
+    },
+    retro: {
+      name: 'retro',
+      displayName: 'Retro Wave',
+      category: 'cinematic',
+      description: 'Estilo retro synthwave con colores vibrantes',
+      primaryColor: '#ff6b9d',
+      isDark: true
+    }
+  },
   isDark: false,
 };
 
 vi.mock('../src/hooks/useTheme', () => ({
   useTheme: () => mockUseTheme,
-  useThemeInfo: () => ({
-    themes: [
-      { value: 'auto', label: 'Automático', description: 'Sigue la preferencia del sistema' },
-      { value: 'light', label: 'Claro', description: 'Tema claro siempre' },
-      { value: 'dark', label: 'Oscuro', description: 'Tema oscuro siempre' },
-      { value: 'festival', label: 'Festival', description: 'Colores vibrantes y festivos' },
-      { value: 'professional', label: 'Profesional', description: 'Colores corporativos' },
-      { value: 'artistic', label: 'Artístico', description: 'Colores creativos y únicos' },
-      { value: 'cinematic', label: 'Cinematográfico', description: 'Estilo de película dramático' },
-      { value: 'looper', label: 'Looper', description: 'Diseño profesional corporativo' },
-      { value: 'corporate', label: 'Corporate', description: 'Estilo minimalista empresarial' },
-    ]
-  })
+  THEMES: {
+    corporate: mockCurrentThemeConfig,
+    cinematic: {
+      name: 'cinematic',
+      displayName: 'Cinematic Dark',
+      category: 'cinematic',
+      description: 'Tema oscuro cinematográfico con efectos glassmorphism',
+      primaryColor: '#4a7bc8',
+      isDark: true
+    },
+    retro: {
+      name: 'retro',
+      displayName: 'Retro Wave',
+      category: 'cinematic',
+      description: 'Estilo retro synthwave con colores vibrantes',
+      primaryColor: '#ff6b9d',
+      isDark: true
+    }
+  }
 }));
 
-describe('ThemeSelector con nuevos temas', () => {
+describe('ThemeSelector con 3 temas', () => {
   beforeEach(() => {
     mockSetTheme.mockClear();
   });
 
-  it('renderiza correctamente y muestra 9 opciones de tema', () => {
+  it('renderiza correctamente y muestra 3 opciones de tema', () => {
     render(<ThemeSelector />);
     
     // Hacer clic en el botón para abrir el selector
-    const button = screen.getByRole('button', { name: /seleccionar tema/i });
+    const button = screen.getByLabelText('Selector de tema');
     fireEvent.click(button);
     
-    // Verificar que hay 9 opciones de tema en total (7 originales + 2 nuevos)
-    const themeOptions = screen.getAllByRole('menuitem');
-    expect(themeOptions).toHaveLength(9);
+    // Verificar que hay 3 opciones de tema en total
+    const themeOptions = screen.getAllByRole('button').filter(btn => 
+      btn.getAttribute('tabindex') === '0' && btn !== button
+    );
+    expect(themeOptions).toHaveLength(3);
   });
 
-  it('muestra las descripciones correctas para los nuevos temas', () => {
+  it('muestra las descripciones correctas para los temas', () => {
     render(<ThemeSelector />);
     
     // Abrir el selector
-    const button = screen.getByRole('button', { name: /seleccionar tema/i });
+    const button = screen.getByLabelText('Selector de tema');
     fireEvent.click(button);
     
-    // Verificar descripciones de los nuevos temas
-    expect(screen.getByText('Diseño profesional corporativo')).toBeInTheDocument();
-    expect(screen.getByText('Estilo minimalista empresarial')).toBeInTheDocument();
+    // Verificar descripciones de los temas
+    expect(screen.getByText('Estilo corporativo minimalista y elegante')).toBeInTheDocument();
+    expect(screen.getByText('Tema oscuro cinematográfico con efectos glassmorphism')).toBeInTheDocument();
+    expect(screen.getByText('Estilo retro synthwave con colores vibrantes')).toBeInTheDocument();
   });
 
   it('permite hacer clic en todas las opciones de tema', () => {
     render(<ThemeSelector />);
     
     // Abrir el selector
-    const button = screen.getByRole('button', { name: /seleccionar tema/i });
+    const button = screen.getByLabelText('Selector de tema');
     fireEvent.click(button);
     
-    // Obtener todas las opciones y hacer clic en cada una
-    const themeOptions = screen.getAllByRole('menuitem');
+    // Obtener todas las opciones de tema y hacer clic en cada una
+    const corporateOption = screen.getByText('Corporate').closest('[role="button"]');
+    const cinematicOption = screen.getByText('Cinematic Dark').closest('[role="button"]');
+    const retroOption = screen.getByText('Retro Wave').closest('[role="button"]');
     
-    themeOptions.forEach((option, index) => {
-      fireEvent.click(option);
-      expect(mockSetTheme).toHaveBeenCalled();
-    });
+    if (corporateOption) fireEvent.click(corporateOption);
+    if (cinematicOption) fireEvent.click(cinematicOption);
+    if (retroOption) fireEvent.click(retroOption);
     
-    // Verificar que se llamó setTheme al menos 9 veces (una por cada tema)
-    expect(mockSetTheme).toHaveBeenCalledTimes(9);
+    // Verificar que se llamó setTheme al menos 3 veces
+    expect(mockSetTheme).toHaveBeenCalledTimes(3);
   });
 
-  it('incluye los nuevos temas en las opciones', () => {
+  it('incluye los 3 temas en las opciones', () => {
     render(<ThemeSelector />);
     
     // Abrir el selector
-    const button = screen.getByRole('button', { name: /seleccionar tema/i });
+    const button = screen.getByLabelText('Selector de tema');
     fireEvent.click(button);
     
-    // Verificar que las clases CSS de los nuevos temas están presentes
-    const looperPreview = document.querySelector('.wf-theme-preview.looper');
-    const corporatePreview = document.querySelector('.wf-theme-preview.corporate');
-    
-    expect(looperPreview).toBeInTheDocument();
-    expect(corporatePreview).toBeInTheDocument();
+    // Verificar que los nombres de los temas están presentes
+    expect(screen.getByText('Corporate')).toBeInTheDocument();
+    expect(screen.getByText('Cinematic Dark')).toBeInTheDocument();
+    expect(screen.getByText('Retro Wave')).toBeInTheDocument();
   });
 
   it('renderiza correctamente con showLabel=true', () => {
     render(<ThemeSelector showLabel={true} />);
     
     // El botón debería mostrar el label del tema actual
-    const button = screen.getByRole('button', { name: /seleccionar tema/i });
+    const button = screen.getByLabelText('Selector de tema');
     expect(button).toBeInTheDocument();
+    expect(screen.getByText('Corporate')).toBeInTheDocument();
   });
 });
