@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '../../ui/Button';
 import styles from './LandingPageSimple.module.scss';
 
 // === INTERFACES ===
@@ -36,16 +35,6 @@ const features: FeatureData[] = [
     icon: '👥',
     title: 'Comunidad Creativa',
     description: 'Conecta con otros artistas, sigue sus trabajos y participa en una comunidad activa.'
-  },
-  {
-    icon: '📚',
-    title: 'Contenido Educativo',
-    description: 'Accede a tutoriales, guías y consejos para mejorar tus habilidades creativas.'
-  },
-  {
-    icon: '🔧',
-    title: 'Herramientas Avanzadas',
-    description: 'Utiliza nuestras herramientas de gestión multimedia con integración Immich.'
   }
 ];
 
@@ -57,10 +46,9 @@ const stats: StatData[] = [
 ];
 
 // === COMPONENTE PRINCIPAL ===
-const LandingPage: React.FC = () => {
+const LandingPageFixed: React.FC = () => {
   const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Efecto para detectar scroll
   useEffect(() => {
@@ -78,7 +66,6 @@ const LandingPage: React.FC = () => {
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
-    setIsMobileMenuOpen(false);
   };
 
   return (
@@ -114,32 +101,22 @@ const LandingPage: React.FC = () => {
             >
               Estadísticas
             </a>
-            <a 
-              href="#cta" 
-              className={styles.navLink}
-              onClick={(e) => {
-                e.preventDefault();
-                scrollToSection('cta');
+            <button 
+              onClick={() => navigate('/login')}
+              style={{
+                background: '#346CB0',
+                color: 'white',
+                border: 'none',
+                padding: '8px 16px',
+                borderRadius: '6px',
+                fontSize: '0.9rem',
+                fontWeight: '500',
+                cursor: 'pointer'
               }}
             >
-              Únete
-            </a>
-            <Button 
-              variant="professional" 
-              size="sm"
-              onClick={() => navigate('/login')}
-            >
               Iniciar Sesión
-            </Button>
+            </button>
           </div>
-
-          <button 
-            className={styles.mobileMenuButton}
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label="Menú móvil"
-          >
-            ☰
-          </button>
         </div>
       </nav>
 
@@ -156,20 +133,37 @@ const LandingPage: React.FC = () => {
             completo para concursos de fotografía, video, audio y cortos de cine.
           </p>
           <div className={`${styles.heroActions} ${styles.scaleIn}`}>
-            <Button 
-              variant="professional" 
-              size="lg"
+            <button 
               onClick={() => navigate('/register')}
+              style={{
+                background: '#346CB0',
+                color: 'white',
+                border: 'none',
+                padding: '12px 24px',
+                borderRadius: '8px',
+                fontSize: '1rem',
+                fontWeight: '500',
+                cursor: 'pointer',
+                marginRight: '1rem'
+              }}
             >
               Registrarse Gratis
-            </Button>
-            <Button 
-              variant="outline" 
-              size="lg"
+            </button>
+            <button 
               onClick={() => navigate('/login')}
+              style={{
+                background: 'transparent',
+                color: '#346CB0',
+                border: '2px solid #346CB0',
+                padding: '12px 24px',
+                borderRadius: '8px',
+                fontSize: '1rem',
+                fontWeight: '500',
+                cursor: 'pointer'
+              }}
             >
               Iniciar Sesión
-            </Button>
+            </button>
           </div>
         </div>
       </section>
@@ -211,90 +205,47 @@ const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section id="cta" className={styles.ctaSection}>
-        <div className={styles.ctaContent}>
-          <h2 className={styles.ctaTitle}>
-            ¿Listo para Mostrar tu Talento?
-          </h2>
-          <p className={styles.ctaDescription}>
-            Únete a miles de artistas creativos y comienza a participar en concursos 
-            profesionales con evaluación especializada.
-          </p>
-          <div className={styles.heroActions}>
-            <Button 
-              variant="professional" 
-              size="lg"
-              onClick={() => navigate('/register')}
-            >
-              Registrarse Gratis
-            </Button>
-            <Button 
-              variant="outline" 
-              size="lg"
-              onClick={() => navigate('/showcase')}
-            >
-              Ver Demo
-            </Button>
-          </div>
-        </div>
-      </section>
-
       {/* Footer */}
       <footer className={styles.footer}>
         <div className={styles.footerContent}>
-          <div className={styles.footerGrid}>
-            <div className={styles.footerSection}>
-              <h4 className={styles.footerTitle}>WebFestival</h4>
-              <p>
-                La plataforma líder en concursos multimedia online que conecta 
-                artistas creativos con jurados profesionales.
-              </p>
-            </div>
-            
-            <div className={styles.footerSection}>
-              <h4 className={styles.footerTitle}>Plataforma</h4>
-              <ul className={styles.footerLinks}>
-                <li><a href="#features">Características</a></li>
-                <li><a href="#pricing">Precios</a></li>
-                <li><a href="#gallery">Galería</a></li>
-                <li><a href="#blog">Blog</a></li>
-              </ul>
-            </div>
-            
-            <div className={styles.footerSection}>
-              <h4 className={styles.footerTitle}>Comunidad</h4>
-              <ul className={styles.footerLinks}>
-                <li><a href="#artists">Artistas</a></li>
-                <li><a href="#judges">Jurados</a></li>
-                <li><a href="#organizers">Organizadores</a></li>
-                <li><a href="#support">Soporte</a></li>
-              </ul>
-            </div>
-            
-            <div className={styles.footerSection}>
-              <h4 className={styles.footerTitle}>Legal</h4>
-              <ul className={styles.footerLinks}>
-                <li><a href="#privacy">Privacidad</a></li>
-                <li><a href="#terms">Términos</a></li>
-                <li><a href="#cookies">Cookies</a></li>
-                <li><a href="#contact">Contacto</a></li>
-              </ul>
-            </div>
-          </div>
-          
-          <div className={styles.footerBottom}>
-            <div className={styles.socialLinks}>
-              <a href="#facebook" aria-label="Facebook">📘</a>
-              <a href="#instagram" aria-label="Instagram">📷</a>
-              <a href="#twitter" aria-label="Twitter">🐦</a>
-              <a href="#linkedin" aria-label="LinkedIn">💼</a>
-              <a href="#youtube" aria-label="YouTube">📺</a>
-            </div>
-            <p>
-              © 2024 WebFestival. Todos los derechos reservados. 
-              Hecho con ❤️ para la comunidad creativa.
+          <div style={{ textAlign: 'center', padding: '2rem' }}>
+            <h4 style={{ fontSize: '1.5rem', marginBottom: '1rem', color: 'white' }}>
+              WebFestival 2025
+            </h4>
+            <p style={{ color: '#e5e7eb', marginBottom: '2rem' }}>
+              La plataforma líder en concursos multimedia online que conecta 
+              artistas creativos con jurados profesionales.
             </p>
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+              <button
+                onClick={() => navigate('/register')}
+                style={{
+                  background: '#346CB0',
+                  color: 'white',
+                  border: 'none',
+                  padding: '12px 24px',
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  cursor: 'pointer'
+                }}
+              >
+                Comenzar Ahora
+              </button>
+              <button
+                onClick={() => navigate('/showcase')}
+                style={{
+                  background: 'transparent',
+                  color: '#346CB0',
+                  border: '2px solid #346CB0',
+                  padding: '12px 24px',
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  cursor: 'pointer'
+                }}
+              >
+                Ver Demo
+              </button>
+            </div>
           </div>
         </div>
       </footer>
@@ -302,4 +253,4 @@ const LandingPage: React.FC = () => {
   );
 };
 
-export default LandingPage;
+export default LandingPageFixed;

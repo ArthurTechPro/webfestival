@@ -34,6 +34,10 @@ export type {
 export { default as ThemeSelector } from './ThemeSelector/ThemeSelector';
 export type { ThemeSelectorProps } from './ThemeSelector/ThemeSelector';
 
+// Icon System
+export { Icon, useIcon, getAvailableIcons } from './Icons/IconSystem';
+export type { IconProps } from './Icons/IconSystem';
+
 // Legacy exports for backward compatibility
 // TODO: Remove these after migration is complete
 // Temporarily commented out until migration is complete

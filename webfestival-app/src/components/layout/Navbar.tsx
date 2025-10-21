@@ -13,13 +13,17 @@ const Navbar: React.FC = () => {
   const { getAvailableRoutes } = useRoleBasedNavigation();
   const { isScrolled } = useScrollEffects(50);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+  
   const handleLogout = () => {
     logout();
     setIsMenuOpen(false);
   };
 
-  const availableRoutes = getAvailableRoutes();
+  // Get available routes for the current user
+  const availableRoutes = getAvailableRoutes().map((route: string) => ({
+    path: route,
+    name: route.split('/').pop()?.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Page'
+  }));
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);

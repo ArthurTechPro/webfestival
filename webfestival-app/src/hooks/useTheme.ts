@@ -2,9 +2,16 @@ import { useState, useEffect, useCallback } from 'react';
 
 // === TIPOS ===
 export type ThemeName = 
+  | 'looper'
   | 'corporate' 
+  | 'minimal'
+  | 'elegant'
+  | 'dark-professional'
   | 'cinematic' 
-  | 'retro';
+  | 'neon'
+  | 'retro'
+  | 'cyberpunk'
+  | 'ocean';
 
 export type ThemeCategory = 'professional' | 'cinematic';
 
@@ -20,13 +27,45 @@ export interface ThemeConfig {
 // === CONFIGURACIÓN DE TEMAS ===
 export const THEMES: Record<ThemeName, ThemeConfig> = {
   // Temas Profesionales
+  looper: {
+    name: 'looper',
+    displayName: 'Looper Professional',
+    category: 'professional',
+    description: 'Tema profesional basado en Looper',
+    primaryColor: '#346CB0',
+    isDark: false
+  },
   corporate: {
     name: 'corporate',
-    displayName: 'Corporate',
+    displayName: 'Corporate Modern',
     category: 'professional',
-    description: 'Estilo corporativo minimalista y elegante',
+    description: 'Diseño corporativo limpio',
     primaryColor: '#2563eb',
     isDark: false
+  },
+  minimal: {
+    name: 'minimal',
+    displayName: 'Minimal Clean',
+    category: 'professional',
+    description: 'Minimalismo elegante',
+    primaryColor: '#000000',
+    isDark: false
+  },
+  elegant: {
+    name: 'elegant',
+    displayName: 'Elegant Business',
+    category: 'professional',
+    description: 'Elegancia profesional',
+    primaryColor: '#3498db',
+    isDark: false
+  },
+  'dark-professional': {
+    name: 'dark-professional',
+    displayName: 'Dark Professional',
+    category: 'professional',
+    description: 'Profesional oscuro',
+    primaryColor: '#007acc',
+    isDark: true
   },
   
   // Temas Cinematográficos
@@ -34,23 +73,47 @@ export const THEMES: Record<ThemeName, ThemeConfig> = {
     name: 'cinematic',
     displayName: 'Cinematic Dark',
     category: 'cinematic',
-    description: 'Tema oscuro cinematográfico con efectos glassmorphism',
+    description: 'Tema cinematográfico original',
     primaryColor: '#4a7bc8',
+    isDark: true
+  },
+  neon: {
+    name: 'neon',
+    displayName: 'Neon Cyber',
+    category: 'cinematic',
+    description: 'Efectos neon futuristas',
+    primaryColor: '#00ffff',
     isDark: true
   },
   retro: {
     name: 'retro',
     displayName: 'Retro Wave',
     category: 'cinematic',
-    description: 'Estilo retro synthwave con colores vibrantes',
+    description: 'Estética retro-futurista',
     primaryColor: '#ff6b9d',
+    isDark: true
+  },
+  cyberpunk: {
+    name: 'cyberpunk',
+    displayName: 'Cyberpunk 2077',
+    category: 'cinematic',
+    description: 'Inspirado en cyberpunk',
+    primaryColor: '#ff0080',
+    isDark: true
+  },
+  ocean: {
+    name: 'ocean',
+    displayName: 'Ocean Deep',
+    category: 'cinematic',
+    description: 'Profundidades oceánicas',
+    primaryColor: '#0ea5e9',
     isDark: true
   }
 };
 
 // === CONSTANTES ===
 const THEME_STORAGE_KEY = 'webfestival-theme';
-const DEFAULT_THEME: ThemeName = 'corporate';
+const DEFAULT_THEME: ThemeName = 'looper';
 
 // === HOOK PRINCIPAL ===
 export const useTheme = () => {
@@ -72,7 +135,7 @@ export const useTheme = () => {
 
         // 2. Detectar preferencia del sistema
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const systemTheme: ThemeName = prefersDark ? 'cinematic' : 'corporate';
+        const systemTheme: ThemeName = prefersDark ? 'cinematic' : 'looper';
         
         setThemeState(systemTheme);
         applyThemeToDocument(systemTheme);
@@ -97,7 +160,7 @@ export const useTheme = () => {
       // Solo cambiar si no hay tema guardado manualmente
       const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
       if (!savedTheme) {
-        const systemTheme: ThemeName = e.matches ? 'cinematic' : 'corporate';
+        const systemTheme: ThemeName = e.matches ? 'cinematic' : 'looper';
         setThemeState(systemTheme);
         applyThemeToDocument(systemTheme);
       }
@@ -148,7 +211,7 @@ export const useTheme = () => {
   // Alternar entre tema claro y oscuro
   const toggleTheme = useCallback(() => {
     const currentConfig = THEMES[theme];
-    const newTheme: ThemeName = currentConfig.isDark ? 'corporate' : 'cinematic';
+    const newTheme: ThemeName = currentConfig.isDark ? 'looper' : 'cinematic';
     setTheme(newTheme);
   }, [theme, setTheme]);
 
@@ -217,8 +280,11 @@ export const useComponentVariant = () => {
       }
     } else {
       switch (theme) {
+        case 'looper': return 'professional';
         case 'corporate': return 'corporate';
-        default: return 'corporate';
+        case 'minimal': return 'minimal';
+        case 'elegant': return 'elegant';
+        default: return 'professional';
       }
     }
   }, [theme, currentThemeConfig.isDark]);

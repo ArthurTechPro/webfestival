@@ -1,12 +1,14 @@
-import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './contexts/AuthContext';
 import { useTheme } from './hooks/useTheme';
 // Estilos ya importados en main.tsx con globals.scss
 
 // Importar páginas públicas
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
+// import LoginPage from './pages/LoginPage';
+// import RegisterPage from './pages/RegisterPage';
+import SimpleLoginPage from './pages/SimpleLoginPage';
+import SimpleRegisterPage from './pages/SimpleRegisterPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import UnauthorizedPage from './pages/UnauthorizedPage';
@@ -20,16 +22,25 @@ import AdminDashboard from './pages/AdminDashboard';
 import ContentAdminDashboard from './pages/ContentAdminDashboard';
 
 // Importar componentes de layout y protección
-import Navbar from './components/layout/Navbar';
+// import Navbar from './components/layout/Navbar';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import RoleBasedRedirect from './components/auth/RoleBasedRedirect';
 
 // Importar componentes premium
-import { Button, ThemeSelector } from './components/ui';
+import { Button } from './components/ui';
+// import { ThemeSelector } from './components/ui';
 import StyleShowcaseSimple from './pages/StyleShowcaseSimple';
 import ProfessionalComponentsDemoSimple from './pages/ProfessionalComponentsDemoSimple';
 import ModernComponentsDemo from './pages/ModernComponentsDemo';
-import { LandingPage } from './components/pages/Landing';
+// import LandingPage from './components/pages/Landing/LandingPage';
+// import LandingPageFixed from './components/pages/Landing/LandingPageFixed';
+
+// import LandingPageNoSCSS from './components/LandingPageNoSCSS';
+
+import LandingPageSafe from './components/LandingPageSafe';
+import ErrorBoundary from './components/ErrorBoundary';
+// import { NavigationProvider } from './contexts/NavigationContext';
+// import TestPage from './pages/TestPage';
 
 
 // Crear instancia de QueryClient para TanStack Query
@@ -141,34 +152,34 @@ const HomePage = () => {
 // Componente wrapper con tema
 const AppContent = () => {
   const { theme } = useTheme();
-  const location = useLocation();
+  // const location = useLocation();
   
-  // Páginas donde no se debe mostrar el Navbar
-  const hideNavbarRoutes = ['/login', '/register', '/forgot-password', '/reset-password'];
-  const shouldHideNavbar = hideNavbarRoutes.includes(location.pathname);
+  // Páginas donde no se debe mostrar el Navbar - temporalmente deshabilitado
+  // const hideNavbarRoutes = ['/login', '/register', '/forgot-password', '/reset-password'];
+  // const shouldHideNavbar = hideNavbarRoutes.includes(location.pathname);
   
   return (
     <div className="App wf-min-h-screen" data-theme={theme}>
-      {/* Selector de tema flotante - solo en páginas que no son de auth */}
-      {!shouldHideNavbar && (
+      {/* Selector de tema flotante - temporalmente deshabilitado */}
+      {/* {!shouldHideNavbar && (
         <div className="wf-fixed wf-bottom-4 wf-left-4 wf-z-50">
           <ThemeSelector showLabel={false} position="fixed" compact={true} />
         </div>
-      )}
+      )} */}
       
-      {/* Navbar - solo en páginas que no son de auth */}
-      {!shouldHideNavbar && <Navbar />}
+      {/* Navbar - temporalmente deshabilitado hasta configurar NavigationProvider */}
+      {/* {!shouldHideNavbar && <Navbar />} */}
       
       <main className="wf-main-content">
         <Routes>
               {/* Rutas públicas */}
-              <Route path="/" element={<LandingPage />} />
+              <Route path="/" element={<LandingPageSafe />} />
               <Route path="/home" element={<HomePage />} />
               <Route path="/showcase" element={<StyleShowcaseSimple />} />
               <Route path="/professional-demo" element={<ProfessionalComponentsDemoSimple />} />
               <Route path="/modern-demo" element={<ModernComponentsDemo />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/login" element={<SimpleLoginPage />} />
+              <Route path="/register" element={<SimpleRegisterPage />} />
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />
               <Route path="/reset-password" element={<ResetPasswordPage />} />
               <Route path="/galeria" element={<GaleriaPublica />} />
@@ -262,13 +273,15 @@ const AppContent = () => {
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Router>
-          <AppContent />
-        </Router>
-      </AuthProvider>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <Router>
+            <AppContent />
+          </Router>
+        </AuthProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 

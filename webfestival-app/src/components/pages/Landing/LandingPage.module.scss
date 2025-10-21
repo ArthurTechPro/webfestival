@@ -5,20 +5,14 @@
 
 // === CONTAINER PRINCIPAL ===
 .landingContainer {
-  @include full-viewport;
-  position: fixed;
-  top: 0;
-  left: 0;
-  overflow-y: auto;
+  min-height: 100vh;
+  width: 100%;
   background: var(--gradient-hero);
   color: var(--color-white);
   font-family: var(--font-primary);
   
   // Scroll suave
   scroll-behavior: smooth;
-  
-  // Optimización de rendimiento
-  will-change: scroll-position;
   
   @include light-themes {
     background: var(--theme-bg-primary);

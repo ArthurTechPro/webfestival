@@ -515,7 +515,119 @@ interface NewsletterMetrics {
 - Newsletter automático para suscriptores
 - Escalabilidad para nuevos tipos de contenido sin cambios de esquema
 
-### 12. Sistema de Temas Profesionales Extendido
+### 12. Sistema de Navegación Principal
+
+**Responsabilidades**:
+- Implementación de menú superior fijo con branding y opciones de usuario
+- Menú lateral izquierdo con navegación específica por rol de usuario
+- Sistema responsive que se adapta a diferentes tamaños de pantalla
+- Integración con sistema de autenticación y autorización por roles
+
+```typescript
+interface NavigationSystem {
+  // Configuración del menú superior
+  topMenu: TopMenuConfig;
+  // Configuración del menú lateral
+  sideMenu: SideMenuConfig;
+  // Configuración responsive
+  responsive: ResponsiveConfig;
+  // Gestión de estado del menú
+  menuState: MenuState;
+}
+
+interface TopMenuConfig {
+  logo: string;
+  height: string;
+  backgroundColor: string;
+  userOptions: UserMenuOption[];
+  notifications: NotificationConfig;
+}
+
+interface SideMenuConfig {
+  width: string;
+  collapsedWidth: string;
+  backgroundColor: string;
+  menuItems: MenuItem[];
+  collapsible: boolean;
+  defaultCollapsed: boolean;
+}
+
+interface MenuItem {
+  id: string;
+  icon: string;
+  label: string;
+  route?: string;
+  action?: string;
+  submenu?: SubMenuItem[];
+  roles: UserRole[];
+  badge?: boolean;
+  active?: boolean;
+}
+
+interface SubMenuItem {
+  id: string;
+  label: string;
+  route: string;
+  roles: UserRole[];
+}
+
+interface UserMenuOption {
+  icon: string;
+  label: string;
+  route?: string;
+  action?: string;
+  badge?: boolean;
+}
+
+interface ResponsiveConfig {
+  mobile: {
+    sideMenuBehavior: 'overlay' | 'push' | 'static';
+    showLabels: boolean;
+    collapsible: boolean;
+  };
+  tablet: {
+    sideMenuBehavior: 'overlay' | 'push' | 'static';
+    showLabels: boolean;
+    collapsible: boolean;
+  };
+  desktop: {
+    sideMenuBehavior: 'overlay' | 'push' | 'static';
+    showLabels: boolean;
+    collapsible: boolean;
+  };
+}
+
+interface MenuState {
+  sideMenuCollapsed: boolean;
+  activeMenuItem: string;
+  userMenuOpen: boolean;
+  mobileMenuOpen: boolean;
+}
+
+interface NavigationService {
+  // Gestión de menús por rol
+  getMenuForRole(role: UserRole): MenuItem[];
+  getTopMenuForRole(role: UserRole): UserMenuOption[];
+  
+  // Gestión de estado
+  toggleSideMenu(): void;
+  toggleUserMenu(): void;
+  toggleMobileMenu(): void;
+  setActiveMenuItem(itemId: string): void;
+  
+  // Navegación
+  navigateTo(route: string): void;
+  executeAction(action: string): void;
+  
+  // Responsive
+  handleResize(width: number): void;
+  isMobile(): boolean;
+  isTablet(): boolean;
+  isDesktop(): boolean;
+}
+```
+
+### 13. Sistema de Temas Profesionales Extendido
 
 **Responsabilidades**:
 - Extensión del sistema de temas existente con opciones profesionales

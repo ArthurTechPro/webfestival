@@ -323,33 +323,8 @@
   color: inherit;
 }
 
+// === MIXINS DE NAVEGACIÓN ===
+// Los mixins de navegación específicos están en el archivo _navigation.scss
+
 // === MIXINS DE TEMAS ===
-
-// Theme variant mixin
-@mixin theme-variant($theme, $property, $value) {
-  [data-theme="#{$theme}"] & {
-    #{$property}: #{$value};
-  }
-}
-
-// Dark mode mixin
-@mixin dark-mode {
-  @media (prefers-color-scheme: dark) {
-    @content;
-  }
-
-  [data-theme="dark"] & {
-    @content;
-  }
-}
-
-// Light mode mixin
-@mixin light-mode {
-  @media (prefers-color-scheme: light) {
-    @content;
-  }
-
-  [data-theme="light"] & {
-    @content;
-  }
-}
+// Los mixins de temas están definidos en _themes.scss para evitar duplicación

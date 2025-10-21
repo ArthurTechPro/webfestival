@@ -1,0 +1,210 @@
+/* Navigation Animations and Transitions */
+
+/* Smooth transitions for side menu */
+.wf-navigation-side-menu {
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              width 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 200ms ease-in-out;
+}
+
+/* Overlay animations */
+.wf-navigation-overlay {
+  transition: opacity 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.wf-navigation-overlay.wf-entering {
+  opacity: 0;
+}
+
+.wf-navigation-overlay.wf-entered {
+  opacity: 1;
+}
+
+.wf-navigation-overlay.wf-exiting {
+  opacity: 1;
+}
+
+.wf-navigation-overlay.wf-exited {
+  opacity: 0;
+}
+
+/* Side menu slide animations */
+.wf-navigation-side-menu.wf-overlay-mode {
+  transform: translateX(-100%);
+}
+
+.wf-navigation-side-menu.wf-overlay-mode.wf-open {
+  transform: translateX(0);
+}
+
+.wf-navigation-side-menu.wf-push-mode {
+  transform: translateX(0);
+}
+
+.wf-navigation-side-menu.wf-static-mode {
+  transform: translateX(0);
+}
+
+/* Menu item animations */
+.wf-menu-item {
+  transition: background-color 200ms ease-in-out,
+              color 200ms ease-in-out,
+              padding 200ms ease-in-out;
+}
+
+.wf-menu-item:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.wf-menu-item.wf-active {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: rgb(29, 78, 216);
+  border-right: 2px solid rgb(29, 78, 216);
+}
+
+/* Submenu animations */
+.wf-submenu {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 200ms cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 200ms ease-in-out;
+  opacity: 0;
+}
+
+.wf-submenu.wf-expanded {
+  max-height: 500px; /* Adjust based on your needs */
+  opacity: 1;
+}
+
+/* Icon animations */
+.wf-menu-icon {
+  transition: transform 200ms ease-in-out,
+              color 200ms ease-in-out;
+}
+
+.wf-chevron-icon {
+  transition: transform 200ms ease-in-out;
+}
+
+.wf-chevron-icon.wf-expanded {
+  transform: rotate(180deg);
+}
+
+/* Tooltip animations */
+.wf-tooltip {
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: opacity 200ms ease-in-out,
+              transform 200ms ease-in-out;
+  pointer-events: none;
+}
+
+.wf-menu-item:hover .wf-tooltip {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Badge animations */
+.wf-badge {
+  animation: wf-pulse 2s infinite;
+}
+
+@keyframes wf-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Responsive breakpoint animations */
+@media (max-width: 767px) {
+  .wf-navigation-side-menu {
+    transition: transform 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .wf-navigation-side-menu {
+    transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1),
+                width 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+@media (min-width: 1024px) {
+  .wf-navigation-side-menu {
+    transition: width 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+/* Content push animations for push mode */
+.wf-main-content {
+  transition: margin-left 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.wf-main-content.wf-pushed {
+  margin-left: 250px; /* Side menu width */
+}
+
+.wf-main-content.wf-pushed-collapsed {
+  margin-left: 60px; /* Collapsed side menu width */
+}
+
+/* Focus states for accessibility */
+.wf-menu-item:focus,
+.wf-hamburger-button:focus {
+  outline: 2px solid rgb(59, 130, 246);
+  outline-offset: 2px;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .wf-navigation-side-menu,
+  .wf-navigation-overlay,
+  .wf-menu-item,
+  .wf-submenu,
+  .wf-menu-icon,
+  .wf-chevron-icon,
+  .wf-tooltip,
+  .wf-main-content {
+    transition: none;
+  }
+  
+  .wf-badge {
+    animation: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .wf-menu-item.wf-active {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-right-width: 3px;
+  }
+  
+  .wf-navigation-overlay {
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+}
+
+/* Dark mode support (if implemented) */
+@media (prefers-color-scheme: dark) {
+  .wf-navigation-side-menu {
+    background-color: rgb(31, 41, 55);
+    border-color: rgb(55, 65, 81);
+  }
+  
+  .wf-menu-item {
+    color: rgb(229, 231, 235);
+  }
+  
+  .wf-menu-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .wf-menu-item.wf-active {
+    background-color: rgba(59, 130, 246, 0.2);
+    color: rgb(147, 197, 253);
+  }
+}

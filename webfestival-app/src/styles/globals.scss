@@ -15,6 +15,7 @@
 
 // 5. Componentes modulares
 @use 'components/auth';
+@use 'components/navigation';
 
 // 6. Componentes temporales (serán migrados al sistema modular)
 @use 'globals/auth-components';

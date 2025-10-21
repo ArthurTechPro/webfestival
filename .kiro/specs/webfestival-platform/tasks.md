@@ -328,12 +328,48 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
     - Actualizar StyleShowcase para mostrar componentes cinematográficos vs profesionales
     - Implementar comparación lado a lado de HeroCinematic vs HeroProfessional
     - Crear sección de demostración de LoginForm vs AuthFormProfessional
-    - Mostrar todos los 9 temas disponibles con preview en tiempo real
+    - Mostrar todos los 3 temas disponibles con preview en tiempo real
     - Documentar cuándo usar cada variante y estilo de componente
     - _Requisitos: 36.5, 37.5_
 
-- [ ] 12. Interfaces para participantes
-  - [ ] 12.1 Dashboard de participantes
+- [ ] 12. Sistema de navegación principal
+  - [x] 12.1 Implementar componentes de navegación base
+    - Crear componente TopNavigation con logo, opciones de usuario y notificaciones
+    - Implementar componente SideNavigation con menú lateral colapsible
+    - Crear componente NavigationProvider para gestión de estado del menú
+    - Implementar hook useNavigation para acceso al estado y funciones de navegación
+    - Crear componente UserMenu dropdown con opciones específicas por rol
+    - Implementar sistema de iconos unificado para elementos de navegación
+    - _Requisitos: 38.1, 38.2_
+
+  - [x] 12.2 Configurar navegación por roles de usuario
+    - Implementar servicio NavigationService que carga opciones desde navigation-menu-options.json
+    - Crear lógica de filtrado de menús según rol de usuario autenticado
+    - Implementar sistema de permisos para mostrar/ocultar opciones de menú
+    - Crear componente MenuItem con soporte para submenús y badges
+    - Implementar navegación activa que resalta la sección actual
+    - Crear sistema de breadcrumbs para navegación contextual
+    - _Requisitos: 38.3, 38.4, 38.5, 38.6_
+
+  - [x] 12.3 Implementar diseño responsive y adaptativo
+    - Crear comportamiento responsive del menú lateral (overlay, push, static)
+    - Implementar menú móvil con hamburger button y overlay
+    - Crear sistema de colapso/expansión del menú lateral en desktop
+    - Implementar adaptación automática según tamaño de pantalla
+    - Crear animaciones suaves para transiciones de menú
+    - Implementar persistencia del estado del menú en localStorage
+    - _Requisitos: 38.1, 38.2_
+
+  - [x] 12.4 Integrar navegación con sistema de temas SCSS
+    - Aplicar variables SCSS para colores y espaciado del sistema de navegación
+    - Crear mixins SCSS específicos para efectos de menú (hover, active, transitions)
+    - Implementar adaptación automática de colores según tema seleccionado
+    - Crear variantes de navegación para temas cinematográficos vs profesionales
+    - Implementar efectos glassmorphism y neumorphism en elementos de navegación
+    - Optimizar navegación para todos los temas disponibles (9 temas)
+    - _Requisitos: 38.1, 38.2, 39.1, 39.2, 39.3, 39.4_
+  - [ ] 13. Interfaces para participantes
+  - [ ] 13.1 Dashboard de participantes
     - Crear página principal con concursos activos filtrados por tipo de medio
     - Implementar página "Mis Envíos" con estado de medios y límite de 3 por concurso
     - Crear interfaz universal para subida de medios multimedia (foto, video, audio, corto) con preview específico por tipo
@@ -342,7 +378,7 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
     - Implementar visualización de metadatos extraídos automáticamente (EXIF para fotos, duración para videos/audios)
     - _Requisitos: 2.1, 2.2, 3.1, 3.2, 4.1, 4.2, 4.3, 17.2, 33.4_
 
-  - [ ] 12.2 Gestión de perfil y comunidad
+  - [ ] 13.2 Gestión de perfil y comunidad
     - Crear página de perfil con edición de datos
     - Implementar sistema de seguimiento entre usuarios
     - Crear feed personalizado de actividades
@@ -350,14 +386,9 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
     - Crear interfaz para gestión de suscripciones y planes
     - Implementar dashboard de límites y uso por plan
     - _Requisitos: 1.1, 1.3, 15.1, 15.2, 15.3, 15.4, 16.1, 16.2, 16.3, 16.4, 36.2, 36.3_
-    - Crear página de perfil con edición de datos
-    - Implementar sistema de seguimiento entre usuarios
-    - Crear feed personalizado de actividades
-    - Implementar comentarios públicos en medios multimedia
-    - _Requisitos: 1.1, 1.3, 15.1, 15.2, 15.3, 15.4, 16.1, 16.2, 16.3, 16.4_
 
-- [ ] 13. Interfaces para jurados especializados
-  - [ ] 13.1 Panel de evaluación especializado
+- [ ] 14. Interfaces para jurados especializados
+  - [ ] 14.1 Panel de evaluación especializado
     - Crear dashboard con categorías asignadas filtradas por especialización del jurado
     - Implementar interfaz de calificación dinámica que carga criterios específicos según tipo de medio evaluado
     - Crear reproductores integrados para evaluación de videos, audios y cortos de cine
@@ -367,23 +398,15 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
     - Crear interfaz para visualizar pesos y descripción de criterios durante evaluación
     - _Requisitos: 5.1, 5.2, 6.1, 6.2, 6.4, 33.4, 33.5, 35.3, 35.4_
 
-  - [ ] 13.2 Gestión de especialización de jurados
+  - [ ] 14.2 Gestión de especialización de jurados
     - Crear interfaz para configurar especializaciones por tipo de medio
     - Implementar sistema de certificaciones y portfolio para jurados
     - Crear dashboard de rendimiento por especialización
     - Implementar sistema de feedback entre jurados especializados
     - _Requisitos: 35.1, 35.2, 35.3, 35.4_
-    - Crear dashboard con categorías asignadas filtradas por especialización del jurado
-    - Implementar interfaz de calificación dinámica que carga criterios específicos según tipo de medio evaluado
-    - Crear reproductores integrados para evaluación de videos, audios y cortos de cine
-    - Implementar visualización de metadatos relevantes para cada tipo de medio durante evaluación
-    - Crear página para ver progreso de evaluaciones con métricas por tipo de medio
-    - Implementar sistema de comentarios especializados para feedback constructivo por tipo
-    - Crear interfaz para visualizar pesos y descripción de criterios durante evaluación
-    - _Requisitos: 5.1, 5.2, 6.1, 6.2, 6.4, 33.4, 33.5_
 
-- [ ] 14. Panel de administración
-  - [ ] 14.1 Dashboard administrativo
+- [ ] 15. Panel de administración
+  - [ ] 15.1 Dashboard administrativo
     - Crear dashboard con métricas generales
     - Implementar CRUD de concursos con formularios completos
     - Crear interfaz para asignación de jurados
@@ -414,8 +437,8 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
     - Implementar analytics de criterios más utilizados y efectivos por tipo de medio
     - _Requisitos: 14.1, 14.2, 14.3, 14.4, 33.5_
 
-- [ ] 15. Galería pública y funcionalidades sociales
-  - [ ] 15.1 Galería pública multimedia
+- [ ] 16. Galería pública y funcionalidades sociales
+  - [ ] 16.1 Galería pública multimedia
     - Crear interfaz de galería unificada con medios ganadores de todos los tipos (foto, video, audio, corto)
     - Implementar reproductores integrados para cada tipo de medio en la galería
     - Crear filtros avanzados por tipo de medio, categoría, concurso y año
@@ -424,21 +447,21 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
     - Implementar visualización de metadatos relevantes en la galería pública
     - _Requisitos: 11.1, 11.2, 11.3, 11.4, 13.1, 13.2, 13.3, 13.4_
 
-- [ ] 16. Optimizaciones y testing
-  - [ ] 16.1 Optimización de rendimiento
+- [ ] 17. Optimizaciones y testing
+  - [ ] 17.1 Optimización de rendimiento
     - Implementar lazy loading para imágenes y componentes
     - Crear sistema de caché para datos frecuentes
     - Optimizar bundle size y code splitting
     - _Requisitos: 22.1, 22.2, 24.1, 24.2, 24.3, 24.4_
 
-  - [ ] 16.2 Testing del frontend
+  - [ ] 17.2 Testing del frontend
     - Crear tests unitarios para componentes críticos
     - Implementar tests de integración para flujos principales
     - Crear tests end-to-end con Playwright
     - _Requisitos: Validación de flujos completos_
 
-- [ ] 17. Landing page pública integrada y SEO
-  - [x] 17.1 Página principal optimizada con tema oscuro
+- [ ] 18. Landing page pública integrada y SEO
+  - [x] 18.1 Página principal optimizada con tema oscuro
     - ✅ **COMPLETADO**: Landing page fullscreen implementada con tema oscuro profesional
     - ✅ **COMPLETADO**: Navbar fijo con navegación suave y efectos glassmorphism
     - ✅ **COMPLETADO**: Hero section con gradientes cinematográficos y call-to-action
@@ -448,15 +471,15 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
     - ✅ **COMPLETADO**: Documentación completa en docs/landing-dark-fullscreen-README.md
     - _Requisitos: 19.1, 19.2, 19.3, 19.4_
 
-  - [ ] 17.2 Optimización SEO y meta tags
+  - [ ] 18.2 Optimización SEO y meta tags
     - Implementar meta tags dinámicos en index.html
     - Crear structured data (JSON-LD) para mejor indexación
     - Optimizar Open Graph tags para compartir en redes sociales
     - Implementar sitemap estático optimizado
     - _Requisitos: 19.4, 32.1, 32.2, 32.3, 32.4_
 
-- [ ] 18. Sistema CMS dinámico y contenido educativo
-  - [ ] 18.1 Panel CMS dinámico y unificado
+- [ ] 19. Sistema CMS dinámico y contenido educativo
+  - [ ] 19.1 Panel CMS dinámico y unificado
     - Crear interfaz de gestión unificada para múltiples tipos de contenido (página estática, blog post, sección CMS)
     - Implementar editor WYSIWYG con plantillas dinámicas que se adaptan según el tipo de contenido
     - Crear sistema de campos personalizables que se cargan dinámicamente por tipo
@@ -466,14 +489,14 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
     - Crear autocompletado inteligente para etiquetas basado en contenido existente
     - _Requisitos: 20.1, 20.3, 20.4, 25.1, 25.2, 25.3, 25.4, 28.1, 28.2_
 
-  - [ ] 18.2 Dashboard de contenido y analytics
+  - [ ] 19.2 Dashboard de contenido y analytics
     - Crear dashboard unificado con estadísticas por tipo de contenido
     - Implementar interfaz para gestión de categorías y etiquetas flexibles
     - Crear herramientas de búsqueda y filtrado avanzado
     - Implementar métricas de engagement consolidadas
     - _Requisitos: 28.1, 28.2, 28.3, 28.4, 31.1, 31.2, 31.3, 31.4_
 
-  - [ ] 18.3 Gestión de contenido educativo
+  - [ ] 19.3 Gestión de contenido educativo
     - Crear interfaz para gestión de tutoriales y guías por tipo de medio
     - Implementar sistema de categorización por nivel (principiante, intermedio, avanzado)
     - Crear herramientas para contenido multimedia educativo (videos, imágenes, ejemplos)
@@ -481,8 +504,8 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
     - Crear métricas de engagement para contenido educativo
     - _Requisitos: 37.1, 37.2, 37.3, 37.4_
 
-- [ ] 19. Blog de la comunidad y moderación
-  - [ ] 19.1 Interfaz pública unificada
+- [ ] 20. Blog de la comunidad y moderación
+  - [ ] 20.1 Interfaz pública unificada
     - Crear páginas públicas adaptables que renderizan cualquier tipo de contenido dinámicamente
     - Implementar sistema de comentarios universal con soporte para respuestas anidadas
     - Crear sistema de likes unificado que funciona para cualquier tipo de contenido
@@ -491,7 +514,7 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
     - Implementar sistema de reportes unificado para contenido y comentarios inapropiados
     - _Requisitos: 26.1, 26.2, 26.3, 26.4, 27.1, 27.2, 27.3, 27.4_
 
-  - [ ] 19.2 Panel de moderación centralizado
+  - [ ] 20.2 Panel de moderación centralizado
     - Crear interfaz unificada para moderación de comentarios de cualquier tipo de contenido
     - Implementar gestión centralizada de reportes con categorización automática
     - Crear herramientas de moderación masiva que funcionan across múltiples tipos de contenido
@@ -500,14 +523,14 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
     - Implementar filtros avanzados para moderación eficiente por tipo, gravedad y estado
     - _Requisitos: 29.1, 29.2, 29.3, 29.4_
 
-- [ ] 20. Newsletter, suscripciones y analytics unificado
-  - [ ] 20.1 Sistema de suscripciones
+- [ ] 21. Newsletter, suscripciones y analytics unificado
+  - [ ] 21.1 Sistema de suscripciones
     - Implementar formularios de suscripción al newsletter
     - Crear páginas de confirmación y cancelación
     - Implementar gestión de suscriptores
     - _Requisitos: 30.1, 30.2, 30.3, 30.4_
 
-  - [ ] 20.2 Analytics unificado y SEO avanzado
+  - [ ] 21.2 Analytics unificado y SEO avanzado
     - Implementar estadísticas consolidadas del CMS, blog y newsletter
     - Crear métricas de engagement por tipo de contenido y post individual
     - Implementar análisis de crecimiento de suscriptores con segmentación
@@ -520,15 +543,15 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
 
 ## Fase 3: Integración y Testing Final
 
-- [ ] 21. Integración completa del ecosistema unificado
-  - [ ] 21.1 Testing de integración entre componentes
+- [ ] 22. Integración completa del ecosistema unificado
+  - [ ] 22.1 Testing de integración entre componentes
     - Crear tests end-to-end que cubran toda la aplicación React unificada
     - Validar flujos completos de usuario entre landing, app y CMS
     - Probar integración con backend API y servicios externos (Immich, email)
     - Validar funcionamiento de temas profesionales y cinematográficos
     - _Requisitos: Validación del ecosistema completo_
 
-  - [ ] 21.2 Optimización de rendimiento y deployment
+  - [ ] 22.2 Optimización de rendimiento y deployment
     - Implementar lazy loading avanzado para todas las secciones (app, landing, CMS)
     - Optimizar bundle splitting por funcionalidad (participantes, jurados, admin, público)
     - Crear sistema de caché unificado para datos compartidos entre secciones

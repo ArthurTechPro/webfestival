@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import './styles/globals.scss';
 import App from './App.tsx';
 
+
 // Importar utilidades de prueba en desarrollo
 if (import.meta.env.DEV) {
   import('./utils/test-auth');

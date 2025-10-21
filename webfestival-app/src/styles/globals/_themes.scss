@@ -29,26 +29,81 @@
 
 
 
+// === TEMA LOOPER (PROFESIONAL) ===
+[data-theme="looper"] {
+  --theme-bg-primary: var(--color-white);
+  --theme-bg-secondary: #f6f7f9;
+  --theme-text-primary: #222230;
+  --theme-text-secondary: #6b7280;
+  --theme-border: #e5e7eb;
+  
+  // Colores Looper profesionales
+  --color-primary: #346CB0;
+  --color-primary-dark: #2a5a96;
+  --color-primary-light: #4a7bc8;
+  --color-secondary: #00A28A;
+  --color-accent: #F7C46C;
+  --component-variant: 'professional';
+  
+  // Fuente específica Looper
+  --font-primary: 'Fira Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
 // === TEMA CORPORATIVO ===
 [data-theme="corporate"] {
-  --theme-bg-primary: var(--color-white);
-  --theme-bg-secondary: var(--color-gray-50);
-  --theme-text-primary: var(--color-gray-900);
-  --theme-text-secondary: var(--color-gray-600);
-  --theme-border: var(--color-gray-200);
+  --theme-bg-primary: #f8fafc;
+  --theme-bg-secondary: var(--color-white);
+  --theme-text-primary: #0f172a;
+  --theme-text-secondary: #64748b;
+  --theme-border: #e2e8f0;
   
-  // Colores más conservadores
+  // Colores corporativos modernos
   --color-primary: #2563eb;
   --color-primary-dark: #1d4ed8;
   --color-primary-light: #3b82f6;
+  --color-secondary: #10b981;
+  --color-accent: #f59e0b;
   --component-variant: 'corporate';
+  
+  // Fuente corporativa
+  --font-primary: 'Inter', system-ui, sans-serif;
 }
 
+// === TEMA MINIMAL (PROFESIONAL) ===
+[data-theme="minimal"] {
+  --theme-bg-primary: #fefefe;
+  --theme-bg-secondary: #f9f9f9;
+  --theme-text-primary: #1a1a1a;
+  --theme-text-secondary: #666666;
+  --theme-border: #e0e0e0;
+  
+  // Paleta minimalista
+  --color-primary: #000000;
+  --color-primary-dark: #333333;
+  --color-primary-light: #666666;
+  --color-secondary: #f0f0f0;
+  --color-accent: #ff6b35;
+  --component-variant: 'minimal';
+}
 
+// === TEMA NEON (CINEMATOGRÁFICO) ===
+[data-theme="neon"] {
+  --theme-bg-primary: #0a0a0f;
+  --theme-bg-secondary: #1a1a2e;
+  --theme-text-primary: #00ffff;
+  --theme-text-secondary: #b19cd9;
+  --theme-border: rgba(0, 255, 255, 0.3);
+  
+  // Colores neon
+  --color-primary: #00ffff;
+  --color-primary-dark: #00cccc;
+  --color-primary-light: #66ffff;
+  --color-secondary: #ff00ff;
+  --color-accent: #ffff00;
+  --component-variant: 'neon';
+}
 
-
-
-// === TEMA RETRO ===
+// === TEMA RETRO (CINEMATOGRÁFICO) ===
 [data-theme="retro"] {
   --theme-bg-primary: #2d1b69;
   --theme-bg-secondary: #1a0f3d;
@@ -60,7 +115,77 @@
   --color-primary: #ff6b9d;
   --color-primary-dark: #e55a8a;
   --color-primary-light: #ff8fb3;
+  --color-secondary: #00d4aa;
+  --color-accent: #ffd23f;
   --component-variant: 'retro';
+}
+
+// === TEMA CYBERPUNK (CINEMATOGRÁFICO) ===
+[data-theme="cyberpunk"] {
+  --theme-bg-primary: #0d1117;
+  --theme-bg-secondary: #161b22;
+  --theme-text-primary: #f0f6fc;
+  --theme-text-secondary: #7d8590;
+  --theme-border: rgba(240, 246, 252, 0.1);
+  
+  // Colores cyberpunk
+  --color-primary: #ff0080;
+  --color-primary-dark: #cc0066;
+  --color-primary-light: #ff3399;
+  --color-secondary: #00ff41;
+  --color-accent: #ffff00;
+  --component-variant: 'cyberpunk';
+}
+
+// === TEMA ELEGANT (PROFESIONAL) ===
+[data-theme="elegant"] {
+  --theme-bg-primary: #fafafa;
+  --theme-bg-secondary: #ffffff;
+  --theme-text-primary: #2c3e50;
+  --theme-text-secondary: #7f8c8d;
+  --theme-border: #ecf0f1;
+  
+  // Colores elegantes
+  --color-primary: #3498db;
+  --color-primary-dark: #2980b9;
+  --color-primary-light: #5dade2;
+  --color-secondary: #1abc9c;
+  --color-accent: #e74c3c;
+  --component-variant: 'elegant';
+}
+
+// === TEMA DARK PROFESSIONAL (PROFESIONAL OSCURO) ===
+[data-theme="dark-professional"] {
+  --theme-bg-primary: #1e1e1e;
+  --theme-bg-secondary: #2d2d30;
+  --theme-text-primary: #ffffff;
+  --theme-text-secondary: #cccccc;
+  --theme-border: rgba(255, 255, 255, 0.1);
+  
+  // Colores profesionales oscuros
+  --color-primary: #007acc;
+  --color-primary-dark: #005a9e;
+  --color-primary-light: #339cdb;
+  --color-secondary: #28a745;
+  --color-accent: #ffc107;
+  --component-variant: 'dark-professional';
+}
+
+// === TEMA OCEAN (CINEMATOGRÁFICO) ===
+[data-theme="ocean"] {
+  --theme-bg-primary: #0f172a;
+  --theme-bg-secondary: #1e293b;
+  --theme-text-primary: #e2e8f0;
+  --theme-text-secondary: #94a3b8;
+  --theme-border: rgba(226, 232, 240, 0.1);
+  
+  // Colores oceánicos
+  --color-primary: #0ea5e9;
+  --color-primary-dark: #0284c7;
+  --color-primary-light: #38bdf8;
+  --color-secondary: #06b6d4;
+  --color-accent: #8b5cf6;
+  --component-variant: 'ocean';
 }
 
 
@@ -71,6 +196,13 @@
 
 // === MIXINS DE TEMA ===
 
+// Theme variant mixin
+@mixin theme-variant($theme, $property, $value) {
+  [data-theme="#{$theme}"] & {
+    #{$property}: #{$value};
+  }
+}
+
 // Mixin para aplicar estilos específicos por tema
 @mixin theme-styles($theme) {
   [data-theme="#{$theme}"] & {
@@ -78,17 +210,68 @@
   }
 }
 
-// Mixin para temas oscuros
-@mixin dark-themes {
-  [data-theme="cinematic"] &,
-  [data-theme="retro"] & {
+// Dark mode mixin
+@mixin dark-mode {
+  @media (prefers-color-scheme: dark) {
+    @content;
+  }
+
+  [data-theme="dark"] & {
     @content;
   }
 }
 
-// Mixin para temas claros
+// Light mode mixin
+@mixin light-mode {
+  @media (prefers-color-scheme: light) {
+    @content;
+  }
+
+  [data-theme="light"] & {
+    @content;
+  }
+}
+
+// Mixin para temas oscuros (cinematográficos)
+@mixin dark-themes {
+  [data-theme="cinematic"] &,
+  [data-theme="retro"] &,
+  [data-theme="neon"] &,
+  [data-theme="cyberpunk"] &,
+  [data-theme="dark-professional"] &,
+  [data-theme="ocean"] & {
+    @content;
+  }
+}
+
+// Mixin para temas claros (profesionales)
 @mixin light-themes {
-  [data-theme="corporate"] & {
+  [data-theme="looper"] &,
+  [data-theme="corporate"] &,
+  [data-theme="minimal"] &,
+  [data-theme="elegant"] & {
+    @content;
+  }
+}
+
+// Mixin para temas cinematográficos
+@mixin cinematic-themes {
+  [data-theme="cinematic"] &,
+  [data-theme="neon"] &,
+  [data-theme="retro"] &,
+  [data-theme="cyberpunk"] &,
+  [data-theme="ocean"] & {
+    @content;
+  }
+}
+
+// Mixin para temas profesionales
+@mixin professional-themes {
+  [data-theme="looper"] &,
+  [data-theme="corporate"] &,
+  [data-theme="minimal"] &,
+  [data-theme="elegant"] &,
+  [data-theme="dark-professional"] & {
     @content;
   }
 }

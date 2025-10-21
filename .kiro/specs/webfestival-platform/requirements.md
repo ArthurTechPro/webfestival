@@ -459,3 +459,16 @@ quisito 38
 3. CUANDO se crean componentes ENTONCES el sistema DEBERÁ usar mixins SCSS parametrizables para efectos, animaciones y responsive design
 4. CUANDO se migran componentes existentes ENTONCES el sistema DEBERÁ mantener compatibilidad total con el hook useTheme y componentes ThemeSelector/ThemeToggle existentes
 5. CUANDO se compila el CSS ENTONCES el sistema DEBERÁ generar un archivo CSS optimizado eliminando código no utilizado y manteniendo rendimiento óptimo
+### Requi
+sito 38
+
+**Historia de Usuario:** Como usuario del sistema, quiero tener un sistema de navegación principal consistente con menú superior y lateral, para poder acceder fácilmente a todas las funcionalidades según mi rol de usuario.
+
+#### Criterios de Aceptación
+
+1. CUANDO accedo a la aplicación ENTONCES el sistema DEBERÁ mostrar un menú superior fijo con el logo de WebFestival y opciones de usuario (perfil, notificaciones, configuración)
+2. CUANDO navego por la aplicación ENTONCES el sistema DEBERÁ mostrar un menú lateral izquierdo con iconos y opciones específicas según mi rol de usuario
+3. CUANDO soy participante ENTONCES el sistema DEBERÁ mostrar opciones de navegación para Dashboard, Concursos, Mis Envíos, Galería, Perfil y Comunidad
+4. CUANDO soy jurado ENTONCES el sistema DEBERÁ mostrar opciones para Dashboard, Evaluaciones, Progreso, Especialización y Perfil
+5. CUANDO soy administrador ENTONCES el sistema DEBERÁ mostrar opciones para Dashboard, Concursos, Usuarios, Criterios, Métricas y Configuración
+6. CUANDO soy administrador de contenido ENTONCES el sistema DEBERÁ mostrar opciones para Dashboard, CMS, Blog, Newsletter y Analytics

@@ -87,7 +87,7 @@ proyecto/
 - **webfestival-api**: Jest (Node.js backend)
 - **webfestival-app**: Vitest (React frontend con Vite)
 
-### Configuración para Jest (Backend - webfestival-api)
+### Configuración para jest (Backend - webfestival-api)
 - **NUNCA importar funciones de 'node:test'** en archivos de test de Jest
 - Jest proporciona `describe`, `it`, `expect`, `beforeEach`, `afterEach` como funciones globales
 - Usar únicamente `/// <reference types="jest" />` para las definiciones de tipos
@@ -97,7 +97,7 @@ proyecto/
 - **Usar Vitest con React Testing Library** para componentes React
 - **Importar explícitamente** las funciones de testing: `import { describe, it, expect, vi, beforeEach } from 'vitest';`
 - **Configurar tipos de jest-dom** en `tests/setup.ts` para matchers como `toBeInTheDocument()`
-- **Estructura de archivos de test**: usar tanto `tests/` como `src/components/__tests__/` según convenga
+- **Estructura de archivos de test**: solo se implenta en la carpeta `tests/` y no en `src/ 
 
 ### Manejo del Autofix de Kiro IDE
 - **CRÍTICO**: El autofix de Kiro IDE automáticamente agrega importaciones incorrectas de `node:test`
@@ -123,25 +123,24 @@ proyecto/
   ```
 
 **Para webfestival-app (Vitest):**
-- **Usar tanto `tests/` como `src/components/__tests__/`** según el tipo de test
-- **Tests de componentes**: `src/components/__tests__/ComponentName.test.tsx`
+- **Usar para realizar los tes en  `tests/`según el tipo de test.
 - **Tests de utilidades/hooks**: `tests/utilityName.test.ts`
 - **Estructura correcta:**
   ```
   webfestival-app/
   ├── src/
-  │   ├── components/
-  │   │   └── auth/
-  │   │       ├── __tests__/
-  │   │       │   ├── LoginForm.test.tsx
-  │   │       │   └── RegisterForm.test.tsx
-  │   │       ├── LoginForm.tsx
-  │   │       └── RegisterForm.tsx
-  │   └── hooks/
   └── tests/
-      ├── setup.ts
-      ├── theme.test.ts
-      └── routing.test.ts
+  │   ├── setup.ts
+  │   ├── theme.test.ts
+  │   └── routing.test.ts
+  │   ├── components/
+  │   └── auth/
+  │   ├── __tests__/
+  │   │  │   ├── LoginForm.test.tsx
+  │   │  │   └── RegisterForm.test.tsx
+  │   │  ├── LoginForm.tsx
+  │   │  └── RegisterForm.tsx
+  │   └── hooks/
   ```
 
 ### Configuración de Tipos para Testing
