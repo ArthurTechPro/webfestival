@@ -247,8 +247,56 @@ const styles = {
   footerContent: {
     maxWidth: '1200px',
     margin: '0 auto',
-    padding: '0 2rem',
-    textAlign: 'center' as const
+    padding: '0 2rem'
+  },
+  footerGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+    gap: '2rem',
+    marginBottom: '2rem'
+  },
+  footerSection: {
+    color: '#e5e7eb'
+  },
+  footerTitle: {
+    fontSize: '1.25rem',
+    fontWeight: '600',
+    marginBottom: '1rem',
+    color: 'white'
+  },
+  footerLinks: {
+    listStyle: 'none',
+    padding: 0,
+    margin: 0
+  },
+  footerLink: {
+    color: '#e5e7eb',
+    textDecoration: 'none',
+    transition: 'color 0.3s ease',
+    display: 'block',
+    marginBottom: '0.5rem'
+  },
+  footerBottom: {
+    borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+    paddingTop: '2rem',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexWrap: 'wrap' as const,
+    gap: '1rem'
+  },
+  socialLinks: {
+    display: 'flex',
+    gap: '1rem'
+  },
+  socialLink: {
+    fontSize: '1.5rem',
+    textDecoration: 'none',
+    transition: 'transform 0.3s ease'
+  },
+  footerCopyright: {
+    color: '#e5e7eb',
+    margin: 0
   }
 };
 
@@ -418,32 +466,58 @@ const LandingPageSafe: React.FC = () => {
       {/* Footer */}
       <footer style={styles.footer}>
         <div style={styles.footerContent}>
-          <h4 style={{ fontSize: '1.5rem', marginBottom: '1rem', color: 'white' }}>
-            WebFestival 2025
-          </h4>
-          <p style={{ color: '#e5e7eb', marginBottom: '2rem' }}>
-            La plataforma líder en concursos multimedia online que conecta 
-            artistas creativos con jurados profesionales.
-          </p>
-          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-            <button
-              onClick={() => handleNavigation('/register')}
-              style={{
-                ...styles.button,
-                ...styles.buttonPrimary
-              }}
-            >
-              Comenzar Ahora
-            </button>
-            <button
-              onClick={() => handleNavigation('/showcase')}
-              style={{
-                ...styles.button,
-                ...styles.buttonOutline
-              }}
-            >
-              Ver Demo
-            </button>
+          <div style={styles.footerGrid}>
+            <div style={styles.footerSection}>
+              <h4 style={styles.footerTitle}>WebFestival</h4>
+              <p>
+                La plataforma líder en concursos multimedia online que conecta 
+                artistas creativos con jurados profesionales.
+              </p>
+            </div>
+            
+            <div style={styles.footerSection}>
+              <h4 style={styles.footerTitle}>Plataforma</h4>
+              <ul style={styles.footerLinks}>
+                <li><a href="#features" style={styles.footerLink}>Características</a></li>
+                <li><a href="#pricing" style={styles.footerLink}>Precios</a></li>
+                <li><a href="#gallery" style={styles.footerLink}>Galería</a></li>
+                <li><a href="#blog" style={styles.footerLink}>Blog</a></li>
+              </ul>
+            </div>
+            
+            <div style={styles.footerSection}>
+              <h4 style={styles.footerTitle}>Comunidad</h4>
+              <ul style={styles.footerLinks}>
+                <li><a href="#artists" style={styles.footerLink}>Artistas</a></li>
+                <li><a href="#judges" style={styles.footerLink}>Jurados</a></li>
+                <li><a href="#organizers" style={styles.footerLink}>Organizadores</a></li>
+                <li><a href="#support" style={styles.footerLink}>Soporte</a></li>
+              </ul>
+            </div>
+            
+            <div style={styles.footerSection}>
+              <h4 style={styles.footerTitle}>Legal</h4>
+              <ul style={styles.footerLinks}>
+                <li><a href="#privacy" style={styles.footerLink}>Privacidad</a></li>
+                <li><a href="#terms" style={styles.footerLink}>Términos</a></li>
+                <li><a href="#cookies" style={styles.footerLink}>Cookies</a></li>
+                <li><a href="#contact" style={styles.footerLink}>Contacto</a></li>
+              </ul>
+            </div>
+          </div>
+          
+          <div style={styles.footerBottom}>
+            <div style={styles.socialLinks}>
+              <a href="#facebook" aria-label="Facebook" style={styles.socialLink}>📘</a>
+              <a href="#instagram" aria-label="Instagram" style={styles.socialLink}>📷</a>
+              <a href="#twitter" aria-label="Twitter" style={styles.socialLink}>🐦</a>
+              <a href="#linkedin" aria-label="LinkedIn" style={styles.socialLink}>💼</a>
+              <a href="#youtube" aria-label="YouTube" style={styles.socialLink}>📺</a>
+            </div>
+            <p style={styles.footerCopyright}>
+              © 2024 WebFestival. Todos los derechos reservados. 
+              Hecho con ❤️ para la comunidad creativa.
+            </p>
           </div>
         </div>
       </footer>

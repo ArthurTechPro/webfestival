@@ -33,14 +33,11 @@ import StyleShowcaseSimple from './pages/StyleShowcaseSimple';
 import ProfessionalComponentsDemoSimple from './pages/ProfessionalComponentsDemoSimple';
 import ModernComponentsDemo from './pages/ModernComponentsDemo';
 // import LandingPage from './components/pages/Landing/LandingPage';
-// import LandingPageFixed from './components/pages/Landing/LandingPageFixed';
 
-// import LandingPageNoSCSS from './components/LandingPageNoSCSS';
-
-import LandingPageSafe from './components/LandingPageSafe';
+import LandingPageSafe from './components/pages/Landing/LandingPageSafe';
 import ErrorBoundary from './components/ErrorBoundary';
 // import { NavigationProvider } from './contexts/NavigationContext';
-// import TestPage from './pages/TestPage';
+
 
 
 // Crear instancia de QueryClient para TanStack Query
