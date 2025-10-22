@@ -38,6 +38,15 @@ import LandingPageSafe from './components/pages/Landing/LandingPageSafe';
 import ErrorBoundary from './components/ErrorBoundary';
 // import { NavigationProvider } from './contexts/NavigationContext';
 
+// Importar componentes específicos del participante
+import { 
+  ConcursosActivos, 
+  MisEnvios, 
+  SubirMedio, 
+  Resultados, 
+  ResultadosDetallados 
+} from './components/pages/participant';
+
 
 
 // Crear instancia de QueryClient para TanStack Query
@@ -235,10 +244,12 @@ const AppContent = () => {
                 } 
               />
               
-              {/* Rutas futuras para cada rol (próximamente) */}
-              {/* Participantes */}
-              <Route path="/participante/concursos" element={<ProtectedRoute requiredRoles={['PARTICIPANTE']}><div className="container py-5"><h1>Mis Concursos (Próximamente)</h1></div></ProtectedRoute>} />
-              <Route path="/participante/envios" element={<ProtectedRoute requiredRoles={['PARTICIPANTE']}><div className="container py-5"><h1>Mis Envíos (Próximamente)</h1></div></ProtectedRoute>} />
+              {/* Rutas específicas para Participantes */}
+              <Route path="/participante/concursos" element={<ProtectedRoute requiredRoles={['PARTICIPANTE']}><ConcursosActivos /></ProtectedRoute>} />
+              <Route path="/participante/mis-envios" element={<ProtectedRoute requiredRoles={['PARTICIPANTE']}><MisEnvios /></ProtectedRoute>} />
+              <Route path="/participante/resultados" element={<ProtectedRoute requiredRoles={['PARTICIPANTE']}><Resultados /></ProtectedRoute>} />
+              <Route path="/participante/resultados/:medioId" element={<ProtectedRoute requiredRoles={['PARTICIPANTE']}><ResultadosDetallados /></ProtectedRoute>} />
+              <Route path="/participante/concurso/:concursoId/subir" element={<ProtectedRoute requiredRoles={['PARTICIPANTE']}><SubirMedio /></ProtectedRoute>} />
               <Route path="/participante/comunidad" element={<ProtectedRoute requiredRoles={['PARTICIPANTE']}><div className="container py-5"><h1>Comunidad (Próximamente)</h1></div></ProtectedRoute>} />
               
               {/* Jurados */}

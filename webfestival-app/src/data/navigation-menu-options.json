@@ -1,0 +1,357 @@
+{
+  "menuOptions": {
+    "PARTICIPANTE": {
+      "topMenu": {
+        "logo": "WebFestival",
+        "userOptions": [
+          {
+            "icon": "user",
+            "label": "Mi Perfil",
+            "route": "/app/profile"
+          },
+          {
+            "icon": "bell",
+            "label": "Notificaciones",
+            "route": "/app/notifications",
+            "badge": true
+          },
+          {
+            "icon": "settings",
+            "label": "Configuración",
+            "route": "/app/settings"
+          },
+          {
+            "icon": "logout",
+            "label": "Cerrar Sesión",
+            "action": "logout"
+          }
+        ]
+      },
+      "sideMenu": [
+        {
+          "icon": "home",
+          "label": "Dashboard",
+          "route": "/app/dashboard",
+          "active": true
+        },
+        {
+          "icon": "trophy",
+          "label": "Concursos",
+          "route": "/app/contests"
+        },
+        {
+          "icon": "upload",
+          "label": "Mis Envíos",
+          "route": "/app/submissions"
+        },
+        {
+          "icon": "image",
+          "label": "Galería",
+          "route": "/app/gallery"
+        },
+        {
+          "icon": "users",
+          "label": "Comunidad",
+          "route": "/app/community"
+        },
+        {
+          "icon": "user",
+          "label": "Mi Perfil",
+          "route": "/app/profile"
+        },
+        {
+          "icon": "credit-card",
+          "label": "Suscripción",
+          "route": "/app/subscription"
+        }
+      ]
+    },
+    "JURADO": {
+      "topMenu": {
+        "logo": "WebFestival",
+        "userOptions": [
+          {
+            "icon": "user",
+            "label": "Mi Perfil",
+            "route": "/app/profile"
+          },
+          {
+            "icon": "bell",
+            "label": "Notificaciones",
+            "route": "/app/notifications",
+            "badge": true
+          },
+          {
+            "icon": "settings",
+            "label": "Configuración",
+            "route": "/app/settings"
+          },
+          {
+            "icon": "logout",
+            "label": "Cerrar Sesión",
+            "action": "logout"
+          }
+        ]
+      },
+      "sideMenu": [
+        {
+          "icon": "home",
+          "label": "Dashboard",
+          "route": "/app/dashboard",
+          "active": true
+        },
+        {
+          "icon": "clipboard-check",
+          "label": "Evaluaciones",
+          "route": "/app/evaluations"
+        },
+        {
+          "icon": "bar-chart",
+          "label": "Progreso",
+          "route": "/app/progress"
+        },
+        {
+          "icon": "award",
+          "label": "Especialización",
+          "route": "/app/specialization"
+        },
+        {
+          "icon": "image",
+          "label": "Galería",
+          "route": "/app/gallery"
+        },
+        {
+          "icon": "user",
+          "label": "Mi Perfil",
+          "route": "/app/profile"
+        }
+      ]
+    },
+    "ADMIN": {
+      "topMenu": {
+        "logo": "WebFestival Admin",
+        "userOptions": [
+          {
+            "icon": "user",
+            "label": "Mi Perfil",
+            "route": "/app/profile"
+          },
+          {
+            "icon": "bell",
+            "label": "Notificaciones",
+            "route": "/app/notifications",
+            "badge": true
+          },
+          {
+            "icon": "settings",
+            "label": "Configuración",
+            "route": "/app/settings"
+          },
+          {
+            "icon": "logout",
+            "label": "Cerrar Sesión",
+            "action": "logout"
+          }
+        ]
+      },
+      "sideMenu": [
+        {
+          "icon": "home",
+          "label": "Dashboard",
+          "route": "/app/dashboard",
+          "active": true
+        },
+        {
+          "icon": "trophy",
+          "label": "Concursos",
+          "route": "/app/admin/contests",
+          "submenu": [
+            {
+              "label": "Gestionar Concursos",
+              "route": "/app/admin/contests"
+            },
+            {
+              "label": "Categorías",
+              "route": "/app/admin/categories"
+            },
+            {
+              "label": "Asignar Jurados",
+              "route": "/app/admin/jury-assignments"
+            }
+          ]
+        },
+        {
+          "icon": "users",
+          "label": "Usuarios",
+          "route": "/app/admin/users"
+        },
+        {
+          "icon": "list",
+          "label": "Criterios",
+          "route": "/app/admin/criteria"
+        },
+        {
+          "icon": "bar-chart",
+          "label": "Métricas",
+          "route": "/app/admin/metrics"
+        },
+        {
+          "icon": "credit-card",
+          "label": "Suscripciones",
+          "route": "/app/admin/subscriptions"
+        },
+        {
+          "icon": "settings",
+          "label": "Configuración",
+          "route": "/app/admin/settings"
+        }
+      ]
+    },
+    "CONTENT_ADMIN": {
+      "topMenu": {
+        "logo": "WebFestival CMS",
+        "userOptions": [
+          {
+            "icon": "user",
+            "label": "Mi Perfil",
+            "route": "/app/profile"
+          },
+          {
+            "icon": "bell",
+            "label": "Notificaciones",
+            "route": "/app/notifications",
+            "badge": true
+          },
+          {
+            "icon": "settings",
+            "label": "Configuración",
+            "route": "/app/settings"
+          },
+          {
+            "icon": "logout",
+            "label": "Cerrar Sesión",
+            "action": "logout"
+          }
+        ]
+      },
+      "sideMenu": [
+        {
+          "icon": "home",
+          "label": "Dashboard",
+          "route": "/app/dashboard",
+          "active": true
+        },
+        {
+          "icon": "edit",
+          "label": "CMS",
+          "route": "/app/cms",
+          "submenu": [
+            {
+              "label": "Páginas Estáticas",
+              "route": "/app/cms/pages"
+            },
+            {
+              "label": "Secciones",
+              "route": "/app/cms/sections"
+            },
+            {
+              "label": "Contenido Educativo",
+              "route": "/app/cms/educational"
+            }
+          ]
+        },
+        {
+          "icon": "file-text",
+          "label": "Blog",
+          "route": "/app/blog",
+          "submenu": [
+            {
+              "label": "Posts",
+              "route": "/app/blog/posts"
+            },
+            {
+              "label": "Categorías",
+              "route": "/app/blog/categories"
+            },
+            {
+              "label": "Comentarios",
+              "route": "/app/blog/comments"
+            }
+          ]
+        },
+        {
+          "icon": "mail",
+          "label": "Newsletter",
+          "route": "/app/newsletter",
+          "submenu": [
+            {
+              "label": "Suscriptores",
+              "route": "/app/newsletter/subscribers"
+            },
+            {
+              "label": "Campañas",
+              "route": "/app/newsletter/campaigns"
+            }
+          ]
+        },
+        {
+          "icon": "bar-chart",
+          "label": "Analytics",
+          "route": "/app/analytics"
+        },
+        {
+          "icon": "shield",
+          "label": "Moderación",
+          "route": "/app/moderation"
+        }
+      ]
+    }
+  },
+  "commonElements": {
+    "mobileBreakpoint": 768,
+    "sideMenuWidth": "250px",
+    "sideMenuCollapsedWidth": "60px",
+    "topMenuHeight": "60px",
+    "animations": {
+      "menuToggle": "300ms ease-in-out",
+      "submenuExpand": "200ms ease-in-out"
+    },
+    "icons": {
+      "home": "🏠",
+      "trophy": "🏆",
+      "upload": "📤",
+      "image": "🖼️",
+      "users": "👥",
+      "user": "👤",
+      "clipboard-check": "📋",
+      "bar-chart": "📊",
+      "award": "🥇",
+      "edit": "✏️",
+      "file-text": "📄",
+      "mail": "📧",
+      "shield": "🛡️",
+      "list": "📝",
+      "credit-card": "💳",
+      "settings": "⚙️",
+      "bell": "🔔",
+      "logout": "🚪"
+    }
+  },
+  "responsiveSettings": {
+    "mobile": {
+      "sideMenuBehavior": "overlay",
+      "showLabels": false,
+      "collapsible": true
+    },
+    "tablet": {
+      "sideMenuBehavior": "push",
+      "showLabels": true,
+      "collapsible": true
+    },
+    "desktop": {
+      "sideMenuBehavior": "static",
+      "showLabels": true,
+      "collapsible": true
+    }
+  }
+}

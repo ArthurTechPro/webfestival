@@ -172,7 +172,7 @@ const AuthTestPanel: React.FC = () => {
 
       {/* Información del API */}
       <div style={{ marginTop: '10px', fontSize: '12px', color: '#888' }}>
-        API: {import.meta.env.VITE_API_URL || 'http://localhost:3005'}
+        API: {import.meta.env.VITE_API_URL || 'http://localhost:3001'}
       </div>
     </div>
   );

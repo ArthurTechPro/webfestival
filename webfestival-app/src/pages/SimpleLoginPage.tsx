@@ -1,14 +1,30 @@
 import React, { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const SimpleLoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Aquí iría la lógica de login
-    console.log('Login attempt:', { email, password });
-    alert('Funcionalidad de login en desarrollo');
+    setError('');
+    setIsLoading(true);
+
+    try {
+      await login({ email, password });
+      // Redirigir al dashboard según el rol del usuario
+      navigate('/dashboard');
+    } catch (error: any) {
+      setError(error.message || 'Error al iniciar sesión');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleBackToHome = () => {
@@ -109,23 +125,39 @@ const SimpleLoginPage: React.FC = () => {
             />
           </div>
 
+          {error && (
+            <div style={{
+              background: 'rgba(239, 68, 68, 0.1)',
+              border: '1px solid rgba(239, 68, 68, 0.3)',
+              color: '#ef4444',
+              padding: '12px',
+              borderRadius: '8px',
+              marginBottom: '1rem',
+              fontSize: '0.9rem'
+            }}>
+              {error}
+            </div>
+          )}
+
           <button
             type="submit"
+            disabled={isLoading}
             style={{
               width: '100%',
-              background: '#346CB0',
+              background: isLoading ? '#6b7280' : '#346CB0',
               color: 'white',
               border: 'none',
               padding: '12px',
               borderRadius: '8px',
               fontSize: '1rem',
               fontWeight: '500',
-              cursor: 'pointer',
+              cursor: isLoading ? 'not-allowed' : 'pointer',
               marginBottom: '1rem',
-              transition: 'all 0.3s ease'
+              transition: 'all 0.3s ease',
+              opacity: isLoading ? 0.7 : 1
             }}
           >
-            Iniciar Sesión
+            {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
           </button>
 
           <div style={{ textAlign: 'center' }}>

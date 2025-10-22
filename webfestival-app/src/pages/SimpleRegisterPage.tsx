@@ -1,29 +1,53 @@
 import React, { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const SimpleRegisterPage: React.FC = () => {
   const [formData, setFormData] = useState({
-    name: '',
+    nombre: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    bio: ''
   });
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const { register } = useAuth();
+  const navigate = useNavigate();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+    
     if (formData.password !== formData.confirmPassword) {
-      alert('Las contraseñas no coinciden');
+      setError('Las contraseñas no coinciden');
       return;
     }
-    // Aquí iría la lógica de registro
-    console.log('Register attempt:', formData);
-    alert('Funcionalidad de registro en desarrollo');
+
+    if (formData.password.length < 6) {
+      setError('La contraseña debe tener al menos 6 caracteres');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      await register(formData);
+      // Redirigir al dashboard según el rol del usuario
+      navigate('/dashboard');
+    } catch (error: any) {
+      setError(error.message || 'Error al registrar usuario');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleBackToHome = () => {
@@ -79,8 +103,8 @@ const SimpleRegisterPage: React.FC = () => {
             </label>
             <input
               type="text"
-              name="name"
-              value={formData.name}
+              name="nombre"
+              value={formData.nombre}
               onChange={handleChange}
               required
               style={{
@@ -184,23 +208,68 @@ const SimpleRegisterPage: React.FC = () => {
             />
           </div>
 
+          <div style={{ marginBottom: '2rem' }}>
+            <label style={{
+              display: 'block',
+              marginBottom: '0.5rem',
+              color: '#e5e7eb',
+              fontSize: '0.9rem'
+            }}>
+              Biografía (Opcional)
+            </label>
+            <textarea
+              name="bio"
+              value={formData.bio}
+              onChange={handleChange}
+              rows={3}
+              style={{
+                width: '100%',
+                padding: '12px',
+                borderRadius: '8px',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                background: 'rgba(255, 255, 255, 0.05)',
+                color: 'white',
+                fontSize: '1rem',
+                outline: 'none',
+                resize: 'vertical' as const
+              }}
+              placeholder="Cuéntanos sobre ti y tu experiencia creativa..."
+            />
+          </div>
+
+          {error && (
+            <div style={{
+              background: 'rgba(239, 68, 68, 0.1)',
+              border: '1px solid rgba(239, 68, 68, 0.3)',
+              color: '#ef4444',
+              padding: '12px',
+              borderRadius: '8px',
+              marginBottom: '1rem',
+              fontSize: '0.9rem'
+            }}>
+              {error}
+            </div>
+          )}
+
           <button
             type="submit"
+            disabled={isLoading}
             style={{
               width: '100%',
-              background: '#346CB0',
+              background: isLoading ? '#6b7280' : '#346CB0',
               color: 'white',
               border: 'none',
               padding: '12px',
               borderRadius: '8px',
               fontSize: '1rem',
               fontWeight: '500',
-              cursor: 'pointer',
+              cursor: isLoading ? 'not-allowed' : 'pointer',
               marginBottom: '1rem',
-              transition: 'all 0.3s ease'
+              transition: 'all 0.3s ease',
+              opacity: isLoading ? 0.7 : 1
             }}
           >
-            Crear Cuenta
+            {isLoading ? 'Creando cuenta...' : 'Crear Cuenta'}
           </button>
 
           <div style={{ textAlign: 'center' }}>
