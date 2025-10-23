@@ -1,3 +1,6 @@
+// Import de la nueva API de color de SASS
+@use "sass:color";
+
 // Variables
 $primary-color: #346CB0;
 $success-color: #2ed573;
@@ -37,7 +40,7 @@ $danger-color: #ff4757;
   // Variantes de color
   &--primary {
     .stats-card__icon {
-      background: linear-gradient(135deg, $primary-color, lighten($primary-color, 10%));
+      background: linear-gradient(135deg, $primary-color, color.adjust($primary-color, $lightness: 10%));
     }
     .stats-card__glow {
       background: radial-gradient(circle, rgba($primary-color, 0.3) 0%, transparent 70%);
@@ -46,7 +49,7 @@ $danger-color: #ff4757;
 
   &--success {
     .stats-card__icon {
-      background: linear-gradient(135deg, $success-color, lighten($success-color, 10%));
+      background: linear-gradient(135deg, $success-color, color.adjust($success-color, $lightness: 10%));
     }
     .stats-card__glow {
       background: radial-gradient(circle, rgba($success-color, 0.3) 0%, transparent 70%);
@@ -55,7 +58,7 @@ $danger-color: #ff4757;
 
   &--warning {
     .stats-card__icon {
-      background: linear-gradient(135deg, $warning-color, lighten($warning-color, 10%));
+      background: linear-gradient(135deg, $warning-color, color.adjust($warning-color, $lightness: 10%));
     }
     .stats-card__glow {
       background: radial-gradient(circle, rgba($warning-color, 0.3) 0%, transparent 70%);
@@ -64,7 +67,7 @@ $danger-color: #ff4757;
 
   &--info {
     .stats-card__icon {
-      background: linear-gradient(135deg, $info-color, lighten($info-color, 10%));
+      background: linear-gradient(135deg, $info-color, color.adjust($info-color, $lightness: 10%));
     }
     .stats-card__glow {
       background: radial-gradient(circle, rgba($info-color, 0.3) 0%, transparent 70%);
@@ -73,7 +76,7 @@ $danger-color: #ff4757;
 
   &--danger {
     .stats-card__icon {
-      background: linear-gradient(135deg, $danger-color, lighten($danger-color, 10%));
+      background: linear-gradient(135deg, $danger-color, color.adjust($danger-color, $lightness: 10%));
     }
     .stats-card__glow {
       background: radial-gradient(circle, rgba($danger-color, 0.3) 0%, transparent 70%);
