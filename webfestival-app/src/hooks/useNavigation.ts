@@ -57,9 +57,9 @@ export const useNavigationMenu = () => {
     userMenuOptions,
     
     // Funciones utilitarias
-    findMenuItem: (id: string) => sideMenuItems.find(item => item.id === id),
+    findMenuItem: (id: string) => sideMenuItems.find((item: any) => item.id === id),
     getMenuItemsByCategory: (hasSubmenu: boolean) => 
-      sideMenuItems.filter(item => !!item.submenu === hasSubmenu)
+      sideMenuItems.filter((item: any) => !!item.submenu === hasSubmenu)
   };
 };
 

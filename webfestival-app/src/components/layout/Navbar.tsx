@@ -77,7 +77,7 @@ const Navbar: React.FC = () => {
                   🎭 Mi Área
                 </button>
                 <div className="wf-dropdown-menu wf-glass">
-                  {availableRoutes.map((route, index) => (
+                  {availableRoutes.map((route: any, index: number) => (
                     <LinkContainer key={index} to={route.path}>
                       <a className="wf-dropdown-item wf-hover-cinematic">
                         {route.name}
@@ -222,7 +222,7 @@ const Navbar: React.FC = () => {
                 <h3 className="wf-text-2xl wf-font-semibold wf-text-cinematic wf-mb-4">
                   🎭 Mi Área
                 </h3>
-                {availableRoutes.map((route, index) => (
+                {availableRoutes.map((route: any, index: number) => (
                   <LinkContainer key={index} to={route.path}>
                     <a 
                       className="wf-block wf-text-xl wf-text-white wf-hover-glow wf-transition-all"

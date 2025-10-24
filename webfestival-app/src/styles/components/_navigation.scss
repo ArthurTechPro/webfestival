@@ -480,9 +480,43 @@
 
 // === UTILIDADES DE NAVEGACIÓN ===
 
+// Estilos específicos para menú colapsado
+.wf-side-menu-collapsed {
+  .wf-menu-item {
+    width: 3rem;
+    height: 3rem;
+    margin: 0.25rem auto;
+    justify-content: center;
+    padding: 0.75rem;
+    
+    .wf-menu-icon {
+      font-size: 1.25rem;
+    }
+    
+    .wf-menu-label {
+      display: none;
+    }
+    
+    // Tooltip en hover
+    &:hover .wf-menu-tooltip {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+}
+
+// Estilos para menú expandido
+.wf-side-menu-expanded {
+  .wf-menu-item {
+    .wf-menu-tooltip {
+      display: none;
+    }
+  }
+}
+
 // Clase para ocultar elementos en modo colapsado
 .wf-collapsed-hidden {
-  .wf-side-menu.wf-collapsed & {
+  .wf-side-menu-collapsed & {
     opacity: 0;
     transform: scale(0);
     transition: var(--nav-transition);
@@ -495,7 +529,7 @@
   transform: scale(0);
   transition: var(--nav-transition);
   
-  .wf-side-menu.wf-collapsed & {
+  .wf-side-menu-collapsed & {
     opacity: 1;
     transform: scale(1);
   }

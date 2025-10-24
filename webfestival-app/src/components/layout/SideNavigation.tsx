@@ -59,7 +59,7 @@ const SideNavigation: React.FC = () => {
   };
 
   const handleSubMenuItemClick = (subItem: SubMenuItem, parentItem: MenuItemType) => {
-    setActiveMenuItem(parentItem.id, subItem.id);
+    setActiveMenuItem(parentItem.id);
     navigateTo(subItem.route);
     updateBreadcrumbs(subItem.route);
     
@@ -79,7 +79,7 @@ const SideNavigation: React.FC = () => {
     }
     
     if (state.sideMenuCollapsed && responsiveConfig.collapsible) {
-      return 'wf-w-16'; // Ancho colapsado
+      return 'wf-w-20'; // Ancho colapsado - un poco más ancho para los iconos
     }
     
     return 'wf-w-64'; // Ancho normal
@@ -113,12 +113,13 @@ const SideNavigation: React.FC = () => {
 
   // Clases para el contenedor principal
   const sideMenuClasses = `
-    wf-fixed wf-left-0 wf-top-16 wf-h-[calc(100vh-4rem)] wf-bg-white wf-border-r wf-border-gray-200 
+    wf-fixed wf-left-0 wf-top-16 wf-h-[calc(100vh-4rem)] wf-bg-white wf-border-r wf-border-gray-200 wf-shadow-lg
     ${state.animationsEnabled ? 'wf-transition-all wf-duration-300 wf-ease-in-out' : ''}
     ${getMenuWidth()}
     ${getMenuTransform()}
     ${getZIndex()}
     ${state.animationsEnabled ? 'wf-transition-transform' : ''}
+    ${state.sideMenuCollapsed && responsiveConfig.collapsible ? 'wf-side-menu-collapsed' : 'wf-side-menu-expanded'}
   `;
 
   // Overlay para modo overlay
@@ -150,12 +151,12 @@ const SideNavigation: React.FC = () => {
           
           {/* Lista de elementos del menú */}
           <div className="wf-flex-1 wf-py-4">
-            {sideMenuItems.map((item) => (
+            {sideMenuItems.map((item: any) => (
               <MenuItem
                 key={item.id}
                 item={item}
                 isActive={state.activeMenuItem === item.id}
-                isCollapsed={state.sideMenuCollapsed && responsiveConfig.collapsible}
+                isCollapsed={state.sideMenuCollapsed}
                 isMobile={state.currentScreenSize === 'mobile'}
                 showLabels={state.showLabels}
                 sideMenuBehavior={state.sideMenuBehavior}

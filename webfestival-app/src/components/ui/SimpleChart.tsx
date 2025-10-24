@@ -55,7 +55,7 @@ const SimpleChart: React.FC<SimpleChartProps> = ({
         <svg width={height} height={height} viewBox={`0 0 ${height} ${height}`}>
           <g transform={`translate(${height/2}, ${height/2})`}>
             {data.map((item, index) => {
-              const percentage = (item.value / total) * 100;
+              // const percentage = (item.value / total) * 100;
               const angle = (item.value / total) * 360;
               const radius = height * 0.35;
               const innerRadius = height * 0.2;

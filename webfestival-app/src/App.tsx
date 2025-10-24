@@ -14,6 +14,8 @@ import ResetPasswordPage from './pages/ResetPasswordPage';
 import UnauthorizedPage from './pages/UnauthorizedPage';
 import GaleriaPublica from './pages/GaleriaPublica';
 import ProfilePage from './pages/ProfilePage';
+import CommunityPage from './pages/CommunityPage';
+import SubscriptionPage from './pages/SubscriptionPage';
 
 // Importar dashboards específicos por rol
 import ParticipanteDashboard from './pages/ParticipanteDashboard';
@@ -36,7 +38,9 @@ import ModernComponentsDemo from './pages/ModernComponentsDemo';
 
 import LandingPageSafe from './components/pages/Landing/LandingPageSafe';
 import ErrorBoundary from './components/ErrorBoundary';
-// import { NavigationProvider } from './contexts/NavigationContext';
+import { NavigationProvider } from './contexts/NavigationContext';
+import SideNavigation from './components/layout/SideNavigation';
+import TopNavigation from './components/layout/TopNavigation';
 
 // Importar componentes específicos del participante
 import { 
@@ -173,10 +177,13 @@ const AppContent = () => {
         </div>
       )} */}
       
-      {/* Navbar - temporalmente deshabilitado hasta configurar NavigationProvider */}
-      {/* {!shouldHideNavbar && <Navbar />} */}
+      {/* Navegación superior */}
+      <TopNavigation />
       
-      <main className="wf-main-content">
+      {/* Navegación lateral */}
+      <SideNavigation />
+      
+      <main className="wf-main-content wf-ml-64">
         <Routes>
               {/* Rutas públicas */}
               <Route path="/" element={<LandingPageSafe />} />
@@ -244,13 +251,31 @@ const AppContent = () => {
                 } 
               />
               
+              <Route 
+                path="/community" 
+                element={
+                  <ProtectedRoute>
+                    <CommunityPage />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              <Route 
+                path="/subscription" 
+                element={
+                  <ProtectedRoute>
+                    <SubscriptionPage />
+                  </ProtectedRoute>
+                } 
+              />
+              
               {/* Rutas específicas para Participantes */}
               <Route path="/participante/concursos" element={<ProtectedRoute requiredRoles={['PARTICIPANTE']}><ConcursosActivos /></ProtectedRoute>} />
               <Route path="/participante/mis-envios" element={<ProtectedRoute requiredRoles={['PARTICIPANTE']}><MisEnvios /></ProtectedRoute>} />
               <Route path="/participante/resultados" element={<ProtectedRoute requiredRoles={['PARTICIPANTE']}><Resultados /></ProtectedRoute>} />
               <Route path="/participante/resultados/:medioId" element={<ProtectedRoute requiredRoles={['PARTICIPANTE']}><ResultadosDetallados /></ProtectedRoute>} />
               <Route path="/participante/concurso/:concursoId/subir" element={<ProtectedRoute requiredRoles={['PARTICIPANTE']}><SubirMedio /></ProtectedRoute>} />
-              <Route path="/participante/comunidad" element={<ProtectedRoute requiredRoles={['PARTICIPANTE']}><div className="container py-5"><h1>Comunidad (Próximamente)</h1></div></ProtectedRoute>} />
+              <Route path="/participante/comunidad" element={<ProtectedRoute requiredRoles={['PARTICIPANTE']}><CommunityPage /></ProtectedRoute>} />
               
               {/* Jurados */}
               <Route path="/jurado/asignaciones" element={<ProtectedRoute requiredRoles={['JURADO']}><div className="container py-5"><h1>Mis Asignaciones (Próximamente)</h1></div></ProtectedRoute>} />
@@ -284,9 +309,11 @@ function App() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <Router>
-            <AppContent />
-          </Router>
+          <NavigationProvider>
+            <Router>
+              <AppContent />
+            </Router>
+          </NavigationProvider>
         </AuthProvider>
       </QueryClientProvider>
     </ErrorBoundary>

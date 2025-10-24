@@ -141,7 +141,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ className = '' }) => {
           
           {/* Opciones del menú */}
           <div className="wf-py-1">
-            {userMenuOptions.map((option, index) => (
+            {userMenuOptions.map((option: any, index: number) => (
               <button
                 key={index}
                 onClick={() => handleMenuAction(option)}

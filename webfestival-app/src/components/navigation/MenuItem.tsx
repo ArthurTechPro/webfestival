@@ -57,22 +57,24 @@ const MenuItem: React.FC<MenuItemProps> = ({
     // Determinar si el submenu debe estar expandido
     const shouldShowSubmenu = isSubmenuExpanded && (showLabels || sideMenuBehavior === 'overlay');
 
-    // Determinar si mostrar etiquetas
-    const shouldShowLabels = showLabels && (!isCollapsed || sideMenuBehavior === 'overlay');
+    // Los iconos SIEMPRE se muestran, las etiquetas solo cuando no está colapsado
+    const shouldShowLabels = !isCollapsed || sideMenuBehavior === 'overlay';
 
-    // Clases CSS para el elemento principal
+    // Clases CSS para el elemento principal - simplificadas
     const mainItemClasses = `
-    wf-menu-item wf-w-full wf-flex wf-items-center wf-text-left wf-group wf-relative wf-cursor-pointer
-    ${isCollapsed && sideMenuBehavior !== 'overlay' ? 'wf-px-2 wf-py-3 wf-justify-center' : 'wf-px-4 wf-py-3'}
-    ${animationsEnabled ? 'wf-nav-smooth-transitions' : ''}
-    ${isActive ? 'wf-active' : ''}
-    wf-menu-stagger
+    flex items-center text-left group relative cursor-pointer
+    rounded-lg mx-2 my-1 transition-all duration-200 ease-in-out
+    ${isCollapsed && sideMenuBehavior !== 'overlay' 
+      ? 'px-2 py-2 justify-center w-12 h-12 min-w-12' 
+      : 'px-4 py-3 justify-start w-full'
+    }
+    ${isActive 
+      ? 'bg-blue-500 text-white shadow-md' 
+      : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+    }
   `;
 
-    // Clases CSS para el icono
-    const iconClasses = `
-    wf-menu-icon wf-flex-shrink-0 ${animationsEnabled ? 'wf-nav-smooth-transitions' : ''}
-  `;
+
 
     return (
         <div className="wf-relative">
@@ -85,16 +87,16 @@ const MenuItem: React.FC<MenuItemProps> = ({
                 aria-haspopup={item.submenu ? 'true' : undefined}
                 tabIndex={0}
             >
-                {/* Icono */}
-                <div className="wf-flex-shrink-0">
+                {/* Icono - SIEMPRE visible */}
+                <div className="wf-flex-shrink-0 wf-flex wf-items-center wf-justify-center">
                     <Icon
                         name={item.icon}
-                        size="md"
-                        className={iconClasses}
+                        size="lg"
+                        className="wf-text-xl"
                     />
                 </div>
 
-                {/* Contenido del elemento */}
+                {/* Contenido del elemento - solo cuando no está colapsado */}
                 {shouldShowLabels && (
                     <>
                         {/* Etiqueta */}
@@ -122,26 +124,29 @@ const MenuItem: React.FC<MenuItemProps> = ({
                     </>
                 )}
 
-                {/* Badge solo icono para modo colapsado */}
+                {/* Badge para modo colapsado - posicionado sobre el icono */}
                 {!shouldShowLabels && item.badge && (
-                    <div className="wf-absolute wf--top-1 wf--right-1">
-                        <span className="wf-menu-badge wf-inline-flex wf-items-center wf-justify-center wf-w-2 wf-h-2 wf-rounded-full" />
+                    <div className="wf-absolute wf-top-0 wf-right-0 wf-transform wf-translate-x-1 wf--translate-y-1">
+                        <span className="wf-menu-badge wf-inline-flex wf-items-center wf-justify-center wf-w-3 wf-h-3 wf-rounded-full wf-bg-red-500" />
                     </div>
                 )}
 
                 {/* Tooltip para modo colapsado */}
                 {isCollapsed && sideMenuBehavior !== 'overlay' && !shouldShowLabels && (
                     <div className={`
-            wf-menu-tooltip wf-absolute wf-left-full wf-ml-2 wf-text-sm wf-whitespace-nowrap wf-z-50
-            wf-opacity-0 wf-pointer-events-none group-hover:wf-opacity-100
-            ${animationsEnabled ? 'wf-transition-opacity wf-duration-200' : ''}
+            wf-menu-tooltip wf-absolute wf-left-full wf-ml-3 wf-px-3 wf-py-2 wf-text-sm wf-whitespace-nowrap wf-z-50
+            wf-bg-gray-900 wf-text-white wf-rounded-md wf-shadow-lg
+            wf-opacity-0 wf-pointer-events-none group-hover:wf-opacity-100 group-hover:wf-visible
+            ${animationsEnabled ? 'wf-transition-all wf-duration-200 wf-ease-in-out' : ''}
           `}>
                         {item.label}
                         {item.badge && (
-                            <span className="wf-menu-badge wf-ml-2 wf-inline-flex wf-items-center wf-justify-center wf-w-2 wf-h-2 wf-rounded-full" />
+                            <span className="wf-ml-2 wf-inline-flex wf-items-center wf-justify-center wf-w-2 wf-h-2 wf-bg-red-500 wf-rounded-full" />
                         )}
                         {/* Flecha del tooltip */}
-                        <div className="wf-absolute wf-left-0 wf-top-1/2 wf-transform wf--translate-x-1 wf--translate-y-1/2 wf-w-0 wf-h-0 wf-border-t-2 wf-border-b-2 wf-border-r-2 wf-border-transparent wf-border-r-current"></div>
+                        <div className="wf-absolute wf-left-0 wf-top-1/2 wf-transform wf--translate-x-1 wf--translate-y-1/2">
+                            <div className="wf-w-0 wf-h-0 wf-border-t-4 wf-border-b-4 wf-border-r-4 wf-border-transparent wf-border-r-gray-900"></div>
+                        </div>
                     </div>
                 )}
             </button>

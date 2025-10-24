@@ -58,7 +58,7 @@ export const useResponsiveNavigation = (config: ResponsiveNavigationConfig = DEF
   const [state, setState] = useState<ResponsiveNavigationState>(() => {
     const width = typeof window !== 'undefined' ? window.innerWidth : 1024;
     const screenSize = getScreenSizeFromWidth(width);
-    const screenConfig = config[screenSize];
+    const screenConfig = config[screenSize as keyof ResponsiveNavigationConfig];
     
     return {
       screenSize,
@@ -81,7 +81,7 @@ export const useResponsiveNavigation = (config: ResponsiveNavigationConfig = DEF
   // Función para actualizar el estado basado en el ancho de pantalla
   const updateStateFromWidth = useCallback((width: number) => {
     const screenSize = getScreenSizeFromWidth(width);
-    const screenConfig = config[screenSize];
+    const screenConfig = config[screenSize as keyof ResponsiveNavigationConfig];
     
     setState(prevState => ({
       ...prevState,
@@ -184,7 +184,7 @@ export const useResponsiveNavigation = (config: ResponsiveNavigationConfig = DEF
     updateStateFromWidth,
     
     // Configuración actual
-    currentConfig: config[state.screenSize]
+    currentConfig: config[state.screenSize as keyof ResponsiveNavigationConfig]
   };
 };
 

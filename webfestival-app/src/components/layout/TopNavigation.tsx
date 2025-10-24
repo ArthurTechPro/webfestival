@@ -159,7 +159,7 @@ const TopNavigation: React.FC = () => {
                     </div>
                     
                     {/* Opciones del menú */}
-                    {userMenuOptions.map((option, index) => (
+                    {userMenuOptions.map((option: any, index: number) => (
                       <button
                         key={index}
                         onClick={() => handleUserMenuAction(option)}

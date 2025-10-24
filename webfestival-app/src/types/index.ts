@@ -3,6 +3,9 @@
 // Re-exportar tipos de autenticación
 export * from './auth';
 
+// Re-exportar tipos de comunidad
+export * from './community';
+
 export interface User {
   id: string;
   email: string;
