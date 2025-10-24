@@ -8,6 +8,7 @@ interface VideoPlayerPremiumProps {
   autoPlay?: boolean;
   muted?: boolean;
   controls?: boolean;
+  style?: React.CSSProperties;
 }
 
 const VideoPlayerPremium: React.FC<VideoPlayerPremiumProps> = ({
@@ -197,4 +198,5 @@ const VideoPlayerPremium: React.FC<VideoPlayerPremiumProps> = ({
   );
 };
 
+export { VideoPlayerPremium };
 export default VideoPlayerPremium;

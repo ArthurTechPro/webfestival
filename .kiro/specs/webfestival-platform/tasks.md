@@ -369,7 +369,7 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
     - Optimizar navegación para todos los temas disponibles (9 temas)
     - _Requisitos: 38.1, 38.2, 39.1, 39.2, 39.3, 39.4_
   - [ ] 13. Interfaces para participantes
-  - [ ] 13.1 Dashboard de participantes
+  - [x] 13.1 Dashboard de participantes
     - Crear página principal con concursos activos filtrados por tipo de medio
     - Implementar página "Mis Envíos" con estado de medios y límite de 3 por concurso
     - Crear interfaz universal para subida de medios multimedia (foto, video, audio, corto) con preview específico por tipo
@@ -378,7 +378,7 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
     - Implementar visualización de metadatos extraídos automáticamente (EXIF para fotos, duración para videos/audios)
     - _Requisitos: 2.1, 2.2, 3.1, 3.2, 4.1, 4.2, 4.3, 17.2, 33.4_
 
-  - [ ] 13.2 Gestión de perfil y comunidad
+  - [x] 13.2 Gestión de perfil y comunidad
     - Crear página de perfil con edición de datos
     - Implementar sistema de seguimiento entre usuarios
     - Crear feed personalizado de actividades
@@ -388,7 +388,7 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
     - _Requisitos: 1.1, 1.3, 15.1, 15.2, 15.3, 15.4, 16.1, 16.2, 16.3, 16.4, 36.2, 36.3_
 
 - [ ] 14. Interfaces para jurados especializados
-  - [ ] 14.1 Panel de evaluación especializado
+  - [x] 14.1 Panel de evaluación especializado
     - Crear dashboard con categorías asignadas filtradas por especialización del jurado
     - Implementar interfaz de calificación dinámica que carga criterios específicos según tipo de medio evaluado
     - Crear reproductores integrados para evaluación de videos, audios y cortos de cine
@@ -398,7 +398,7 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
     - Crear interfaz para visualizar pesos y descripción de criterios durante evaluación
     - _Requisitos: 5.1, 5.2, 6.1, 6.2, 6.4, 33.4, 33.5, 35.3, 35.4_
 
-  - [ ] 14.2 Gestión de especialización de jurados
+  - [x] 14.2 Gestión de especialización de jurados
     - Crear interfaz para configurar especializaciones por tipo de medio
     - Implementar sistema de certificaciones y portfolio para jurados
     - Crear dashboard de rendimiento por especialización

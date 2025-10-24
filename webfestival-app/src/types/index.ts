@@ -6,6 +6,9 @@ export * from './auth';
 // Re-exportar tipos de comunidad
 export * from './community';
 
+// Re-exportar tipos de evaluación
+export * from './evaluation';
+
 export interface User {
   id: string;
   email: string;

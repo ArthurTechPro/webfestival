@@ -22,6 +22,7 @@ import ParticipanteDashboard from './pages/ParticipanteDashboard';
 import JuradoDashboard from './pages/JuradoDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import ContentAdminDashboard from './pages/ContentAdminDashboard';
+import SpecializationManagementPage from './pages/SpecializationManagementPage';
 
 // Importar componentes de layout y protección
 // import Navbar from './components/layout/Navbar';
@@ -280,7 +281,7 @@ const AppContent = () => {
               {/* Jurados */}
               <Route path="/jurado/asignaciones" element={<ProtectedRoute requiredRoles={['JURADO']}><div className="container py-5"><h1>Mis Asignaciones (Próximamente)</h1></div></ProtectedRoute>} />
               <Route path="/jurado/evaluaciones" element={<ProtectedRoute requiredRoles={['JURADO']}><div className="container py-5"><h1>Evaluaciones (Próximamente)</h1></div></ProtectedRoute>} />
-              <Route path="/jurado/especializacion" element={<ProtectedRoute requiredRoles={['JURADO']}><div className="container py-5"><h1>Mi Especialización (Próximamente)</h1></div></ProtectedRoute>} />
+              <Route path="/jurado/especializacion" element={<ProtectedRoute requiredRoles={['JURADO']}><SpecializationManagementPage /></ProtectedRoute>} />
               
               {/* Administradores */}
               <Route path="/admin/concursos" element={<ProtectedRoute requiredRoles={['ADMIN']}><div className="container py-5"><h1>Gestión de Concursos (Próximamente)</h1></div></ProtectedRoute>} />

@@ -197,4 +197,5 @@ const AudioPlayerPremium: React.FC<AudioPlayerPremiumProps> = ({
   );
 };
 
+export { AudioPlayerPremium };
 export default AudioPlayerPremium;

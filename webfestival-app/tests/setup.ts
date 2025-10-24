@@ -9,11 +9,17 @@ declare module 'vitest' {
   interface AsymmetricMatchersContaining extends TestingLibraryMatchers<any, void> {}
 }
 
-// Extender expect globalmente
+// Extender expect globalmente para Vitest
 declare global {
   namespace Vi {
     interface JestAssertion<T = any> extends TestingLibraryMatchers<T, void> {}
   }
+}
+
+// Extender expect para que funcione con jest-dom
+declare module '@vitest/expect' {
+  interface Assertion<T = any> extends TestingLibraryMatchers<T, void> {}
+  interface AsymmetricMatchersContaining extends TestingLibraryMatchers<any, void> {}
 }
 
 // Configuración global para los tests

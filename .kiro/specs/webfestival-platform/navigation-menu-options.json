@@ -113,7 +113,7 @@
         {
           "icon": "award",
           "label": "Especialización",
-          "route": "/app/specialization"
+          "route": "/jurado/especializacion"
         },
         {
           "icon": "image",
