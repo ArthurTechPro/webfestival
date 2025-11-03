@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { AuthTokens, JWTPayload, LoginCredentials, RegisterData, User, ApiError } from '@/types';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '../lib/prisma';
 import { Role } from '@prisma/client';
 
 export class AuthService {

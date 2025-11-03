@@ -37,6 +37,7 @@ En el panel de control de tu proveedor de dominio (`webfestival.art`):
 3.  **Instalar Node.js (v20 sugerida):**
     ```bash
     curl -fsSL [https://deb.nodesource.com/setup_20.x](https://deb.nodesource.com/setup_20.x) | sudo -E bash -
+    curl -fsSL https://deb.nodesource.com/setup_22.x sudo -E bash -
     sudo apt install -y nodejs
     ```
 4.  **Instalar PM2 (Gestor de procesos de Node):**
@@ -67,8 +68,9 @@ En el panel de control de tu proveedor de dominio (`webfestival.art`):
 3.  Dentro de la consola de `psql`, ejecuta:
     ```sql
     CREATE DATABASE mi_api;
-    CREATE USER mi_api_user WITH PASSWORD 'TuContraseñaSeguraAqui';
-    GRANT ALL PRIVILEGES ON DATABASE mi_api TO mi_api_user;
+    CREATE USER postgres WITH PASSWORD 'TuContraseñaSeguraAqui';
+    CREATE USER postgres WITH PASSWORD 'wasi3355';
+    GRANT ALL PRIVILEGES ON DATABASE webfestival TO postgres;
     \q
     ```
 4.  Tu API usará esta URL de conexión: `postgresql://mi_api_user:TuContraseñaSeguraAqui@localhost:5432/mi_api`
@@ -83,16 +85,16 @@ En el panel de control de tu proveedor de dominio (`webfestival.art`):
     ```
 2.  **Clonar el repositorio de Immich:**
     ```bash
-    git clone [https://github.com/immich/immich.git](https://github.com/immich/immich.git)
+    git clone [https://github.com/immich-app/immich.git](https://github.com/immich-app/immich.git)
     cd immich/docker
-    ```
+    ```i
 3.  **Configurar Immich:**
     Copia el archivo de ejemplo `.env`:
     ```bash
-    cp .env.example .env
+    cp example.env .env
     ```
-    Edita el archivo `.env` (`nano .env`) y define tus contraseñas (ej: `DB_PASSWORD`) y la ruta donde se guardarán las fotos (ej: `UPLOAD_LOCATION=/home/ubuntu/immich-data`).
-    *Importante: Asegúrate de que esa carpeta exista (`mkdir -p /home/ubuntu/immich-data`).*
+    Edita el archivo `.env` (`nano .env`) y define tus contraseñas (ej: `DB_PASSWORD`) y la ruta donde se guardarán las fotos (ej: `UPLOAD_LOCATION=/home/webfetival/immich-data`).
+    *Importante: Asegúrate de que esa carpeta exista (`mkdir -p /home/webfetival/immich-data`).*
 
 4.  **Iniciar Immich:**
     ```bash
@@ -117,7 +119,7 @@ Haremos que tu servidor pueda clonar tus repositorios privados de forma segura.
     ```
     Copia todo el contenido (empieza con `ssh-rsa...` y termina con `...deploy@webfestival.art`).
 
-3.  **En GitHub (Repite para la API y la App):**
+3.  **En GitHub (Repite para la API y la App):**|
     * Ve a tu repositorio (ej: el de la API).
     * Ve a `Settings` > `Security` > `Deploy Keys`.
     * Haz clic en `Add deploy key`.

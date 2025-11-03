@@ -7,7 +7,7 @@ export const loginSchema = z.object({
     .min(1, 'El email es requerido'),
   password: z.string()
     .min(6, 'La contraseña debe tener al menos 6 caracteres')
-    .max(100, 'La contraseña no puede exceder 100 caracteres')
+    .max(50, 'La contraseña no puede exceder 50 caracteres')
 });
 
 // Esquema para registro
@@ -17,7 +17,7 @@ export const registerSchema = z.object({
     .min(1, 'El email es requerido'),
   password: z.string()
     .min(6, 'La contraseña debe tener al menos 6 caracteres')
-    .max(100, 'La contraseña no puede exceder 100 caracteres')
+    .max(50, 'La contraseña no puede exceder 50 caracteres')
     .regex(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
       'La contraseña debe contener al menos una letra minúscula, una mayúscula y un número'

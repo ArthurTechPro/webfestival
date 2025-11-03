@@ -1,3 +1,4 @@
+require('module-alias/register');
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -45,8 +46,9 @@ app.use(compression());
 app.use(limiter);
 app.use(cors({
   origin: [
-    process.env['FRONTEND_URL'] || 'http://localhost:3000',
-    process.env['CMS_URL'] || 'http://localhost:3002'
+    process.env['FRONTEND_URL'] || 'http://localhost:3001',
+    process.env['CMS_URL'] || 'http://localhost:3002',
+    process.env['APP_URL'] || 'http://localhost:3003'
   ],
   credentials: true
 }));

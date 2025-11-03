@@ -15,7 +15,14 @@ declare global {
 /**
  * Tipos de roles disponibles en el sistema
  */
-export type UserRole = 'PARTICIPANTE' | 'JURADO' | 'ADMIN' | 'CONTENT_ADMIN';
+export const UserRole = {
+  PARTICIPANTE: 'PARTICIPANTE',
+  JURADO: 'JURADO',
+  ADMIN: 'ADMIN',
+  CONTENT_ADMIN: 'CONTENT_ADMIN'
+} as const;
+
+export type UserRole = typeof UserRole[keyof typeof UserRole];
 
 /**
  * Configuración de permisos por rol

@@ -58,7 +58,7 @@ router.use('/notifications', notificationRoutes);
 // Rutas de redes sociales
 router.use('/social-media', socialMediaRoutes);
 
-// Health check route
+// Health check route - estado del los servicios.
 router.get('/health', (_req, res) => {
   res.json({
     status: 'OK',
@@ -67,7 +67,7 @@ router.get('/health', (_req, res) => {
   });
 });
 
-// API info route
+// API informacion de los endpoits disponibles
 router.get('/', (_req, res) => {
   res.json({
     name: 'WebFestival API',

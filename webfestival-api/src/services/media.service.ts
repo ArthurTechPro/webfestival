@@ -1,5 +1,5 @@
 import { Medio, TipoMedio, PaginatedResponse } from '@/types';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '../lib/prisma';
 import { immichService } from './immich.service';
 import { AssetResponseDto } from '@immich/sdk';
 import { z } from 'zod';

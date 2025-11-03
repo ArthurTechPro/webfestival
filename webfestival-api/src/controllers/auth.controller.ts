@@ -149,12 +149,15 @@ export class AuthController {
         (error as any).details = validationErrors;
         throw error;
       }
-
       // Validar con schema para seguridad adicional
       const validatedData = registerSchema.parse(sanitizedData) as RegisterRequest;
-
+      
+      const sanitized = {
+        ...validatedData,
+        bio: validatedData.bio ?? undefined, // convierte null en undefined
+      };
       // Registrar usuario
-      const result = await authService.register(validatedData);
+      const result = await authService.register(sanitized);
       
       console.log(`[AUTH] New user registered: ${result.user.email}`);
       const response = this.formatAuthResponse(result.user, result.tokens, 'Registro exitoso');

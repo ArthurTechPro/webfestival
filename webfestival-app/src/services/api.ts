@@ -84,6 +84,15 @@ class ApiService {
     }
   }
 
+  async patch<T>(url: string, data?: unknown): Promise<ApiResponse<T>> {
+    try {
+      const response = await this.api.patch<ApiResponse<T>>(url, data);
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
   private handleError(error: unknown): Error {
     if (error && typeof error === 'object' && 'response' in error) {
       // Error de respuesta del servidor

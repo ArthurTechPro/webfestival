@@ -10,7 +10,10 @@ pnpm-debug.log*
 out/
 build/
 dist/
-document/estilos/
+
+# Proyectos webfestival.
+# webfestival-api/
+# webfestival-app/
 
 # Environment variables
 .env
