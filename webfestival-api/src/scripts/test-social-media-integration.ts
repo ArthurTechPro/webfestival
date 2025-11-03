@@ -14,7 +14,7 @@ dotenv.config();
 
 const prisma = new PrismaClient();
 
-async function testSocialMediaIntegration() {
+const testSocialMediaIntegration = async () => {
   console.log('🧪 Iniciando pruebas de integración con redes sociales...\n');
 
   try {

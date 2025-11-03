@@ -27,7 +27,7 @@ export const immichConfig: ImmichConfig = immichConfigSchema.parse({
  * Valida que la configuración de Immich esté completa
  * @throws Error si la configuración es inválida
  */
-export function validateImmichConfig(): void {
+export const validateImmichConfig = (): void => {
   try {
     immichConfigSchema.parse({
       serverUrl: process.env['IMMICH_SERVER_URL'],
@@ -43,4 +43,4 @@ export function validateImmichConfig(): void {
     }
     throw error;
   }
-}
+};

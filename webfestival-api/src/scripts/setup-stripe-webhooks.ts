@@ -32,7 +32,7 @@ const REQUIRED_WEBHOOK_EVENTS = [
   'setup_intent.setup_failed'
 ];
 
-async function setupStripeWebhooks(): Promise<void> {
+const setupStripeWebhooks = async (): Promise<void> => {
   console.log('🔗 Configurando webhooks de Stripe...');
   console.log(`⏰ Timestamp: ${new Date().toISOString()}`);
   

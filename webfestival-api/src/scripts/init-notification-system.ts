@@ -17,7 +17,7 @@ import { getEmailService } from '../services/email.service';
 
 const prisma = new PrismaClient();
 
-async function initNotificationSystem() {
+const initNotificationSystem = async () => {
   console.log('🚀 Inicializando sistema de notificaciones automáticas...\n');
 
   try {

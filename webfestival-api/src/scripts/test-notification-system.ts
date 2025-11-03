@@ -20,7 +20,7 @@ import { getEmailService } from '../services/email.service';
 
 const prisma = new PrismaClient();
 
-async function testNotificationSystem() {
+const testNotificationSystem = async () => {
   console.log('🧪 Iniciando pruebas del sistema de notificaciones...\n');
 
   try {

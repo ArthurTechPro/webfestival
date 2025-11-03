@@ -14,7 +14,7 @@ import { DEFAULT_PLANS } from '../types/subscription.types';
 
 const prisma = new PrismaClient();
 
-async function initializePlans() {
+const initializePlans = async () => {
   console.log('🚀 Inicializando planes de suscripción predeterminados...');
 
   try {

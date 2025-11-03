@@ -16,7 +16,7 @@ import { connectDatabase, disconnectDatabase } from '../lib/prisma';
 // Cargar variables de entorno
 dotenv.config();
 
-async function runPaymentMaintenance(): Promise<void> {
+const runPaymentMaintenance = async (): Promise<void> => {
     console.log('🚀 Iniciando mantenimiento de pagos y suscripciones...');
     console.log(`⏰ Timestamp: ${new Date().toISOString()}`);
     

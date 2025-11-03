@@ -15,7 +15,7 @@ import { connectDatabase, disconnectDatabase } from '../lib/prisma';
 // Cargar variables de entorno
 dotenv.config();
 
-async function testStripeIntegration(): Promise<void> {
+const testStripeIntegration = async (): Promise<void> => {
     console.log('🧪 Iniciando pruebas de integración con Stripe...');
     console.log(`⏰ Timestamp: ${new Date().toISOString()}`);
     

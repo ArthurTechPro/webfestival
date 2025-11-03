@@ -28,7 +28,7 @@ export const databaseConfig = {
 };
 
 // Validación de configuración de base de datos
-export function validateDatabaseConfig() {
+export const validateDatabaseConfig = () => {
   if (!process.env['DATABASE_URL']) {
     throw new Error('DATABASE_URL no está definida en las variables de entorno');
   }
@@ -40,10 +40,10 @@ export function validateDatabaseConfig() {
   }
 
   console.log('✅ Configuración de base de datos validada correctamente');
-}
+};
 
 // Función para obtener información de la base de datos
-export async function getDatabaseInfo(prisma: PrismaClient) {
+export const getDatabaseInfo = async (prisma: PrismaClient) => {
   try {
     const result = await prisma.$queryRaw<Array<{ version: string }>>`SELECT version()`;
     const version = result[0]?.version || 'Desconocida';
@@ -63,6 +63,6 @@ export async function getDatabaseInfo(prisma: PrismaClient) {
       timestamp: new Date().toISOString()
     };
   }
-}
+};
 
 export default databaseConfig;

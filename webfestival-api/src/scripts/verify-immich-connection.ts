@@ -12,7 +12,7 @@ import { validateImmichConfig } from '../config/immich';
 // Cargar variables de entorno
 dotenv.config();
 
-async function verifyImmichConnection() {
+const verifyImmichConnection = async () => {
   console.log('🔍 Verificando conexión con Immich...\n');
 
   try {

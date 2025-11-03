@@ -11,7 +11,7 @@ import { EmailService } from '../services/email.service';
 // Cargar variables de entorno
 dotenv.config();
 
-async function testEmailService() {
+const testEmailService = async () => {
   console.log('🧪 Iniciando pruebas del servicio de email...\n');
 
   try {

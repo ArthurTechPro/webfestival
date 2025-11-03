@@ -12,7 +12,7 @@ import { swaggerSpec } from '../config/swagger';
 // Cargar variables de entorno
 dotenv.config();
 
-async function testServerStartup() {
+const testServerStartup = async () => {
     console.log('🧪 Probando configuración del servidor...\n');
 
     try {

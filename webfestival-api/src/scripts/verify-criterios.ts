@@ -2,7 +2,7 @@ import { PrismaClient, TipoMedio } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-async function verifyCriterios() {
+const verifyCriterios = async () => {
   console.log('🔍 Verificando criterios preconfigurados...\n');
 
   // Obtener todos los criterios agrupados por tipo de medio
@@ -75,7 +75,7 @@ async function verifyCriterios() {
   console.log(`  • TOTAL DE CRITERIOS: ${totalCriterios}`);
 
   console.log('\n✅ Verificación completada exitosamente!');
-}
+};
 
 verifyCriterios()
   .catch((e) => {

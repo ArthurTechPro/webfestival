@@ -4,7 +4,7 @@ import { authService } from '../services/auth.service';
 // Cargar variables de entorno
 dotenv.config();
 
-async function verifyAuthConfig() {
+const verifyAuthConfig = async () => {
   console.log('🔐 Verificando configuración de autenticación...\n');
 
   // Verificar variables de entorno
@@ -97,7 +97,7 @@ async function verifyAuthConfig() {
     console.error('\n❌ Error durante las pruebas:', error);
     process.exit(1);
   }
-}
+};
 
 // Ejecutar verificación
 verifyAuthConfig().catch(console.error);

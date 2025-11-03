@@ -1,7 +1,7 @@
 import { TipoMedio } from '@prisma/client';
 import { criteriosService } from '../services/criterios.service';
 
-async function testCriteriosService() {
+const testCriteriosService = async () => {
   console.log('🧪 Probando el servicio de criterios...\n');
 
   try {

@@ -9,7 +9,7 @@ import { swaggerSpec } from '../config/swagger';
 import { readFileSync, readdirSync } from 'fs';
 import { join } from 'path';
 
-async function verifySwaggerDocumentation() {
+const verifySwaggerDocumentation = async () => {
   console.log('🔍 Verificando documentación de Swagger...\n');
 
   try {

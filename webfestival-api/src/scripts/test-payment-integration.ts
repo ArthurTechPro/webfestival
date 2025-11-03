@@ -24,7 +24,7 @@ import { subscriptionAnalyticsService } from '../services/subscription-analytics
 // Cargar variables de entorno
 dotenv.config();
 
-async function testPaymentIntegration(): Promise<void> {
+const testPaymentIntegration = async (): Promise<void> => {
     console.log('🧪 Iniciando pruebas de integración del sistema de pagos...');
     console.log(`⏰ Timestamp: ${new Date().toISOString()}`);
 
@@ -68,7 +68,7 @@ async function testPaymentIntegration(): Promise<void> {
     }
 }
 
-async function testSubscriptionPlans(): Promise<void> {
+const testSubscriptionPlans = async (): Promise<void> => {
     try {
         const plans = await subscriptionService.getAvailablePlans();
         console.log(`✅ Planes disponibles: ${plans.length}`);
@@ -97,7 +97,7 @@ async function testSubscriptionPlans(): Promise<void> {
     }
 }
 
-async function testPaymentRecoveryServices(): Promise<void> {
+const testPaymentRecoveryServices = async (): Promise<void> => {
     try {
         // Test estadísticas de recuperación
         const recoveryStats = await paymentRecoveryService.getRecoveryStats();
@@ -119,7 +119,7 @@ async function testPaymentRecoveryServices(): Promise<void> {
     }
 }
 
-async function testSubscriptionAnalytics(): Promise<void> {
+const testSubscriptionAnalytics = async (): Promise<void> => {
     try {
         // Test métricas comprehensivas
         const metrics = await subscriptionAnalyticsService.getComprehensiveMetrics();
@@ -150,7 +150,7 @@ async function testSubscriptionAnalytics(): Promise<void> {
     }
 }
 
-async function testIntelligentFailureHandling(): Promise<void> {
+const testIntelligentFailureHandling = async (): Promise<void> => {
     try {
         console.log('✅ Servicio de manejo inteligente de fallos inicializado');
         console.log('   • Estrategias disponibles: retry_immediate, retry_delayed, request_payment_update, suspend_subscription');
@@ -166,7 +166,7 @@ async function testIntelligentFailureHandling(): Promise<void> {
     }
 }
 
-async function testWebhookConfiguration(): Promise<void> {
+const testWebhookConfiguration = async (): Promise<void> => {
     try {
         const stripeSecretKey = process.env['STRIPE_SECRET_KEY'];
         const stripeWebhookSecret = process.env['STRIPE_WEBHOOK_SECRET'];
@@ -196,7 +196,7 @@ async function testWebhookConfiguration(): Promise<void> {
     }
 }
 
-async function showSystemSummary(): Promise<void> {
+const showSystemSummary = async (): Promise<void> => {
     console.log('\n📊 Resumen del Sistema de Pagos:');
     console.log('════════════════════════════════════════');
 

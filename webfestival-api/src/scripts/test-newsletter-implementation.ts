@@ -9,7 +9,7 @@ import { newsletterService } from '../services/newsletter.service';
 
 const prisma = new PrismaClient();
 
-async function testNewsletterImplementation() {
+const testNewsletterImplementation = async () => {
   console.log('🧪 Iniciando pruebas del sistema de newsletter y contenido educativo...\n');
 
   try {
