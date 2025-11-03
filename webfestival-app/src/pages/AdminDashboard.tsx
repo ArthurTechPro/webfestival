@@ -8,6 +8,7 @@ import ConcursoManagement from '../components/admin/ConcursoManagement';
 import UserManagement from '../components/admin/UserManagement';
 import JuryAssignment from '../components/admin/JuryAssignment';
 import AdminMetrics from '../components/admin/AdminMetrics';
+import CriteriaManagement from '../components/admin/CriteriaManagement';
 import { useAdmin } from '../hooks/useAdmin';
 
 /**
@@ -16,9 +17,9 @@ import { useAdmin } from '../hooks/useAdmin';
 const AdminDashboard: React.FC = () => {
   const { user } = useAuth();
   const { stats } = useAdmin();
-  
+
   // Estado para controlar la vista activa
-  const [activeView, setActiveView] = useState<'dashboard' | 'concursos' | 'usuarios' | 'jurados' | 'metricas'>('dashboard');
+  const [activeView, setActiveView] = useState<'dashboard' | 'concursos' | 'usuarios' | 'jurados' | 'criterios' | 'metricas'>('dashboard');
 
   // Renderizar contenido según la vista activa
   const renderContent = () => {
@@ -29,6 +30,8 @@ const AdminDashboard: React.FC = () => {
         return <UserManagement />;
       case 'jurados':
         return <JuryAssignment />;
+      case 'criterios':
+        return <CriteriaManagement />;
       case 'metricas':
         return <AdminMetrics />;
       default:
@@ -90,13 +93,13 @@ const AdminDashboard: React.FC = () => {
               label: item.mes,
               value: item.usuarios
             })) || [
-              { label: 'Ene', value: 120 },
-              { label: 'Feb', value: 190 },
-              { label: 'Mar', value: 150 },
-              { label: 'Abr', value: 220 },
-              { label: 'May', value: 180 },
-              { label: 'Jun', value: 250 }
-            ]}
+                { label: 'Ene', value: 120 },
+                { label: 'Feb', value: 190 },
+                { label: 'Mar', value: 150 },
+                { label: 'Abr', value: 220 },
+                { label: 'May', value: 180 },
+                { label: 'Jun', value: 250 }
+              ]}
           />
         </Col>
         <Col lg={4}>
@@ -127,8 +130,8 @@ const AdminDashboard: React.FC = () => {
               <Card.Text className="text-light">
                 Crear, editar y gestionar concursos multimedia
               </Card.Text>
-              <Button 
-                variant="danger" 
+              <Button
+                variant="danger"
                 onClick={() => setActiveView('concursos')}
               >
                 Gestionar Concursos
@@ -144,8 +147,8 @@ const AdminDashboard: React.FC = () => {
               <Card.Text className="text-light">
                 Administrar usuarios, roles y permisos
               </Card.Text>
-              <Button 
-                variant="outline-danger" 
+              <Button
+                variant="outline-danger"
                 onClick={() => setActiveView('usuarios')}
               >
                 Gestionar Usuarios
@@ -161,8 +164,8 @@ const AdminDashboard: React.FC = () => {
               <Card.Text className="text-light">
                 Asignar jurados especializados a categorías
               </Card.Text>
-              <Button 
-                variant="outline-warning" 
+              <Button
+                variant="outline-warning"
                 onClick={() => setActiveView('jurados')}
               >
                 Asignar Jurados
@@ -174,12 +177,15 @@ const AdminDashboard: React.FC = () => {
         <Col md={4} className="mb-4">
           <Card className="h-100 bg-dark text-white border-0">
             <Card.Body>
-              <Card.Title className="text-white">📝 Criterios de Evaluación</Card.Title>
+              <Card.Title className="text-white">🎯 Criterios de Evaluación</Card.Title>
               <Card.Text className="text-light">
                 Gestionar criterios dinámicos por tipo de medio
               </Card.Text>
-              <Button variant="outline-info" disabled>
-                Gestionar Criterios (Próximamente)
+              <Button
+                variant="outline-info"
+                onClick={() => setActiveView('criterios')}
+              >
+                Gestionar Criterios
               </Button>
             </Card.Body>
           </Card>
@@ -192,8 +198,8 @@ const AdminDashboard: React.FC = () => {
               <Card.Text className="text-light">
                 Estadísticas detalladas de la plataforma
               </Card.Text>
-              <Button 
-                variant="outline-success" 
+              <Button
+                variant="outline-success"
                 onClick={() => setActiveView('metricas')}
               >
                 Ver Métricas
@@ -252,7 +258,7 @@ const AdminDashboard: React.FC = () => {
           <Col>
             <Nav variant="pills" className="bg-dark p-2 rounded">
               <Nav.Item>
-                <Nav.Link 
+                <Nav.Link
                   active={activeView === 'dashboard'}
                   onClick={() => setActiveView('dashboard')}
                   className={activeView === 'dashboard' ? 'bg-danger text-white' : 'text-light'}
@@ -261,7 +267,7 @@ const AdminDashboard: React.FC = () => {
                 </Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link 
+                <Nav.Link
                   active={activeView === 'concursos'}
                   onClick={() => setActiveView('concursos')}
                   className={activeView === 'concursos' ? 'bg-danger text-white' : 'text-light'}
@@ -270,7 +276,7 @@ const AdminDashboard: React.FC = () => {
                 </Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link 
+                <Nav.Link
                   active={activeView === 'usuarios'}
                   onClick={() => setActiveView('usuarios')}
                   className={activeView === 'usuarios' ? 'bg-danger text-white' : 'text-light'}
@@ -279,7 +285,7 @@ const AdminDashboard: React.FC = () => {
                 </Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link 
+                <Nav.Link
                   active={activeView === 'jurados'}
                   onClick={() => setActiveView('jurados')}
                   className={activeView === 'jurados' ? 'bg-danger text-white' : 'text-light'}
@@ -288,7 +294,16 @@ const AdminDashboard: React.FC = () => {
                 </Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link 
+                <Nav.Link
+                  active={activeView === 'criterios'}
+                  onClick={() => setActiveView('criterios')}
+                  className={activeView === 'criterios' ? 'bg-danger text-white' : 'text-light'}
+                >
+                  🎯 Criterios
+                </Nav.Link>
+              </Nav.Item>
+              <Nav.Item>
+                <Nav.Link
                   active={activeView === 'metricas'}
                   onClick={() => setActiveView('metricas')}
                   className={activeView === 'metricas' ? 'bg-danger text-white' : 'text-light'}

@@ -188,7 +188,7 @@
         {
           "icon": "list",
           "label": "Criterios",
-          "route": "/app/admin/criteria"
+          "route": "/admin/criterios"
         },
         {
           "icon": "bar-chart",

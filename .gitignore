@@ -12,8 +12,8 @@ build/
 dist/
 
 # Proyectos webfestival.
-# webfestival-api/
-# webfestival-app/
+webfestival-api/
+webfestival-app/
 
 # Environment variables
 .env

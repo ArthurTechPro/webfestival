@@ -23,6 +23,7 @@ import JuradoDashboard from './pages/JuradoDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import ContentAdminDashboard from './pages/ContentAdminDashboard';
 import SpecializationManagementPage from './pages/SpecializationManagementPage';
+import CriteriaManagementPage from './pages/CriteriaManagementPage';
 
 // Importar componentes de layout y protección
 // import Navbar from './components/layout/Navbar';
@@ -287,7 +288,7 @@ const AppContent = () => {
               <Route path="/admin/concursos" element={<ProtectedRoute requiredRoles={['ADMIN']}><div className="container py-5"><h1>Gestión de Concursos (Próximamente)</h1></div></ProtectedRoute>} />
               <Route path="/admin/usuarios" element={<ProtectedRoute requiredRoles={['ADMIN']}><div className="container py-5"><h1>Gestión de Usuarios (Próximamente)</h1></div></ProtectedRoute>} />
               <Route path="/admin/jurados" element={<ProtectedRoute requiredRoles={['ADMIN']}><div className="container py-5"><h1>Asignación de Jurados (Próximamente)</h1></div></ProtectedRoute>} />
-              <Route path="/admin/criterios" element={<ProtectedRoute requiredRoles={['ADMIN']}><div className="container py-5"><h1>Criterios de Evaluación (Próximamente)</h1></div></ProtectedRoute>} />
+              <Route path="/admin/criterios" element={<ProtectedRoute requiredRoles={['ADMIN']}><CriteriaManagementPage /></ProtectedRoute>} />
               <Route path="/admin/metricas" element={<ProtectedRoute requiredRoles={['ADMIN']}><div className="container py-5"><h1>Métricas y Analytics (Próximamente)</h1></div></ProtectedRoute>} />
               <Route path="/admin/suscripciones" element={<ProtectedRoute requiredRoles={['ADMIN']}><div className="container py-5"><h1>Suscripciones (Próximamente)</h1></div></ProtectedRoute>} />
               

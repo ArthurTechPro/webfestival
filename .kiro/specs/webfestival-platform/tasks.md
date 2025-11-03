@@ -413,7 +413,7 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
     - Implementar página de gestión de usuarios y roles
     - _Requisitos: 7.1, 7.2, 7.3, 7.4, 8.1, 8.4, 14.1, 14.2, 14.3, 14.4, 23.4_
 
-  - [ ] 14.2 Gestión de criterios de evaluación
+  - [x] 14.2 Gestión de criterios de evaluación
     - Crear interfaz CRUD para gestión de criterios dinámicos
     - Implementar configuración de criterios por tipo de medio
     - Crear sistema de pesos y ponderación de criterios
@@ -439,7 +439,7 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
 
 - [ ] 16. Galería pública y funcionalidades sociales
   - [ ] 16.1 Galería pública multimedia
-    - Crear interfaz de galería unificada con medios ganadores de todos los tipos (foto, video, audio, corto)
+    - Crear interfaz de galería unificada con medios ganadores de todos los tipos (foto, video, corto)
     - Implementar reproductores integrados para cada tipo de medio en la galería
     - Crear filtros avanzados por tipo de medio, categoría, concurso y año
     - Implementar modal de visualización detallada con reproductor específico por tipo
