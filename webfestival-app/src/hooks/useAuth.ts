@@ -47,8 +47,9 @@ export const useAuth = () => {
         email,
         nombre: 'Usuario Demo',
         role: 'PARTICIPANTE',
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        activo: true,
+        created_at: new Date(),
+        updated_at: new Date(),
       };
 
       localStorage.setItem('authToken', 'mock-token');

@@ -1,7 +1,7 @@
 import React from 'react';
-import './SimpleChart.scss';
+import { Card } from 'react-bootstrap';
 
-interface ChartData {
+interface ChartDataPoint {
   label: string;
   value: number;
   color?: string;
@@ -9,100 +9,111 @@ interface ChartData {
 
 interface SimpleChartProps {
   title: string;
-  data: ChartData[];
-  type?: 'bar' | 'donut' | 'line';
-  height?: number;
-  className?: string;
+  type: 'bar' | 'donut' | 'line';
+  height: number;
+  data: ChartDataPoint[];
 }
 
+/**
+ * Componente simple para mostrar gráficos básicos sin dependencias externas
+ */
 const SimpleChart: React.FC<SimpleChartProps> = ({
   title,
-  data,
-  type = 'bar',
-  height = 200,
-  className = ''
+  type,
+  height,
+  data
 }) => {
-  const maxValue = Math.max(...data.map(d => d.value));
-  const colors = ['#346CB0', '#2ed573', '#ffa502', '#3742fa', '#ff4757', '#5f27cd'];
-
-  const renderBarChart = () => (
-    <div className="chart-container" style={{ height }}>
-      <div className="chart-bars">
+  const renderBarChart = () => {
+    const maxValue = Math.max(...data.map(d => d.value));
+    
+    return (
+      <div className="d-flex align-items-end justify-content-around" style={{ height: height - 60 }}>
         {data.map((item, index) => (
-          <div key={index} className="bar-container">
-            <div 
-              className="bar"
+          <div key={index} className="d-flex flex-column align-items-center">
+            <div
+              className="bg-primary rounded-top"
               style={{
-                height: `${(item.value / maxValue) * 100}%`,
-                backgroundColor: item.color || colors[index % colors.length]
+                width: '40px',
+                height: `${(item.value / maxValue) * (height - 100)}px`,
+                minHeight: '5px'
               }}
-            >
-              <div className="bar-value">{item.value}</div>
-            </div>
-            <div className="bar-label">{item.label}</div>
+              title={`${item.label}: ${item.value}`}
+            />
+            <small className="text-muted mt-2">{item.label}</small>
+            <small className="text-white">{item.value}</small>
           </div>
         ))}
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderDonutChart = () => {
     const total = data.reduce((sum, item) => sum + item.value, 0);
     let currentAngle = 0;
-
+    
+    const radius = Math.min(height, 300) / 2 - 20;
+    const centerX = radius + 20;
+    const centerY = radius + 20;
+    
     return (
-      <div className="chart-container donut-container" style={{ height }}>
-        <svg width={height} height={height} viewBox={`0 0 ${height} ${height}`}>
-          <g transform={`translate(${height/2}, ${height/2})`}>
+      <div className="d-flex align-items-center justify-content-center">
+        <div className="me-4">
+          <svg width={radius * 2 + 40} height={radius * 2 + 40}>
             {data.map((item, index) => {
               // const percentage = (item.value / total) * 100;
               const angle = (item.value / total) * 360;
-              const radius = height * 0.35;
-              const innerRadius = height * 0.2;
               
               const startAngle = currentAngle;
               const endAngle = currentAngle + angle;
-              currentAngle += angle;
-
-              const x1 = Math.cos((startAngle - 90) * Math.PI / 180) * radius;
-              const y1 = Math.sin((startAngle - 90) * Math.PI / 180) * radius;
-              const x2 = Math.cos((endAngle - 90) * Math.PI / 180) * radius;
-              const y2 = Math.sin((endAngle - 90) * Math.PI / 180) * radius;
-
+              
+              const startX = centerX + radius * Math.cos((startAngle - 90) * Math.PI / 180);
+              const startY = centerY + radius * Math.sin((startAngle - 90) * Math.PI / 180);
+              const endX = centerX + radius * Math.cos((endAngle - 90) * Math.PI / 180);
+              const endY = centerY + radius * Math.sin((endAngle - 90) * Math.PI / 180);
+              
               const largeArcFlag = angle > 180 ? 1 : 0;
-
+              
               const pathData = [
-                `M ${x1} ${y1}`,
-                `A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2}`,
-                `L ${Math.cos((endAngle - 90) * Math.PI / 180) * innerRadius} ${Math.sin((endAngle - 90) * Math.PI / 180) * innerRadius}`,
-                `A ${innerRadius} ${innerRadius} 0 ${largeArcFlag} 0 ${Math.cos((startAngle - 90) * Math.PI / 180) * innerRadius} ${Math.sin((startAngle - 90) * Math.PI / 180) * innerRadius}`,
+                `M ${centerX} ${centerY}`,
+                `L ${startX} ${startY}`,
+                `A ${radius} ${radius} 0 ${largeArcFlag} 1 ${endX} ${endY}`,
                 'Z'
               ].join(' ');
-
+              
+              currentAngle += angle;
+              
               return (
                 <path
                   key={index}
                   d={pathData}
-                  fill={item.color || colors[index % colors.length]}
-                  className="donut-segment"
+                  fill={item.color || `hsl(${index * 60}, 70%, 50%)`}
+                  stroke="#fff"
+                  strokeWidth="2"
                 />
               );
             })}
-          </g>
-        </svg>
-        <div className="donut-center">
-          <div className="donut-total">{total}</div>
-          <div className="donut-label">Total</div>
+            {/* Círculo interior para efecto donut */}
+            <circle
+              cx={centerX}
+              cy={centerY}
+              r={radius * 0.6}
+              fill="#212529"
+            />
+          </svg>
         </div>
-        <div className="donut-legend">
+        <div>
           {data.map((item, index) => (
-            <div key={index} className="legend-item">
-              <div 
-                className="legend-color"
-                style={{ backgroundColor: item.color || colors[index % colors.length] }}
+            <div key={index} className="d-flex align-items-center mb-2">
+              <div
+                className="rounded me-2"
+                style={{
+                  width: '12px',
+                  height: '12px',
+                  backgroundColor: item.color || `hsl(${index * 60}, 70%, 50%)`
+                }}
               />
-              <span className="legend-label">{item.label}</span>
-              <span className="legend-value">{item.value}</span>
+              <small className="text-white me-2">{item.label}:</small>
+              <small className="text-muted">{item.value}</small>
             </div>
           ))}
         </div>
@@ -111,80 +122,95 @@ const SimpleChart: React.FC<SimpleChartProps> = ({
   };
 
   const renderLineChart = () => {
-    const width = 300;
-    const chartHeight = height - 40;
-    const points = data.map((item, index) => ({
-      x: (index / (data.length - 1)) * width,
-      y: chartHeight - (item.value / maxValue) * chartHeight
-    }));
-
-    const pathData = points.map((point, index) => 
-      `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`
-    ).join(' ');
-
+    const maxValue = Math.max(...data.map(d => d.value));
+    const minValue = Math.min(...data.map(d => d.value));
+    const range = maxValue - minValue || 1;
+    
+    const chartHeight = height - 80;
+    const chartWidth = 400;
+    const stepX = chartWidth / (data.length - 1);
+    
+    let pathData = '';
+    
+    data.forEach((item, index) => {
+      const x = index * stepX;
+      const y = chartHeight - ((item.value - minValue) / range) * chartHeight;
+      
+      if (index === 0) {
+        pathData += `M ${x} ${y}`;
+      } else {
+        pathData += ` L ${x} ${y}`;
+      }
+    });
+    
     return (
-      <div className="chart-container line-container" style={{ height }}>
-        <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
-          <defs>
-            <linearGradient id="lineGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#346CB0" stopOpacity="0.3"/>
-              <stop offset="100%" stopColor="#346CB0" stopOpacity="0"/>
-            </linearGradient>
-          </defs>
-          
-          {/* Área bajo la línea */}
-          <path
-            d={`${pathData} L ${width} ${chartHeight} L 0 ${chartHeight} Z`}
-            fill="url(#lineGradient)"
-          />
-          
-          {/* Línea principal */}
+      <div className="d-flex justify-content-center">
+        <svg width={chartWidth + 40} height={height}>
           <path
             d={pathData}
-            stroke="#346CB0"
-            strokeWidth="3"
             fill="none"
-            className="line-path"
+            stroke="#0d6efd"
+            strokeWidth="3"
+            transform="translate(20, 20)"
           />
-          
-          {/* Puntos */}
-          {points.map((point, index) => (
-            <circle
-              key={index}
-              cx={point.x}
-              cy={point.y}
-              r="4"
-              fill="#346CB0"
-              className="line-point"
-            />
-          ))}
+          {data.map((item, index) => {
+            const x = index * stepX + 20;
+            const y = chartHeight - ((item.value - minValue) / range) * chartHeight + 20;
+            
+            return (
+              <g key={index}>
+                <circle
+                  cx={x}
+                  cy={y}
+                  r="4"
+                  fill="#0d6efd"
+                />
+                <text
+                  x={x}
+                  y={height - 5}
+                  textAnchor="middle"
+                  fontSize="12"
+                  fill="#6c757d"
+                >
+                  {item.label}
+                </text>
+              </g>
+            );
+          })}
         </svg>
-        
-        <div className="line-labels">
-          {data.map((item, index) => (
-            <div key={index} className="line-label">
-              {item.label}
-            </div>
-          ))}
-        </div>
       </div>
     );
   };
 
+  const renderChart = () => {
+    switch (type) {
+      case 'bar':
+        return renderBarChart();
+      case 'donut':
+        return renderDonutChart();
+      case 'line':
+        return renderLineChart();
+      default:
+        return <div className="text-center text-muted">Tipo de gráfico no soportado</div>;
+    }
+  };
+
   return (
-    <div className={`simple-chart ${className}`}>
-      <div className="chart-header">
-        <h3 className="chart-title">{title}</h3>
-      </div>
-      
-      <div className="chart-body">
-        {type === 'bar' && renderBarChart()}
-        {type === 'donut' && renderDonutChart()}
-        {type === 'line' && renderLineChart()}
-      </div>
-    </div>
+    <Card className="bg-dark text-white border-0 h-100">
+      <Card.Header>
+        <h6 className="mb-0">{title}</h6>
+      </Card.Header>
+      <Card.Body>
+        {data.length === 0 ? (
+          <div className="d-flex align-items-center justify-content-center" style={{ height }}>
+            <p className="text-muted">No hay datos disponibles</p>
+          </div>
+        ) : (
+          renderChart()
+        )}
+      </Card.Body>
+    </Card>
   );
 };
 
-export { SimpleChart };
 export default SimpleChart;

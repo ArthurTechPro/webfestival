@@ -16,8 +16,9 @@ export interface User {
   role: 'PARTICIPANTE' | 'JURADO' | 'ADMIN' | 'CONTENT_ADMIN';
   picture_url?: string;
   bio?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  activo: boolean;
+  created_at: Date;
+  updated_at: Date;
 }
 
 export interface Concurso {
@@ -31,12 +32,14 @@ export interface Concurso {
   imagen_url?: string;
   max_envios: number;
   tamaño_max_mb: number;
+  categorias?: Categoria[];
 }
 
 export interface Categoria {
   id: number;
   nombre: string;
   concurso_id: number;
+  tipo_medio?: 'fotografia' | 'video' | 'audio' | 'corto_cine';
 }
 
 export interface Medio {

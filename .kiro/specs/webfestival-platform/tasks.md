@@ -406,7 +406,7 @@ WebFestival es un ecosistema completo de aplicaciones para concursos multimedia 
     - _Requisitos: 35.1, 35.2, 35.3, 35.4_
 
 - [ ] 15. Panel de administración
-  - [ ] 15.1 Dashboard administrativo
+  - [x] 15.1 Dashboard administrativo
     - Crear dashboard con métricas generales
     - Implementar CRUD de concursos con formularios completos
     - Crear interfaz para asignación de jurados
