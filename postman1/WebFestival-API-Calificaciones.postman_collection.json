@@ -1,0 +1,170 @@
+{
+  "info": {
+    "name": "WebFestival-API - Calificaciones",
+    "description": "# ⭐ Sistema de Calificaciones\n\nSistema de evaluación de medios por jurados.\n\n## Roles\n- **JURADO:** Calificar medios asignados\n- **ADMIN:** Ver todas las calificaciones y resultados\n\n## Funcionalidades\n- Calificación por criterios\n- Asignaciones de medios\n- Progreso de evaluación\n- Resultados finales y rankings",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Jurado",
+      "item": [
+        {
+          "name": "Mis Asignaciones",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {
+              "raw": "{{baseUrl}}/calificaciones/mis-asignaciones?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["calificaciones", "mis-asignaciones"],
+              "query": [
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "20"},
+                {"key": "concursoId", "value": "", "disabled": true},
+                {"key": "estado", "value": "", "disabled": true}
+              ]
+            },
+            "description": "**Medios asignados para evaluar (Jurado)**\n\nLista de medios que debo calificar.\n\n**Filtros:**\n- concursoId\n- estado: pendiente, evaluado, parcial"
+          }
+        },
+        {
+          "name": "Crear Calificación",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "if (pm.response.code === 201) {",
+                "    const res = pm.response.json();",
+                "    if (res.data) {",
+                "        pm.environment.set('calificacionId', res.data.id);",
+                "    }",
+                "}"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"medio_id\": {{medioId}},\n  \"calificaciones_criterios\": [\n    {\n      \"criterio_id\": 1,\n      \"puntuacion\": 8.5,\n      \"comentario\": \"Excelente composición\"\n    },\n    {\n      \"criterio_id\": 2,\n      \"puntuacion\": 9.0,\n      \"comentario\": \"Muy creativo\"\n    }\n  ],\n  \"comentario_general\": \"Trabajo excepcional\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/calificaciones", "host": ["{{baseUrl}}"], "path": ["calificaciones"]},
+            "description": "**Crear calificación (Jurado)**\n\nCalifica un medio asignado.\n\n**Validaciones:**\n- Medio asignado al jurado\n- No calificado previamente\n- Puntuaciones 0-10"
+          }
+        },
+        {
+          "name": "Actualizar Calificación",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"calificaciones_criterios\": [\n    {\n      \"criterio_id\": 1,\n      \"puntuacion\": 9.0,\n      \"comentario\": \"Actualizado\"\n    }\n  ],\n  \"comentario_general\": \"Comentario actualizado\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/calificaciones/{{calificacionId}}", "host": ["{{baseUrl}}"], "path": ["calificaciones", "{{calificacionId}}"]},
+            "description": "**Actualizar calificación (Jurado)**\n\nModifica una calificación existente."
+          }
+        },
+        {
+          "name": "Eliminar Calificación",
+          "request": {
+            "method": "DELETE",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/calificaciones/{{calificacionId}}", "host": ["{{baseUrl}}"], "path": ["calificaciones", "{{calificacionId}}"]},
+            "description": "**Eliminar calificación (Jurado)**\n\nElimina una calificación propia."
+          }
+        },
+        {
+          "name": "Criterios por Tipo",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/calificaciones/criterios/fotografia", "host": ["{{baseUrl}}"], "path": ["calificaciones", "criterios", "fotografia"]},
+            "description": "**Obtener criterios para evaluar**\n\nCriterios aplicables a un tipo de medio.\n\n**Tipos:** fotografia, video, audio, corto_cine, universal"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Consultas",
+      "item": [
+        {
+          "name": "Listar Calificaciones",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {
+              "raw": "{{baseUrl}}/calificaciones?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["calificaciones"],
+              "query": [
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "20"},
+                {"key": "concursoId", "value": "", "disabled": true},
+                {"key": "categoriaId", "value": "", "disabled": true},
+                {"key": "medioId", "value": "", "disabled": true}
+              ]
+            },
+            "description": "**Listar calificaciones**\n\nJurado: ve las suyas\nAdmin: ve todas"
+          }
+        },
+        {
+          "name": "Calificación por ID",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/calificaciones/{{calificacionId}}", "host": ["{{baseUrl}}"], "path": ["calificaciones", "{{calificacionId}}"]},
+            "description": "**Obtener calificación específica**\n\nDetalles completos con criterios."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Administración (Admin)",
+      "item": [
+        {
+          "name": "Progreso de Evaluación",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/calificaciones/progreso/{{concursoId}}", "host": ["{{baseUrl}}"], "path": ["calificaciones", "progreso", "{{concursoId}}"]},
+            "description": "**Progreso de evaluación (Admin)**\n\nEstado de evaluación del concurso:\n- Medios evaluados\n- Progreso por categoría\n- Progreso por jurado"
+          }
+        },
+        {
+          "name": "Resultados Finales",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {
+              "raw": "{{baseUrl}}/calificaciones/resultados/{{concursoId}}?top=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["calificaciones", "resultados", "{{concursoId}}"],
+              "query": [
+                {"key": "top", "value": "10"},
+                {"key": "categoriaId", "value": "", "disabled": true}
+              ]
+            },
+            "description": "**Resultados finales (Admin)**\n\nRankings y ganadores por categoría.\n\n**Incluye:**\n- Posiciones\n- Puntuaciones promedio\n- Desviación estándar\n- Estadísticas generales"
+          }
+        },
+        {
+          "name": "Estadísticas Generales",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/calificaciones/estadisticas", "host": ["{{baseUrl}}"], "path": ["calificaciones", "estadisticas"]},
+            "description": "**Estadísticas del sistema (Admin)**\n\nMétricas generales de calificaciones:\n- Total de calificaciones\n- Promedios\n- Distribución de puntuaciones\n- Jurados activos"
+          }
+        }
+      ]
+    }
+  ]
+}

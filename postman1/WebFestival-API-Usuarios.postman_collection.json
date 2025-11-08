@@ -1,0 +1,199 @@
+{
+  "info": {
+    "name": "WebFestival-API - Usuarios",
+    "description": "# 👥 Gestión de Usuarios\n\nPerfiles, seguimientos y especialización de jurados.\n\n## Funcionalidades\n- Perfiles públicos y privados\n- Sistema de seguimientos\n- Búsqueda de usuarios\n- Especialización de jurados\n- Asignación de jurados a categorías",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Perfiles",
+      "item": [
+        {
+          "name": "Perfil Público",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {"raw": "{{baseUrl}}/users/{{userId}}/profile", "host": ["{{baseUrl}}"], "path": ["users", "{{userId}}", "profile"]},
+            "description": "**Ver perfil público**\n\nInformación pública del usuario + estadísticas."
+          }
+        },
+        {
+          "name": "Actualizar Mi Perfil",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Nombre Actualizado\",\n  \"bio\": \"Nueva biografía\",\n  \"picture_url\": \"https://ejemplo.com/foto.jpg\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/users/profile", "host": ["{{baseUrl}}"], "path": ["users", "profile"]},
+            "description": "**Actualizar perfil propio**\n\nModifica nombre, bio y foto."
+          }
+        },
+        {
+          "name": "Buscar Usuarios",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/search?search=juan&page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "search"],
+              "query": [
+                {"key": "search", "value": "juan"},
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "20"},
+                {"key": "role", "value": "", "disabled": true},
+                {"key": "especializacion", "value": "", "disabled": true}
+              ]
+            },
+            "description": "**Buscar usuarios**\n\nBúsqueda por nombre, email, rol o especialización."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Seguimientos",
+      "item": [
+        {
+          "name": "Seguir Usuario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {"mode": "raw", "raw": "{\n  \"seguido_id\": \"user_456\"\n}"},
+            "url": {"raw": "{{baseUrl}}/users/follow", "host": ["{{baseUrl}}"], "path": ["users", "follow"]},
+            "description": "**Seguir a un usuario**\n\nCrea relación de seguimiento."
+          }
+        },
+        {
+          "name": "Dejar de Seguir",
+          "request": {
+            "method": "DELETE",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/users/follow/user_456", "host": ["{{baseUrl}}"], "path": ["users", "follow", "user_456"]},
+            "description": "**Dejar de seguir**\n\nElimina relación de seguimiento."
+          }
+        },
+        {
+          "name": "Mis Seguidos",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {
+              "raw": "{{baseUrl}}/users/following?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "following"],
+              "query": [{"key": "page", "value": "1"}, {"key": "limit", "value": "20"}]
+            },
+            "description": "**Usuarios que sigo**\n\nLista de usuarios seguidos."
+          }
+        },
+        {
+          "name": "Mis Seguidores",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {
+              "raw": "{{baseUrl}}/users/followers?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "followers"],
+              "query": [{"key": "page", "value": "1"}, {"key": "limit", "value": "20"}]
+            },
+            "description": "**Mis seguidores**\n\nLista de usuarios que me siguen."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Jurados",
+      "item": [
+        {
+          "name": "Crear Especialización",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"especializaciones\": [\"fotografia\", \"video\"],\n  \"experiencia_años\": 5,\n  \"certificaciones\": [\"Certificado Adobe\"],\n  \"portfolio_url\": \"https://portfolio.com\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/users/jurado/especializacion", "host": ["{{baseUrl}}"], "path": ["users", "jurado", "especializacion"]},
+            "description": "**Crear especialización (Jurado)**\n\nDefine áreas de especialización."
+          }
+        },
+        {
+          "name": "Actualizar Especialización",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"experiencia_años\": 7,\n  \"certificaciones\": [\"Nuevo certificado\"]\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/users/jurado/especializacion", "host": ["{{baseUrl}}"], "path": ["users", "jurado", "especializacion"]},
+            "description": "**Actualizar especialización (Jurado)**"
+          }
+        },
+        {
+          "name": "Jurados Especializados",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/users/jurados/fotografia", "host": ["{{baseUrl}}"], "path": ["users", "jurados", "fotografia"]},
+            "description": "**Listar jurados especializados (Admin)**\n\nJurados por tipo de medio."
+          }
+        },
+        {
+          "name": "Asignar Jurado",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jurado_id\": \"user_123\",\n  \"categoria_id\": 1\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/users/jurado/asignar", "host": ["{{baseUrl}}"], "path": ["users", "jurado", "asignar"]},
+            "description": "**Asignar jurado a categoría (Admin)**"
+          }
+        },
+        {
+          "name": "Remover Asignación",
+          "request": {
+            "method": "DELETE",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/users/jurado/asignar/user_123/1", "host": ["{{baseUrl}}"], "path": ["users", "jurado", "asignar", "user_123", "1"]},
+            "description": "**Remover asignación (Admin)**"
+          }
+        },
+        {
+          "name": "Asignaciones de Jurado",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {
+              "raw": "{{baseUrl}}/users/jurado/asignaciones",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "jurado", "asignaciones"],
+              "query": [{"key": "juradoId", "value": "", "disabled": true}]
+            },
+            "description": "**Ver asignaciones de jurado**\n\nJurado: ve las suyas\nAdmin: puede especificar juradoId"
+          }
+        }
+      ]
+    }
+  ]
+}

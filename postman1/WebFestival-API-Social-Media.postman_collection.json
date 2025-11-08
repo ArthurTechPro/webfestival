@@ -1,0 +1,52 @@
+{
+  "info": {
+    "name": "WebFestival-API - Social-Media",
+    "description": "# 📱 Integración con Redes Sociales\n\nCompartir medios ganadores en redes sociales.\n\n## Plataformas\n- Facebook\n- Instagram\n- Twitter\n- LinkedIn\n\n## Funcionalidades\n- Generar enlaces para compartir\n- Acceso público a medios ganadores\n- Metadatos Open Graph\n- Configuración de APIs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Compartir",
+      "item": [
+        {
+          "name": "Generar Enlaces para Compartir",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"medioId\": {{medioId}}\n}"},
+            "url": {"raw": "{{baseUrl}}/social-media/share-links", "host": ["{{baseUrl}}"], "path": ["social-media", "share-links"]},
+            "description": "**Generar enlaces para compartir**\n\nCrea URLs personalizadas para Facebook, Instagram, Twitter y LinkedIn.\n\n⚠️ Solo medios ganadores (primeros 3 lugares).\n\n**Respuesta:**\n```json\n{\n  \"medio\": {...},\n  \"shareUrls\": {\n    \"facebook\": \"https://...\",\n    \"instagram\": \"https://...\",\n    \"twitter\": \"https://...\",\n    \"linkedin\": \"https://...\"\n  },\n  \"shareContent\": {\n    \"title\": \"...\",\n    \"description\": \"...\",\n    \"hashtags\": [\"#WebFestival\", \"#Fotografía\"]\n  }\n}\n```"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Público",
+      "item": [
+        {
+          "name": "Acceso Público a Medio Compartido",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {"raw": "{{baseUrl}}/social-media/public/media/{{medioId}}/mi-foto-ganadora", "host": ["{{baseUrl}}"], "path": ["social-media", "public", "media", "{{medioId}}", "mi-foto-ganadora"]},
+            "description": "**Acceso público a medio compartido**\n\nEndpoint público para medios ganadores con metadatos Open Graph.\n\n**Incluye:**\n- Información del medio\n- Datos del autor\n- Información del concurso\n- Posición y puntaje\n- Metadatos Open Graph\n- URLs para compartir\n\n**Uso:**\nCuando se comparte en redes sociales, muestra preview con imagen y descripción."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Configuración (Admin)",
+      "item": [
+        {
+          "name": "Obtener Configuración",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/social-media/configuration", "host": ["{{baseUrl}}"], "path": ["social-media", "configuration"]},
+            "description": "**Obtener configuración de APIs (Admin)**\n\nVerifica estado de configuración de las APIs de redes sociales.\n\n**Respuesta:**\n```json\n{\n  \"isConfigured\": true,\n  \"missingKeys\": [],\n  \"availableServices\": {\n    \"facebook\": true,\n    \"instagram\": true,\n    \"twitter\": true,\n    \"linkedin\": true\n  }\n}\n```"
+          }
+        }
+      ]
+    }
+  ]
+}

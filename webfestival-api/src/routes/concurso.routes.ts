@@ -141,7 +141,11 @@ router.use(authenticateToken); // Todas las rutas siguientes requieren autentica
  *             properties:
  *               concursoId:
  *                 type: integer
- *                 description: ID del concurso al que se desea inscribir
+ *                 description: ID del concurso al que se desea inscribir (también acepta concurso_id)
+ *                 example: 1
+ *               concurso_id:
+ *                 type: integer
+ *                 description: ID del concurso (formato alternativo con guión bajo)
  *                 example: 1
  *     responses:
  *       201:

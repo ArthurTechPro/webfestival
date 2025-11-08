@@ -44,8 +44,14 @@ export const updateConcursoSchema = z.object({
 
 // Esquema para inscripción a concurso
 export const inscripcionConcursoSchema = z.object({
-  concurso_id: z.number().int().positive('ID de concurso debe ser un número positivo'),
-});
+  concurso_id: z.number().int().positive('ID de concurso debe ser un número positivo').optional(),
+  concursoId: z.number().int().positive('ID de concurso debe ser un número positivo').optional(),
+}).refine((data) => data.concurso_id || data.concursoId, {
+  message: 'Se requiere concurso_id o concursoId',
+  path: ['concurso_id']
+}).transform((data) => ({
+  concurso_id: data.concurso_id || data.concursoId!
+}));
 
 // Esquema para filtros de concursos
 export const concursoFiltersSchema = z.object({

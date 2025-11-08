@@ -1,0 +1,161 @@
+{
+  "info": {
+    "name": "WebFestival-API - Newsletter",
+    "description": "# 📧 Newsletter y Contenido Educativo\n\nSistema de newsletter semanal y contenido educativo.\n\n## Funcionalidades\n- Suscripción y confirmación\n- Contenido educativo por tipo de medio\n- Generación de digests\n- Recomendaciones personalizadas",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Newsletter",
+      "item": [
+        {
+          "name": "Suscribirse",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\n  \"email\": \"usuario@ejemplo.com\",\n  \"nombre\": \"Juan Pérez\",\n  \"intereses\": [\"fotografia\", \"video\"]\n}"},
+            "url": {"raw": "{{baseUrl}}/newsletter/subscribe", "host": ["{{baseUrl}}"], "path": ["newsletter", "subscribe"]},
+            "description": "**Suscribirse al newsletter**\n\nEnvía email de confirmación."
+          }
+        },
+        {
+          "name": "Confirmar Suscripción",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\n  \"token\": \"confirmation_token_123\"\n}"},
+            "url": {"raw": "{{baseUrl}}/newsletter/confirm", "host": ["{{baseUrl}}"], "path": ["newsletter", "confirm"]},
+            "description": "**Confirmar suscripción**\n\nActiva la suscripción con token."
+          }
+        },
+        {
+          "name": "Cancelar Suscripción",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\n  \"email\": \"usuario@ejemplo.com\"\n}"},
+            "url": {"raw": "{{baseUrl}}/newsletter/unsubscribe", "host": ["{{baseUrl}}"], "path": ["newsletter", "unsubscribe"]},
+            "description": "**Cancelar suscripción**"
+          }
+        },
+        {
+          "name": "Listar Suscriptores (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/newsletter/subscribers?page=1&limit=20", "host": ["{{baseUrl}}"], "path": ["newsletter", "subscribers"], "query": [{"key": "page", "value": "1"}, {"key": "limit", "value": "20"}]},
+            "description": "**Listar suscriptores (Content Admin)**"
+          }
+        },
+        {
+          "name": "Estadísticas (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/newsletter/stats", "host": ["{{baseUrl}}"], "path": ["newsletter", "stats"]},
+            "description": "**Estadísticas del newsletter (Content Admin)**"
+          }
+        },
+        {
+          "name": "Generar Digest (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/newsletter/generate-digest", "host": ["{{baseUrl}}"], "path": ["newsletter", "generate-digest"]},
+            "description": "**Generar digest semanal (Content Admin)**"
+          }
+        },
+        {
+          "name": "Enviar Digest (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"digestId\": 1\n}"},
+            "url": {"raw": "{{baseUrl}}/newsletter/send-digest", "host": ["{{baseUrl}}"], "path": ["newsletter", "send-digest"]},
+            "description": "**Enviar digest a suscriptores (Content Admin)**"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contenido Educativo",
+      "item": [
+        {
+          "name": "Listar Contenido Educativo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {"raw": "{{baseUrl}}/educational-content?tipoMedio=fotografia&nivel=intermedio&page=1&limit=10", "host": ["{{baseUrl}}"], "path": ["educational-content"], "query": [{"key": "tipoMedio", "value": "fotografia"}, {"key": "nivel", "value": "intermedio"}, {"key": "page", "value": "1"}, {"key": "limit", "value": "10"}]},
+            "description": "**Listar contenido educativo**\n\nFiltros: tipoMedio, nivel (principiante, intermedio, avanzado)"
+          }
+        },
+        {
+          "name": "Contenido por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {"raw": "{{baseUrl}}/educational-content/1", "host": ["{{baseUrl}}"], "path": ["educational-content", "1"]},
+            "description": "**Obtener contenido educativo específico**"
+          }
+        },
+        {
+          "name": "Recomendaciones Personalizadas",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/educational-content/recommendations", "host": ["{{baseUrl}}"], "path": ["educational-content", "recommendations"]},
+            "description": "**Recomendaciones personalizadas**\n\nBasado en intereses del usuario."
+          }
+        },
+        {
+          "name": "Registrar Vista",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\n  \"contenidoId\": 1\n}"},
+            "url": {"raw": "{{baseUrl}}/educational-content/track-view", "host": ["{{baseUrl}}"], "path": ["educational-content", "track-view"]},
+            "description": "**Registrar vista de contenido**\n\nPara métricas."
+          }
+        },
+        {
+          "name": "Crear Contenido (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"titulo\": \"Introducción a la Fotografía\",\n  \"contenido\": \"Contenido del tutorial...\",\n  \"tipoMedio\": \"fotografia\",\n  \"nivel\": \"principiante\",\n  \"tiempoEstimadoLectura\": 10\n}"},
+            "url": {"raw": "{{baseUrl}}/educational-content", "host": ["{{baseUrl}}"], "path": ["educational-content"]},
+            "description": "**Crear contenido educativo (Content Admin)**"
+          }
+        },
+        {
+          "name": "Actualizar Contenido (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"titulo\": \"Título Actualizado\"\n}"},
+            "url": {"raw": "{{baseUrl}}/educational-content/1", "host": ["{{baseUrl}}"], "path": ["educational-content", "1"]},
+            "description": "**Actualizar contenido (Content Admin)**"
+          }
+        },
+        {
+          "name": "Eliminar Contenido (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/educational-content/1", "host": ["{{baseUrl}}"], "path": ["educational-content", "1"]},
+            "description": "**Eliminar contenido (Content Admin)**"
+          }
+        },
+        {
+          "name": "Métricas (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/educational-content/metrics", "host": ["{{baseUrl}}"], "path": ["educational-content", "metrics"]},
+            "description": "**Métricas de contenido educativo (Content Admin)**"
+          }
+        }
+      ]
+    }
+  ]
+}

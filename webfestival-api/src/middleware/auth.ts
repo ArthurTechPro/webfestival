@@ -112,28 +112,52 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
     return;
   }
 
+  // Verificar que JWT_SECRET esté configurado
+  const jwtSecret = process.env['JWT_SECRET'];
+  if (!jwtSecret) {
+    console.error('❌ JWT_SECRET no está configurado en las variables de entorno');
+    res.status(500).json({
+      success: false,
+      error: 'Error de configuración del servidor',
+      code: 'SERVER_CONFIG_ERROR'
+    });
+    return;
+  }
+
   try {
-    const decoded = jwt.verify(token, process.env['JWT_SECRET']!) as JWTPayload;
+    // Intentar decodificar el token sin verificar primero (para debugging)
+    const decodedUnverified = jwt.decode(token);
+    console.log('🔍 Token decodificado (sin verificar):', decodedUnverified);
+
+    // Ahora verificar con el secret
+    const decoded = jwt.verify(token, jwtSecret) as JWTPayload;
+    console.log('✅ Token verificado exitosamente:', { userId: decoded.userId, role: decoded.role });
+    
     req.user = decoded;
     next();
   } catch (error) {
+    console.error('❌ Error al verificar token:', error);
+    
     if (error instanceof jwt.TokenExpiredError) {
       res.status(401).json({
         success: false,
         error: 'Token expirado',
-        code: 'TOKEN_EXPIRED'
+        code: 'TOKEN_EXPIRED',
+        details: process.env['NODE_ENV'] === 'development' ? { expiredAt: error.expiredAt } : undefined
       });
     } else if (error instanceof jwt.JsonWebTokenError) {
       res.status(403).json({
         success: false,
         error: 'Token inválido',
-        code: 'TOKEN_INVALID'
+        code: 'TOKEN_INVALID',
+        details: process.env['NODE_ENV'] === 'development' ? { message: error.message } : undefined
       });
     } else {
       res.status(403).json({
         success: false,
         error: 'Error de autenticación',
-        code: 'AUTH_ERROR'
+        code: 'AUTH_ERROR',
+        details: process.env['NODE_ENV'] === 'development' ? { error: String(error) } : undefined
       });
     }
   }

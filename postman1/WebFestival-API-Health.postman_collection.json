@@ -1,0 +1,54 @@
+{
+  "info": {
+    "name": "WebFestival-API - Health",
+    "description": "# 🏥 Health Checks y Diagnósticos\n\nMonitoreo del estado de los servicios de WebFestival API.\n\n## Servicios\n- API Principal\n- Base de Datos PostgreSQL\n- Immich (Gestión de medios)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Estado General",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {"raw": "{{baseUrl}}/health", "host": ["{{baseUrl}}"], "path": ["health"]},
+        "description": "**Estado general del sistema**\n\nVerifica todos los servicios (API, DB, Immich)."
+      }
+    },
+    {
+      "name": "Estado Base de Datos",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {"raw": "{{baseUrl}}/health/database", "host": ["{{baseUrl}}"], "path": ["health", "database"]},
+        "description": "**Estado de PostgreSQL**\n\nConexión, versión y estadísticas de BD."
+      }
+    },
+    {
+      "name": "Estado Immich",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {"raw": "{{baseUrl}}/health/immich", "host": ["{{baseUrl}}"], "path": ["health", "immich"]},
+        "description": "**Estado del servicio Immich**\n\nVerifica conectividad y versión del servidor de medios."
+      }
+    },
+    {
+      "name": "Estadísticas de BD",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {"raw": "{{baseUrl}}/health/database/stats", "host": ["{{baseUrl}}"], "path": ["health", "database", "stats"]},
+        "description": "**Estadísticas de la base de datos**\n\nContadores de usuarios, concursos, medios, etc."
+      }
+    },
+    {
+      "name": "Información de API",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {"raw": "{{baseUrl}}/", "host": ["{{baseUrl}}"], "path": [""]},
+        "description": "**Información general de la API**\n\nVersión, descripción y lista de endpoints disponibles."
+      }
+    }
+  ]
+}

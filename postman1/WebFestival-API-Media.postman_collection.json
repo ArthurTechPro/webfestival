@@ -1,0 +1,200 @@
+{
+  "info": {
+    "name": "WebFestival-API - Media",
+    "description": "# 🎬 Gestión de Medios Multimedia\n\nSistema de subida y gestión de medios (fotos, videos, audio, cortometrajes).\n\n## Funcionalidades\n- Subida segura de archivos\n- Validación de formatos y tamaños\n- Galerías públicas\n- Gestión de medios por usuario\n\n## Tipos de Medio\n- Fotografía\n- Video\n- Audio\n- Cortometraje",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Configuración",
+      "item": [
+        {
+          "name": "Obtener Configuración de Validación",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {"raw": "{{baseUrl}}/media/validation-config", "host": ["{{baseUrl}}"], "path": ["media", "validation-config"]},
+            "description": "**Configuración de validación**\n\nRetorna:\n- Tamaño máximo de archivo\n- Formatos permitidos por tipo\n\n**Ejemplo:**\n```json\n{\n  \"maxFileSize\": 10485760,\n  \"allowedFormats\": {\n    \"fotografia\": [\"image/jpeg\", \"image/png\"],\n    \"video\": [\"video/mp4\", \"video/webm\"],\n    \"audio\": [\"audio/mp3\", \"audio/wav\"],\n    \"corto_cine\": [\"video/mp4\", \"video/mov\"]\n  }\n}\n```"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Subida de Medios",
+      "item": [
+        {
+          "name": "Generar URL de Subida",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "if (pm.response.code === 200) {",
+                "    const res = pm.response.json();",
+                "    if (res.data) {",
+                "        pm.environment.set('uploadId', res.data.uploadId);",
+                "        pm.environment.set('uploadUrl', res.data.uploadUrl);",
+                "    }",
+                "}"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Mi Fotografía\",\n  \"tipo_medio\": \"fotografia\",\n  \"categoria_id\": {{categoriaId}},\n  \"formato\": \"image/jpeg\",\n  \"tamaño_archivo\": 2048576\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/media/contests/{{concursoId}}/upload-url", "host": ["{{baseUrl}}"], "path": ["media", "contests", "{{concursoId}}", "upload-url"]},
+            "description": "**Generar URL de subida**\n\nCrea URL temporal para subir archivo.\n\n**Validaciones:**\n- Usuario inscrito\n- Formato permitido\n- Tamaño dentro del límite\n- No excede límite de envíos\n\n**Respuesta:**\n- uploadUrl: URL para subir\n- uploadId: ID de la subida\n- expiresIn: Tiempo de expiración"
+          }
+        },
+        {
+          "name": "Procesar Subida Completada",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "if (pm.response.code === 201) {",
+                "    const res = pm.response.json();",
+                "    if (res.data) {",
+                "        pm.environment.set('medioId', res.data.id);",
+                "    }",
+                "}"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"uploadId\": \"{{uploadId}}\",\n  \"immichAssetId\": \"asset_123456\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/media/contests/{{concursoId}}/process-upload", "host": ["{{baseUrl}}"], "path": ["media", "contests", "{{concursoId}}", "process-upload"]},
+            "description": "**Procesar subida completada**\n\nConfirma la subida y crea el registro.\n\n**Proceso:**\n1. Valida uploadId\n2. Verifica immichAssetId\n3. Crea registro en BD\n4. Asocia al concurso\n5. Actualiza contador de envíos"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Consultas",
+      "item": [
+        {
+          "name": "Obtener Medio por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {"raw": "{{baseUrl}}/media/{{medioId}}", "host": ["{{baseUrl}}"], "path": ["media", "{{medioId}}"]},
+            "description": "**Obtener detalles del medio**\n\nRetorna información completa del medio."
+          }
+        },
+        {
+          "name": "Medios por Usuario",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {"raw": "{{baseUrl}}/media/user/{{userId}}", "host": ["{{baseUrl}}"], "path": ["media", "user", "{{userId}}"]},
+            "description": "**Medios de un usuario**\n\nLista todos los medios subidos por un usuario."
+          }
+        },
+        {
+          "name": "Medios por Concurso",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {"raw": "{{baseUrl}}/media/contests/{{concursoId}}", "host": ["{{baseUrl}}"], "path": ["media", "contests", "{{concursoId}}"]},
+            "description": "**Medios de un concurso**\n\nLista medios participantes en un concurso."
+          }
+        },
+        {
+          "name": "Categorías por Tipo de Medio",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {"raw": "{{baseUrl}}/media/contests/{{concursoId}}/categories", "host": ["{{baseUrl}}"], "path": ["media", "contests", "{{concursoId}}", "categories"]},
+            "description": "**Categorías organizadas por tipo**\n\nRetorna categorías agrupadas por tipo de medio."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Galerías Públicas",
+      "item": [
+        {
+          "name": "Galería de Ganadores",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/media/gallery/winners?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["media", "gallery", "winners"],
+              "query": [
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "20"},
+                {"key": "tipo_medio", "value": "", "disabled": true},
+                {"key": "concurso_id", "value": "", "disabled": true},
+                {"key": "año", "value": "", "disabled": true}
+              ]
+            },
+            "description": "**Galería de medios ganadores**\n\nMuestra medios ganadores de concursos finalizados.\n\n**Filtros opcionales:**\n- tipo_medio\n- concurso_id\n- año"
+          }
+        },
+        {
+          "name": "Galería Destacados",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/media/gallery/featured?limit=12",
+              "host": ["{{baseUrl}}"],
+              "path": ["media", "gallery", "featured"],
+              "query": [
+                {"key": "limit", "value": "12"},
+                {"key": "tipo_medio", "value": "", "disabled": true}
+              ]
+            },
+            "description": "**Galería de medios destacados**\n\nSelección curada para página principal."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Gestión (Autenticado)",
+      "item": [
+        {
+          "name": "Actualizar Medio",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Título Actualizado\",\n  \"descripcion\": \"Nueva descripción del medio\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/media/{{medioId}}", "host": ["{{baseUrl}}"], "path": ["media", "{{medioId}}"]},
+            "description": "**Actualizar medio**\n\nEdita título y descripción.\n\n⚠️ No se puede cambiar el archivo."
+          }
+        },
+        {
+          "name": "Eliminar Medio",
+          "request": {
+            "method": "DELETE",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/media/{{medioId}}", "host": ["{{baseUrl}}"], "path": ["media", "{{medioId}}"]},
+            "description": "**Eliminar medio**\n\nElimina un medio subido.\n\n⚠️ Solo si el concurso no está en evaluación."
+          }
+        }
+      ]
+    }
+  ]
+}

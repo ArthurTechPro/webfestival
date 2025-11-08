@@ -1,0 +1,133 @@
+{
+  "info": {
+    "name": "WebFestival-API - Billing",
+    "description": "# 💰 Sistema de Facturación\n\nFacturas, métodos de pago y estadísticas.\n\n## Funcionalidades\n- Historial de facturas\n- Gestión de métodos de pago\n- Estadísticas de facturación\n- Recuperación de pagos fallidos",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Facturas",
+      "item": [
+        {
+          "name": "Mis Facturas",
+          "event": [{
+            "listen": "test",
+            "script": {"exec": ["if (pm.response.code === 200) {", "    const res = pm.response.json();", "    if (res.data && res.data.length > 0) {", "        pm.environment.set('invoiceId', res.data[0].id);", "    }", "}"]}
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/billing/invoices?page=1&limit=20", "host": ["{{baseUrl}}"], "path": ["billing", "invoices"], "query": [{"key": "page", "value": "1"}, {"key": "limit", "value": "20"}, {"key": "status", "value": "", "disabled": true}]},
+            "description": "**Historial de facturas**\n\nFiltros: status (paid, pending, failed, cancelled)"
+          }
+        },
+        {
+          "name": "Factura por ID",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/billing/invoices/{{invoiceId}}", "host": ["{{baseUrl}}"], "path": ["billing", "invoices", "{{invoiceId}}"]},
+            "description": "**Detalles de factura**"
+          }
+        },
+        {
+          "name": "Descargar Factura PDF",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/billing/invoices/{{invoiceId}}/download", "host": ["{{baseUrl}}"], "path": ["billing", "invoices", "{{invoiceId}}", "download"]},
+            "description": "**Descargar factura en PDF**"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Métodos de Pago",
+      "item": [
+        {
+          "name": "Mis Métodos de Pago",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/billing/payment-methods", "host": ["{{baseUrl}}"], "path": ["billing", "payment-methods"]},
+            "description": "**Métodos de pago guardados**"
+          }
+        },
+        {
+          "name": "Eliminar Método de Pago",
+          "request": {
+            "method": "DELETE",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/billing/payment-methods/pm_123", "host": ["{{baseUrl}}"], "path": ["billing", "payment-methods", "pm_123"]},
+            "description": "**Eliminar método de pago**"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Estadísticas",
+      "item": [
+        {
+          "name": "Mis Estadísticas",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/billing/stats", "host": ["{{baseUrl}}"], "path": ["billing", "stats"]},
+            "description": "**Estadísticas de facturación**\n\nTotal gastado, próximo cobro, etc."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Administración (Admin)",
+      "item": [
+        {
+          "name": "Estadísticas de Recuperación",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/billing/admin/recovery-stats", "host": ["{{baseUrl}}"], "path": ["billing", "admin", "recovery-stats"]},
+            "description": "**Estadísticas de recuperación de pagos (Admin)**"
+          }
+        },
+        {
+          "name": "Ejecutar Mantenimiento",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"type\": \"failed_payments\",\n  \"dry_run\": false\n}"},
+            "url": {"raw": "{{baseUrl}}/billing/admin/run-maintenance", "host": ["{{baseUrl}}"], "path": ["billing", "admin", "run-maintenance"]},
+            "description": "**Ejecutar mantenimiento de pagos (Admin)**\n\nTipos: full, failed_payments, subscriptions, invoices"
+          }
+        },
+        {
+          "name": "Estadísticas Avanzadas",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/billing/admin/advanced-recovery-stats", "host": ["{{baseUrl}}"], "path": ["billing", "admin", "advanced-recovery-stats"]},
+            "description": "**Estadísticas avanzadas de recuperación (Admin)**"
+          }
+        },
+        {
+          "name": "Métricas Comprehensivas",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/billing/admin/comprehensive-metrics", "host": ["{{baseUrl}}"], "path": ["billing", "admin", "comprehensive-metrics"]},
+            "description": "**Métricas comprehensivas (Admin)**\n\nMRR, ARR, churn, LTV, CAC"
+          }
+        },
+        {
+          "name": "Predicción de Churn",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/billing/admin/churn-prediction?risk_level=all&timeframe=30", "host": ["{{baseUrl}}"], "path": ["billing", "admin", "churn-prediction"], "query": [{"key": "risk_level", "value": "all"}, {"key": "timeframe", "value": "30"}]},
+            "description": "**Predicción de churn (Admin)**\n\nUsuarios en riesgo de cancelar."
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,121 @@
+{
+  "info": {
+    "name": "WebFestival-API - Jurado-Asignacion",
+    "description": "# 🎯 Asignación Inteligente de Jurados\n\nSistema de asignación automática y manual de jurados a categorías.\n\n## Funcionalidades\n- Asignación manual\n- Asignación automática inteligente\n- Sugerencias basadas en especialización\n- Validación de cobertura\n- Balanceo de carga",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "CRUD Asignaciones",
+      "item": [
+        {
+          "name": "Crear Asignación",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"usuarioId\": \"user_123\",\n  \"categoriaId\": 1,\n  \"especialidad\": \"Fotografía de paisaje\",\n  \"nivel_experiencia\": \"experto\"\n}"},
+            "url": {"raw": "{{baseUrl}}/jurado-asignacion", "host": ["{{baseUrl}}"], "path": ["jurado-asignacion"]},
+            "description": "**Crear asignación manual (Admin)**"
+          }
+        },
+        {
+          "name": "Listar Asignaciones",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/jurado-asignacion?page=1&limit=20", "host": ["{{baseUrl}}"], "path": ["jurado-asignacion"], "query": [{"key": "page", "value": "1"}, {"key": "limit", "value": "20"}, {"key": "concursoId", "value": "", "disabled": true}, {"key": "categoriaId", "value": "", "disabled": true}]},
+            "description": "**Listar todas las asignaciones (Admin)**"
+          }
+        },
+        {
+          "name": "Eliminar Asignación",
+          "request": {
+            "method": "DELETE",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/jurado-asignacion/user_123/1", "host": ["{{baseUrl}}"], "path": ["jurado-asignacion", "user_123", "1"]},
+            "description": "**Eliminar asignación (Admin)**"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Consultas",
+      "item": [
+        {
+          "name": "Asignaciones de Jurado",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/jurado-asignacion/jurado/{{userId}}", "host": ["{{baseUrl}}"], "path": ["jurado-asignacion", "jurado", "{{userId}}"]},
+            "description": "**Asignaciones de un jurado específico**"
+          }
+        },
+        {
+          "name": "Jurados de Categoría",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/jurado-asignacion/categoria/{{categoriaId}}", "host": ["{{baseUrl}}"], "path": ["jurado-asignacion", "categoria", "{{categoriaId}}"]},
+            "description": "**Jurados asignados a una categoría**"
+          }
+        },
+        {
+          "name": "Jurados de Concurso",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/jurado-asignacion/concurso/{{concursoId}}", "host": ["{{baseUrl}}"], "path": ["jurado-asignacion", "concurso", "{{concursoId}}"]},
+            "description": "**Jurados del concurso agrupados por categoría**"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Asignación Inteligente",
+      "item": [
+        {
+          "name": "Sugerencias Inteligentes",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/jurado-asignacion/sugerencias/{{concursoId}}?min_jurados_por_categoria=3", "host": ["{{baseUrl}}"], "path": ["jurado-asignacion", "sugerencias", "{{concursoId}}"], "query": [{"key": "min_jurados_por_categoria", "value": "3"}]},
+            "description": "**Obtener sugerencias de asignación (Admin)**\n\nBasado en especialización y experiencia."
+          }
+        },
+        {
+          "name": "Asignar Automáticamente",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"min_jurados_por_categoria\": 3,\n  \"max_jurados_por_categoria\": 5,\n  \"priorizar_experiencia\": true,\n  \"balancear_carga\": true\n}"},
+            "url": {"raw": "{{baseUrl}}/jurado-asignacion/asignar-automaticamente/{{concursoId}}", "host": ["{{baseUrl}}"], "path": ["jurado-asignacion", "asignar-automaticamente", "{{concursoId}}"]},
+            "description": "**Asignación automática (Admin)**\n\nAlgoritmo inteligente de asignación."
+          }
+        },
+        {
+          "name": "Validar Cobertura",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/jurado-asignacion/cobertura/{{concursoId}}", "host": ["{{baseUrl}}"], "path": ["jurado-asignacion", "cobertura", "{{concursoId}}"]},
+            "description": "**Validar cobertura de jurados (Admin)**\n\nVerifica si todas las categorías tienen suficientes jurados."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Estadísticas",
+      "item": [
+        {
+          "name": "Estadísticas Generales",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/jurado-asignacion/estadisticas", "host": ["{{baseUrl}}"], "path": ["jurado-asignacion", "estadisticas"]},
+            "description": "**Estadísticas del sistema (Admin)**\n\nMétricas de asignaciones y jurados."
+          }
+        }
+      ]
+    }
+  ]
+}

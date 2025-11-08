@@ -1,0 +1,166 @@
+{
+  "info": {
+    "name": "WebFestival-API - CMS",
+    "description": "# 📝 Sistema de Gestión de Contenido\n\nCMS completo con taxonomía, SEO y analytics.\n\n## Tipos de Contenido\n- Blog posts\n- Páginas estáticas\n- Secciones CMS\n\n## Funcionalidades\n- CRUD de contenido\n- Taxonomía (categorías y etiquetas)\n- SEO y metadatos\n- Analytics y métricas\n- Búsqueda avanzada",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Contenido Público",
+      "item": [
+        {
+          "name": "Listar Contenido",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {"raw": "{{baseUrl}}/cms/content?page=1&limit=10&tipo=blog_post", "host": ["{{baseUrl}}"], "path": ["cms", "content"], "query": [{"key": "page", "value": "1"}, {"key": "limit", "value": "10"}, {"key": "tipo", "value": "blog_post"}, {"key": "categoria", "value": "", "disabled": true}, {"key": "etiqueta", "value": "", "disabled": true}, {"key": "busqueda", "value": "", "disabled": true}]},
+            "description": "**Listar contenido con filtros**\n\nFiltros: tipo, categoría, etiqueta, búsqueda, estado, destacado"
+          }
+        },
+        {
+          "name": "Contenido por Slug",
+          "event": [{
+            "listen": "test",
+            "script": {"exec": ["if (pm.response.code === 200) {", "    const res = pm.response.json();", "    if (res.data) {", "        pm.environment.set('contenidoId', res.data.id);", "    }", "}"]}
+          }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {"raw": "{{baseUrl}}/cms/content/mi-articulo-blog", "host": ["{{baseUrl}}"], "path": ["cms", "content", "mi-articulo-blog"]},
+            "description": "**Obtener contenido por slug**\n\nIncluye autor, SEO, métricas y configuración."
+          }
+        },
+        {
+          "name": "Categorías",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {"raw": "{{baseUrl}}/cms/categories?tipo=blog_post", "host": ["{{baseUrl}}"], "path": ["cms", "categories"], "query": [{"key": "tipo", "value": "blog_post", "disabled": true}]},
+            "description": "**Obtener categorías únicas**"
+          }
+        },
+        {
+          "name": "Etiquetas (Autocompletado)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {"raw": "{{baseUrl}}/cms/tags?query=java&limit=10", "host": ["{{baseUrl}}"], "path": ["cms", "tags"], "query": [{"key": "query", "value": "java"}, {"key": "limit", "value": "10"}]},
+            "description": "**Autocompletado de etiquetas**"
+          }
+        },
+        {
+          "name": "Tipos de Contenido",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {"raw": "{{baseUrl}}/cms/content-types", "host": ["{{baseUrl}}"], "path": ["cms", "content-types"]},
+            "description": "**Tipos de contenido disponibles**"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Administración (Content Admin)",
+      "item": [
+        {
+          "name": "Crear Contenido",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"titulo\": \"Mi Nuevo Artículo\",\n  \"slug\": \"mi-nuevo-articulo\",\n  \"contenido\": \"<p>Contenido del artículo...</p>\",\n  \"resumen\": \"Resumen breve\",\n  \"tipo\": \"blog_post\",\n  \"estado\": \"BORRADOR\",\n  \"categorias\": [\"tecnología\", \"web\"],\n  \"etiquetas\": [\"javascript\", \"react\"],\n  \"imagen_destacada\": \"https://...\",\n  \"configuracion\": {\n    \"comentarios_habilitados\": true,\n    \"compartir_habilitado\": true,\n    \"destacado\": false\n  },\n  \"seo\": {\n    \"meta_title\": \"Título SEO\",\n    \"meta_description\": \"Descripción SEO\",\n    \"keywords\": [\"keyword1\", \"keyword2\"]\n  }\n}"},
+            "url": {"raw": "{{baseUrl}}/cms/content", "host": ["{{baseUrl}}"], "path": ["cms", "content"]},
+            "description": "**Crear contenido (Content Admin)**"
+          }
+        },
+        {
+          "name": "Actualizar Contenido",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"titulo\": \"Título Actualizado\",\n  \"contenido\": \"<p>Contenido actualizado...</p>\"\n}"},
+            "url": {"raw": "{{baseUrl}}/cms/content/{{contenidoId}}", "host": ["{{baseUrl}}"], "path": ["cms", "content", "{{contenidoId}}"]},
+            "description": "**Actualizar contenido (Content Admin)**"
+          }
+        },
+        {
+          "name": "Eliminar Contenido",
+          "request": {
+            "method": "DELETE",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/cms/content/{{contenidoId}}", "host": ["{{baseUrl}}"], "path": ["cms", "content", "{{contenidoId}}"]},
+            "description": "**Eliminar contenido (Content Admin)**"
+          }
+        },
+        {
+          "name": "Publicar Contenido",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/cms/content/{{contenidoId}}/publish", "host": ["{{baseUrl}}"], "path": ["cms", "content", "{{contenidoId}}", "publish"]},
+            "description": "**Publicar contenido (Content Admin)**\n\nCambia estado a PUBLICADO."
+          }
+        },
+        {
+          "name": "Actualizar SEO",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"meta_title\": \"Nuevo título SEO\",\n  \"meta_description\": \"Nueva descripción\",\n  \"keywords\": [\"keyword1\", \"keyword2\"]\n}"},
+            "url": {"raw": "{{baseUrl}}/cms/content/{{contenidoId}}/seo", "host": ["{{baseUrl}}"], "path": ["cms", "content", "{{contenidoId}}", "seo"]},
+            "description": "**Actualizar SEO (Content Admin)**"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Analytics",
+      "item": [
+        {
+          "name": "Métricas de Contenido",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/cms/content/{{contenidoId}}/metrics", "host": ["{{baseUrl}}"], "path": ["cms", "content", "{{contenidoId}}", "metrics"]},
+            "description": "**Métricas de contenido específico**"
+          }
+        },
+        {
+          "name": "Overview Analytics",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/cms/analytics/overview", "host": ["{{baseUrl}}"], "path": ["cms", "analytics", "overview"]},
+            "description": "**Métricas generales del CMS**"
+          }
+        },
+        {
+          "name": "Rendimiento de Contenido",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/cms/analytics/content-performance?limit=10&metric=vistas", "host": ["{{baseUrl}}"], "path": ["cms", "analytics", "content-performance"], "query": [{"key": "limit", "value": "10"}, {"key": "metric", "value": "vistas"}]},
+            "description": "**Top contenido por métrica**"
+          }
+        },
+        {
+          "name": "Estadísticas de Taxonomía",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/cms/analytics/taxonomy-stats", "host": ["{{baseUrl}}"], "path": ["cms", "analytics", "taxonomy-stats"]},
+            "description": "**Categorías y etiquetas más populares**"
+          }
+        },
+        {
+          "name": "Tendencias de Crecimiento",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/cms/analytics/growth-trends?periodo=monthly&meses=12", "host": ["{{baseUrl}}"], "path": ["cms", "analytics", "growth-trends"], "query": [{"key": "periodo", "value": "monthly"}, {"key": "meses", "value": "12"}]},
+            "description": "**Tendencias de crecimiento**"
+          }
+        }
+      ]
+    }
+  ]
+}
