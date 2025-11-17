@@ -15,6 +15,7 @@ import {
   UserFiltersRequest
 } from '../schemas/user.schemas';
 import { ApiResponse, ApiError } from '../types';
+import { getImageUrls } from '../utils/image-url.helper';
 
 
 export class UserController {
@@ -37,32 +38,46 @@ export class UserController {
     return req.user;
   };
 
-  private formatUserProfile = (user: any, isFollowing?: boolean) => ({
-    id: user.id,
-    nombre: user.nombre,
-    bio: user.bio,
-    picture_url: user.picture_url,
-    role: user.role,
-    created_at: user.created_at,
-    stats: {
-      concursos_participados: user.stats?.concursos_participados || 0,
-      medios_subidos: user.stats?.medios_subidos || 0,
-      seguidores: user.stats?.seguidores || 0,
-      siguiendo: user.stats?.siguiendo || 0
-    },
-    ...(isFollowing !== undefined && { is_following: isFollowing }),
-    ...(user.especializacion && { especializacion: user.especializacion })
-  });
+  private formatUserProfile = (user: any, isFollowing?: boolean) => {
+    // Obtener URLs de Immich si existe asset_id
+    const imageUrls = getImageUrls(user.picture_asset_id);
+    
+    return {
+      id: user.id,
+      nombre: user.nombre,
+      bio: user.bio,
+      picture_url: imageUrls?.original || user.picture_url,
+      picture_thumbnail: imageUrls?.thumbnail,
+      picture_preview: imageUrls?.preview,
+      role: user.role,
+      created_at: user.created_at,
+      stats: {
+        concursos_participados: user.stats?.concursos_participados || 0,
+        medios_subidos: user.stats?.medios_subidos || 0,
+        seguidores: user.stats?.seguidores || 0,
+        siguiendo: user.stats?.siguiendo || 0
+      },
+      ...(isFollowing !== undefined && { is_following: isFollowing }),
+      ...(user.especializacion && { especializacion: user.especializacion })
+    };
+  };
 
-  private formatFollowResponse = (seguimiento: any) => ({
-    seguidor_id: seguimiento.seguidor_id,
-    seguido_id: seguimiento.seguido_id,
-    fecha_seguimiento: seguimiento.fecha_seguimiento,
-    seguido: {
-      nombre: seguimiento.seguido?.nombre,
-      picture_url: seguimiento.seguido?.picture_url
-    }
-  });
+  private formatFollowResponse = (seguimiento: any) => {
+    // Obtener URLs de Immich para el usuario seguido
+    const imageUrls = getImageUrls(seguimiento.seguido?.picture_asset_id);
+    
+    return {
+      seguidor_id: seguimiento.seguidor_id,
+      seguido_id: seguimiento.seguido_id,
+      fecha_seguimiento: seguimiento.fecha_seguimiento,
+      seguido: {
+        nombre: seguimiento.seguido?.nombre,
+        picture_url: imageUrls?.original || seguimiento.seguido?.picture_url,
+        picture_thumbnail: imageUrls?.thumbnail,
+        picture_preview: imageUrls?.preview
+      }
+    };
+  };
 
   private validateFollowRequest = (seguidorId: string, seguidoId: string) => {
     if (seguidorId === seguidoId) {

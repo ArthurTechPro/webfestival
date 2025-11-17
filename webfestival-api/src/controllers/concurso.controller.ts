@@ -7,10 +7,34 @@ import {
   concursoFiltersSchema 
 } from '../schemas/concurso.schemas';
 import { AuthenticatedRequest } from '../types';
+import { getImageUrls } from '../utils/image-url.helper';
 
 export class ConcursoController {
+  /**
+   * Agrega URLs de imagen de Immich a un concurso
+   */
+  private addImageUrls = (concurso: any): any => {
+    if (!concurso) return concurso;
+
+    const imageUrls = getImageUrls(concurso.imagen_asset_id);
+    
+    return {
+      ...concurso,
+      imagen_url: imageUrls?.original || concurso.imagen_url,
+      imagen_thumbnail: imageUrls?.thumbnail,
+      imagen_preview: imageUrls?.preview
+    };
+  }
+
+  /**
+   * Agrega URLs de Immich a un array de concursos
+   */
+  private addImageUrlsToArray = (concursos: any[]): any[] => {
+    return concursos.map(concurso => this.addImageUrls(concurso));
+  }
+
   // Crear un nuevo concurso (solo ADMIN)
-  async createConcurso(req: AuthenticatedRequest, res: Response) {
+  createConcurso = async (req: AuthenticatedRequest, res: Response) => {
     try {
       const validatedData = createConcursoSchema.parse(req.body);
       const concurso = await concursoService.createConcurso(validatedData);
@@ -18,7 +42,7 @@ export class ConcursoController {
       res.status(201).json({
         success: true,
         message: 'Concurso creado exitosamente',
-        data: concurso
+        data: this.addImageUrls(concurso)
       });
     } catch (error: any) {
       res.status(400).json({
@@ -30,7 +54,7 @@ export class ConcursoController {
   }
 
   // Obtener todos los concursos con filtros (ADMIN)
-  async getConcursos(req: Request, res: Response) {
+  getConcursos = async (req: Request, res: Response) => {
     try {
       const filters = concursoFiltersSchema.parse({
         status: req.query['status'],
@@ -43,7 +67,7 @@ export class ConcursoController {
       
       res.json({
         success: true,
-        data: result.concursos,
+        data: this.addImageUrlsToArray(result.concursos),
         pagination: result.pagination
       });
     } catch (error: any) {
@@ -56,13 +80,13 @@ export class ConcursoController {
   }
 
   // Obtener concursos activos (público)
-  async getConcursosActivos(_req: Request, res: Response) {
+  getConcursosActivos = async (_req: Request, res: Response) => {
     try {
       const concursos = await concursoService.getConcursosActivos();
       
       res.json({
         success: true,
-        data: concursos
+        data: this.addImageUrlsToArray(concursos)
       });
     } catch (error: any) {
       res.status(500).json({
@@ -73,7 +97,7 @@ export class ConcursoController {
   }
 
   // Obtener concursos finalizados (público)
-  async getConcursosFinalizados(req: Request, res: Response) {
+  getConcursosFinalizados = async (req: Request, res: Response) => {
     try {
       const page = req.query['page'] ? parseInt(req.query['page'] as string) : 1;
       const limit = req.query['limit'] ? parseInt(req.query['limit'] as string) : 10;
@@ -82,7 +106,7 @@ export class ConcursoController {
       
       res.json({
         success: true,
-        data: result.concursos,
+        data: this.addImageUrlsToArray(result.concursos),
         pagination: result.pagination
       });
     } catch (error: any) {
@@ -94,7 +118,7 @@ export class ConcursoController {
   }
 
   // Obtener un concurso por ID
-  async getConcursoById(req: Request, res: Response) {
+  getConcursoById = async (req: Request, res: Response) => {
     try {
       const idParam = req.params['id'];
       if (!idParam) {
@@ -116,7 +140,7 @@ export class ConcursoController {
       
       return res.json({
         success: true,
-        data: concurso
+        data: this.addImageUrls(concurso)
       });
     } catch (error: any) {
       const statusCode = error.message === 'Concurso no encontrado' ? 404 : 500;
@@ -128,7 +152,7 @@ export class ConcursoController {
   }
 
   // Actualizar un concurso (solo ADMIN)
-  async updateConcurso(req: AuthenticatedRequest, res: Response) {
+  updateConcurso = async (req: AuthenticatedRequest, res: Response) => {
     try {
       const idParam = req.params['id'];
       if (!idParam) {
@@ -152,7 +176,7 @@ export class ConcursoController {
       return res.json({
         success: true,
         message: 'Concurso actualizado exitosamente',
-        data: concurso
+        data: this.addImageUrls(concurso)
       });
     } catch (error: any) {
       return res.status(400).json({
@@ -164,7 +188,7 @@ export class ConcursoController {
   }
 
   // Eliminar un concurso (solo ADMIN)
-  async deleteConcurso(req: AuthenticatedRequest, res: Response) {
+  deleteConcurso = async (req: AuthenticatedRequest, res: Response) => {
     try {
       const idParam = req.params['id'];
       if (!idParam) {
@@ -198,7 +222,7 @@ export class ConcursoController {
   }
 
   // Inscribirse a un concurso
-  async inscribirseAConcurso(req: AuthenticatedRequest, res: Response) {
+  inscribirseAConcurso = async (req: AuthenticatedRequest, res: Response) => {
     try {
       const validatedData = inscripcionConcursoSchema.parse(req.body);
       const usuarioId = req.user!.userId;
@@ -220,7 +244,7 @@ export class ConcursoController {
   }
 
   // Cancelar inscripción a un concurso
-  async cancelarInscripcion(req: AuthenticatedRequest, res: Response) {
+  cancelarInscripcion = async (req: AuthenticatedRequest, res: Response) => {
     try {
       const concursoIdParam = req.params['concursoId'];
       if (!concursoIdParam) {
@@ -254,7 +278,7 @@ export class ConcursoController {
   }
 
   // Obtener inscripciones del usuario autenticado
-  async getMisInscripciones(req: AuthenticatedRequest, res: Response) {
+  getMisInscripciones = async (req: AuthenticatedRequest, res: Response) => {
     try {
       const usuarioId = req.user!.userId;
       const inscripciones = await concursoService.getInscripcionesUsuario(usuarioId);
@@ -272,7 +296,7 @@ export class ConcursoController {
   }
 
   // Verificar si el usuario está inscrito en un concurso
-  async verificarInscripcion(req: AuthenticatedRequest, res: Response) {
+  verificarInscripcion = async (req: AuthenticatedRequest, res: Response) => {
     try {
       const concursoIdParam = req.params['concursoId'];
       if (!concursoIdParam) {

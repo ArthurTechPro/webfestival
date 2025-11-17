@@ -1,4 +1,8 @@
-import { init, getServerVersion } from '@immich/sdk';
+import { 
+  init, 
+  getServerVersion,
+  getAlbumInfo
+} from '@immich/sdk';
 import { immichConfig, validateImmichConfig } from '../config/immich';
 
 /**
@@ -227,6 +231,116 @@ export class ImmichService {
     this.lastHealthCheck = null;
     
     console.log('🔌 Conexión con Immich desconectada');
+  }
+
+  /**
+   * Obtiene o crea un álbum en Immich
+   * @param albumName Nombre del álbum
+   * @param description Descripción del álbum
+   * @returns ID del álbum
+   */
+  async getOrCreateAlbum(albumName: string, description?: string): Promise<string> {
+    this.ensureConnection();
+
+    try {
+      console.log(`📁 Intentando crear álbum: "${albumName}"`);
+      
+      // Usar fetch directamente para crear el álbum
+      const response = await fetch(`${immichConfig.serverUrl}/api/albums`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': immichConfig.apiKey,
+        },
+        body: JSON.stringify({
+          albumName,
+          description: description || `Álbum: ${albumName}`
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+
+      const album = await response.json() as { id: string };
+      console.log(`✅ Álbum creado: ${albumName} (ID: ${album.id})`);
+      return album.id;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+      console.error(`❌ Error al crear álbum "${albumName}":`, errorMessage);
+      throw new Error(`Fallo al gestionar álbum en Immich: ${errorMessage}`);
+    }
+  }
+
+  /**
+   * Agrega assets a un álbum
+   * @param albumId ID del álbum
+   * @param assetIds IDs de los assets a agregar
+   */
+  async addAssetsToAlbum(albumId: string, assetIds: string[]): Promise<void> {
+    this.ensureConnection();
+
+    try {
+      // Usar fetch directamente para agregar assets
+      const response = await fetch(`${immichConfig.serverUrl}/api/albums/${albumId}/assets`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': immichConfig.apiKey,
+        },
+        body: JSON.stringify({
+          ids: assetIds
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+
+      console.log(`✅ ${assetIds.length} asset(s) agregado(s) al álbum ${albumId}`);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+      console.error(`❌ Error al agregar assets al álbum:`, errorMessage);
+      throw new Error(`Fallo al agregar assets al álbum: ${errorMessage}`);
+    }
+  }
+
+  /**
+   * Obtiene información de un álbum
+   * @param albumId ID del álbum
+   */
+  async getAlbumInfo(albumId: string): Promise<any> {
+    this.ensureConnection();
+
+    try {
+      const albumInfo = await this.executeWithRetry(() =>
+        getAlbumInfo({ id: albumId })
+      );
+
+      return albumInfo;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+      console.error(`❌ Error al obtener información del álbum:`, errorMessage);
+      throw new Error(`Fallo al obtener información del álbum: ${errorMessage}`);
+    }
+  }
+
+  /**
+   * Genera el nombre del álbum para un concurso y usuario
+   * Formato: "Concurso: [Título] / Usuario: [Nombre]"
+   */
+  generateAlbumName(concursoTitulo: string, usuarioNombre: string): string {
+    return `Concurso: ${concursoTitulo} / Usuario: ${usuarioNombre}`;
+  }
+
+  /**
+   * Genera el nombre del álbum principal del concurso
+   * Formato: "Concurso: [Título]"
+   */
+  generateConcursoAlbumName(concursoTitulo: string): string {
+    return `Concurso: ${concursoTitulo}`;
   }
 }
 

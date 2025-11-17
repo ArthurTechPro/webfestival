@@ -1,1062 +1,249 @@
 # WebFestival API - Colecciones de Postman
 
-Esta carpeta contiene colecciones completas de Postman para probar todos los endpoints de la API WebFestival.
+Esta carpeta contiene todas las colecciones de Postman organizadas por controladores de la API de WebFestival.
 
-## 📋 Colecciones Disponibles
+## 📁 Estructura de Colecciones
 
-### 🎯 Colección Maestra (Recomendada)
-- **`WebFestival-Master-Collection.postman_collection.json`**
-  - **Colección unificada "Web Festival"** con toda la API organizada
-  - Quick Start con 7 pasos básicos
-  - Todas las funcionalidades organizadas por módulos
-  - Scripts automáticos para guardar tokens
-  - Variables compartidas entre todos los endpoints
+Cada controlador tiene su propia colección con carpetas internas para organizar los endpoints:
 
-### 🔐 Autenticación y Usuarios
-- **`WebFestival-API-Auth.postman_collection.json`**
-  - Login, registro, refresh tokens
-  - Gestión de perfiles de usuario
-  - Cambio de contraseñas
-  - Validación de tokens
+### Colecciones por Controlador
 
-### 🏆 Concursos y Participación
-- **`WebFestival-API-Concursos.postman_collection.json`**
-  - CRUD de concursos
-  - Inscripciones y cancelaciones
-  - Consulta de concursos activos/finalizados
-  - Verificación de inscripciones
+1. **WebFestival-API-Auth.postman_collection.json** - Autenticación y gestión de sesiones
+2. **WebFestival-API-Concursos.postman_collection.json** - Gestión de concursos e inscripciones
+3. **WebFestival-API-Media.postman_collection.json** - Gestión de medios multimedia
+4. **WebFestival-API-Criterios.postman_collection.json** - Criterios de evaluación
+5. **WebFestival-API-Calificaciones.postman_collection.json** - Sistema de calificaciones y evaluación
+6. **WebFestival-API-Usuarios.postman_collection.json** - Perfiles, seguimientos y jurados
+7. **WebFestival-API-Jurado-Asignacion.postman_collection.json** - Asignación inteligente de jurados
+8. **WebFestival-API-CMS.postman_collection.json** - Sistema de gestión de contenido
+9. **WebFestival-API-Interactions.postman_collection.json** - Likes, comentarios y reportes
+10. **WebFestival-API-Newsletter.postman_collection.json** - Newsletter y contenido educativo
+11. **WebFestival-API-Subscriptions.postman_collection.json** - Suscripciones y planes
+12. **WebFestival-API-Billing.postman_collection.json** - Facturación y pagos
+13. **WebFestival-API-Notifications.postman_collection.json** - Sistema de notificaciones
+14. **WebFestival-API-Social-Media.postman_collection.json** - Integración con redes sociales
+15. **WebFestival-API-Health.postman_collection.json** - Health checks y diagnósticos
+16. **WebFestival-API-Upload-Immich.postman_collection.json** - ✨ **NUEVO** - Subida de imágenes a Immich
 
-### 📊 Criterios de Evaluación
-- **`WebFestival-API-Criterios.postman_collection.json`**
-  - Gestión de criterios dinámicos
-  - Criterios por tipo de medio
-  - Calificaciones y evaluaciones
-  - Asignación de jurados
+### Colección Especial
 
-### 🎬 Medios Multimedia
-- **`WebFestival-API-Media.postman_collection.json`**
-  - Subida de medios (foto, video, audio, cine)
-  - Validación de archivos
-  - Galerías públicas
-  - Gestión de metadatos
+- **WebFestival-API-Flujo-Completo-Subida.postman_collection.json** - Flujo completo paso a paso para subir medios
 
-### 📤 Subida Completa de Archivos (NUEVO)
-- **`WebFestival-Upload-Complete.postman_collection.json`**
-  - **Flujo completo de 3 pasos** incluyendo subida real a Immich
-  - Ejemplos específicos para cada tipo de medio
-  - Scripts automáticos para capturar variables
-  - Guías paso a paso con instrucciones claras
-- **`EJEMPLOS-SUBIDA-ARCHIVOS-IMMICH.md`**
-  - **Documentación detallada** del proceso de subida
-  - Ejemplos de configuración de Postman
-  - Troubleshooting y solución de problemas
+### Environments
 
-### 📝 Sistema CMS
-- **`WebFestival-API-CMS.postman_collection.json`**
-  - Gestión de contenido
-  - Categorías y etiquetas
-  - Búsqueda avanzada
-  - Analytics y métricas
+- **Local.postman_environment.json** - Configuración para desarrollo local
+- **Production.postman_environment.json** - Configuración para producción
 
-### 💬 Interacciones Sociales
-- **`WebFestival-API-Interactions.postman_collection.json`**
-  - Likes unificados
-  - Comentarios con anidamiento
-  - Sistema de reportes
-  - Moderación centralizada
+## 🚀 Cómo Usar
 
-### 💳 Suscripciones y Pagos
-- **`WebFestival-API-Subscriptions.postman_collection.json`**
-  - Planes de suscripción
-  - Procesamiento de pagos
-  - Gestión de límites
-  - Facturación automática
+### Importar en Postman
 
-### 🔔 Notificaciones
-- **`WebFestival-API-Notifications.postman_collection.json`**
-  - Notificaciones automáticas
-  - Gestión de preferencias
-  - Historial de notificaciones
-  - Templates personalizados
+1. Abre Postman
+2. Click en "Import" en la esquina superior izquierda
+3. Arrastra y suelta todos los archivos `.json` de esta carpeta
+4. Las colecciones y environments se importarán automáticamente
 
-### 📧 Newsletter y Contenido Educativo
-- **`WebFestival-API-Newsletter.postman_collection.json`**
-  - Suscripción al newsletter
-  - Contenido educativo por tipo de medio
-  - Recomendaciones personalizadas
-  - Progreso de aprendizaje
+### Configurar Environment
 
-### 🌐 Redes Sociales
-- **`WebFestival-API-Social-Media.postman_collection.json`**
-  - Enlaces compartibles
-  - Integración con redes sociales
-  - Open Graph metadata
-  - Medios públicos
+1. Selecciona el environment apropiado (Local o Production) en el dropdown superior derecho
+2. Para Local: Asegúrate de que tu servidor esté corriendo en `http://localhost:3000`
+3. Para Production: Usa `http://api.webfestival.art/api/v1`
 
-### 🏥 Health Checks y Sistema
-- **`WebFestival-API-Health.postman_collection.json`**
-  - Health checks del servidor
-  - Monitoreo de base de datos
-  - Estado de servicios externos
-  - Información de la API
+### Autenticación
 
-## 🚀 Cómo Usar las Colecciones
+La mayoría de los endpoints requieren autenticación. Sigue estos pasos:
 
-### 1. Preparación del Servidor
-Antes de usar las colecciones, asegúrate de que el servidor esté ejecutándose:
+1. Ve a la colección **Auth**
+2. Ejecuta el endpoint **POST Login** o **POST Register**
+3. Copia el `accessToken` de la respuesta
+4. El token se guardará automáticamente en la variable de environment `{{accessToken}}`
+5. Los demás endpoints usarán automáticamente este token
 
-```bash
-# Navegar al directorio del proyecto
-cd webfestival-api
+## 📝 Variables de Environment
 
-# Instalar dependencias (si es la primera vez)
-npm install
+### Variables Comunes
 
-# Configurar base de datos (si es la primera vez)
-npx prisma db push
-npx prisma db seed
+- `baseUrl` - URL base de la API
+- `accessToken` - Token JWT de autenticación
+- `refreshToken` - Token para renovar el accessToken
+- `userId` - ID del usuario autenticado
+- `currentUserId` - ID del usuario actual (para uploads)
+- `concursoId` - ID de concurso para pruebas
+- `medioId` - ID de medio para pruebas
+- `categoriaId` - ID de categoría para pruebas
+- `criterioId` - ID de criterio
+- `calificacionId` - ID de calificación
+- `contenidoId` - ID de contenido CMS
+- `comentarioId` - ID de comentario
+- `notificacionId` - ID de notificación
+- `planId` - ID de plan de suscripción
+- `invoiceId` - ID de factura
+- `uploadId` - ID de subida temporal
+- `immichAssetId` - ID de asset en Immich
+- `authToken` - Alias de accessToken (para compatibilidad)
 
-# Iniciar el servidor de desarrollo
-npm run dev
-```
+## 🔐 Roles de Usuario
 
-El servidor estará disponible en: `http://localhost:3001`
+La API maneja diferentes roles con permisos específicos:
 
-### 2. Importar en Postman
+- **PARTICIPANTE** - Usuario regular que puede participar en concursos
+- **JURADO** - Puede evaluar medios asignados
+- **ADMIN** - Acceso completo al sistema
+- **CONTENT_ADMIN** - Gestión de contenido CMS
 
-#### Opción A: Colección Maestra (Más Fácil - Recomendado)
-1. **Abre Postman**
-2. **Haz clic en "Import"** en la esquina superior izquierda
-3. **Importa estos 2 archivos**:
-   - `WebFestival-Master-Collection.postman_collection.json` (Colección completa)
-   - `WebFestival-Development.postman_environment.json` (Entorno de desarrollo)
-4. **¡Listo!** Tendrás toda la API organizada en una sola colección "Web Festival"
+## 📚 Documentación por Módulo
 
-#### Opción B: Importar Todo (Para usuarios avanzados)
-1. **Abre Postman**
-2. **Haz clic en "Import"** en la esquina superior izquierda
-3. **Selecciona "Upload Files"** o arrastra toda la carpeta `postman/`
-4. **Importa todos los archivos JSON** de una vez:
-   - Todas las colecciones (12 archivos individuales)
-   - El entorno de desarrollo (`WebFestival-Development.postman_environment.json`)
+### Auth (Autenticación)
+- Login y registro de usuarios
+- Renovación de tokens
+- Cambio de contraseña
+- Validación de sesión
 
-#### Opción C: Importar Selectivamente
-Si solo necesitas ciertas funcionalidades específicas:
-- **Básico**: Auth + Health + Workspace
-- **Concursos**: Auth + Concursos + Media + Criterios
-- **CMS**: Auth + CMS + Interactions + Newsletter
-- **Completo**: Colección Maestra (recomendado)
+### Concursos
+- CRUD de concursos (Admin)
+- Inscripción y cancelación
+- Consulta de concursos activos/finalizados
+- Verificación de inscripción
 
-### 3. Configurar Entorno de Desarrollo
+### Media (Medios)
+- Generación de URLs de subida
+- Procesamiento de archivos
+- Galerías de ganadores y destacados
+- Gestión de medios por usuario/concurso
 
-#### Automático (Recomendado)
-1. **Importa el archivo** `WebFestival-Development.postman_environment.json`
-2. **Selecciona el entorno** "WebFestival Development" en Postman
-3. **¡Listo!** Todas las variables están preconfiguradas
+### Criterios
+- CRUD de criterios de evaluación
+- Criterios por tipo de medio
+- Criterios universales
+- Reordenamiento y estadísticas
 
-#### Manual (Si prefieres crear tu propio entorno)
-Crea un nuevo entorno con estas variables:
+### Calificaciones
+- Crear y actualizar calificaciones (Jurado)
+- Asignaciones de medios a jurados
+- Progreso de evaluación
+- Resultados finales y rankings
+
+### Usuarios
+- Perfiles públicos y privados
+- Sistema de seguimientos
+- Especialización de jurados
+- Búsqueda de usuarios
+
+### Jurado-Asignación
+- Asignación manual y automática
+- Sugerencias inteligentes
+- Validación de cobertura
+- Estadísticas de asignación
+
+### CMS
+- Gestión de contenido (blog, páginas)
+- Taxonomía (categorías, etiquetas)
+- SEO y métricas
+- Analytics y búsqueda avanzada
+
+### Interactions
+- Likes unificados
+- Comentarios anidados
+- Sistema de reportes
+- Moderación centralizada
+
+### Newsletter
+- Suscripción y confirmación
+- Contenido educativo
+- Generación de digests
+- Estadísticas de suscriptores
+
+### Subscriptions
+- Planes de suscripción
+- Procesamiento de pagos (Stripe/PayPal)
+- Límites de uso
+- Webhooks de pago
+
+### Billing
+- Historial de facturas
+- Métodos de pago
+- Estadísticas de facturación
+- Recuperación de pagos fallidos
+
+### Notifications
+- Notificaciones de usuario
+- Trabajos programados
+- Limpieza de notificaciones antiguas
+
+### Social Media
+- Generación de enlaces para compartir
+- Acceso público a medios ganadores
+- Configuración de APIs sociales
+
+### Health
+- Estado general del sistema
+- Health check de base de datos
+- Health check de Immich
+- Estadísticas del sistema
+
+### Upload Immich ✨ **NUEVO**
+- Subida de avatares de usuario
+- Subida de posters de concurso
+- Subida de imágenes CMS
+- Subida de portfolios de jurado
+- URLs optimizadas (original, thumbnail, preview)
+- Tests automáticos incluidos
+
+## 🛠️ Troubleshooting
+
+### Token Expirado
+Si recibes error 401, ejecuta el endpoint **POST Refresh Token** en la colección Auth.
+
+### Variables No Definidas
+Asegúrate de tener seleccionado el environment correcto (Local o Production).
+
+### Errores de Conexión
+Verifica que el servidor esté corriendo y que la URL base sea correcta.
+
+## 📞 Soporte
+
+Para más información sobre la API, consulta:
+- Documentación Swagger: `http://localhost:3000/api-docs` (Local)
+- Repositorio: [GitHub](https://github.com/tu-repo/webfestival-api)
+
+## 🆕 Novedades - Integración Immich
+
+### Nuevos Endpoints de Upload
+
+La API ahora incluye endpoints dedicados para subir imágenes directamente a Immich:
+
+- **POST** `/api/v1/users/:userId/avatar` - Subir avatar (máx 5MB)
+- **POST** `/api/v1/concursos/:concursoId/imagen` - Subir poster (máx 10MB)
+- **POST** `/api/v1/cms/contenido/:contenidoId/imagen` - Subir imagen CMS (máx 10MB)
+- **POST** `/api/v1/jurados/:juradoId/portfolio` - Subir portfolio (máx 5MB)
+
+### URLs Optimizadas en Respuestas
+
+Todos los endpoints que retornan usuarios, concursos o contenido CMS ahora incluyen URLs optimizadas:
 
 ```json
 {
-  "base_url": "http://localhost:3001/api/v1",
-  "server_url": "http://localhost:3001",
-  "access_token": "",
-  "refresh_token": "",
-  "user_id": "",
-  "admin_token": "",
-  "jurado_token": "",
-  "content_admin_token": "",
-  "test_email": "test@webfestival.com",
-  "test_password": "TestPassword123!",
-  "admin_email": "admin@webfestival.com",
-  "admin_password": "AdminPassword123!",
-  "concurso_id": "",
-  "categoria_id": "",
-  "medio_id": "",
-  "criterio_id": "",
-  "contenido_id": "",
-  "comentario_id": "",
-  "reporte_id": "",
-  "subscription_id": ""
+  "picture_url": "https://medios.webfestival.art/api/asset/file/xxx",
+  "picture_thumbnail": "https://medios.webfestival.art/api/asset/thumbnail/xxx",
+  "picture_preview": "https://medios.webfestival.art/api/asset/thumbnail/xxx?size=preview"
 }
 ```
 
-### 4. Flujo de Inicio Rápido (Quick Start)
-
-#### 🎯 Opción 1: Usar la Colección Maestra (Más Fácil)
-1. **Abre la colección** "Web Festival"
-2. **Ejecuta la carpeta** "🚀 Quick Start"
-3. **Ejecuta los requests en orden**:
-   - Health Check → Verificar servidor
-   - Registrar Usuario → Crear cuenta de prueba
-   - Login Usuario → Obtener token (se guarda automáticamente)
-   - Obtener Perfil → Verificar autenticación
-   - Ver Concursos Activos → Explorar contenido
-   - Ver Criterios → Entender evaluación
-   - Ver Planes → Conocer suscripciones
-
-#### 🎯 Opción 2: Flujo Manual Paso a Paso
-
-**Paso 1: Verificar Servidor**
-```http
-GET {{server_url}}/health
-```
-✅ Respuesta esperada: `{ "status": "OK", "timestamp": "..." }`
-
-**Paso 2: Registrar Usuario de Prueba**
-```http
-POST {{base_url}}/auth/register
-Content-Type: application/json
-
-{
-  "email": "{{test_email}}",
-  "password": "{{test_password}}",
-  "nombre": "Usuario de Prueba",
-  "bio": "Usuario creado para testing de la API"
-}
-```
-
-**Paso 3: Hacer Login (Token se guarda automáticamente)**
-```http
-POST {{base_url}}/auth/login
-Content-Type: application/json
-
-{
-  "email": "{{test_email}}",
-  "password": "{{test_password}}"
-}
-```
-
-**Paso 4: Verificar Autenticación**
-```http
-GET {{base_url}}/auth/me
-Authorization: Bearer {{access_token}}
-```
-
-**Paso 5: Explorar Contenido**
-```http
-GET {{base_url}}/concursos/activos
-```
-
-### 5. Flujos de Testing Avanzados
-
-#### 🏆 Flujo Completo de Concurso
-**Ejecutar en este orden:**
-
-1. **Login como Admin**
-   ```http
-   POST {{base_url}}/auth/login
-   {
-     "email": "{{admin_email}}",
-     "password": "{{admin_password}}"
-   }
-   ```
-
-2. **Crear Concurso**
-   ```http
-   POST {{base_url}}/concursos
-   Authorization: Bearer {{admin_token}}
-   {
-     "titulo": "Concurso de Fotografía Urbana 2025",
-     "descripcion": "Captura la esencia de la vida urbana",
-     "fecha_inicio": "2025-01-15T00:00:00Z",
-     "fecha_final": "2025-03-15T23:59:59Z",
-     "max_envios": 3,
-     "tamano_max_mb": 10
-   }
-   ```
-
-3. **Cambiar a Usuario Normal**
-   ```http
-   POST {{base_url}}/auth/login
-   {
-     "email": "{{test_email}}",
-     "password": "{{test_password}}"
-   }
-   ```
-
-4. **Inscribirse al Concurso**
-   ```http
-   POST {{base_url}}/concursos/inscripcion
-   {
-     "concursoId": {{concurso_id}}
-   }
-   ```
-
-5. **Subir Archivo Completo (3 pasos)**
-   - **Paso 1:** Generar URL de subida
-   - **Paso 2:** Subir archivo real a Immich
-   - **Paso 3:** Procesar subida completada
-   
-   **💡 Usa la colección `WebFestival-Upload-Complete.postman_collection.json` para el flujo completo**
-
-#### 💬 Flujo de Interacciones Sociales
-1. **Dar Like a Contenido**
-2. **Crear Comentario**
-3. **Responder Comentario**
-4. **Reportar Contenido Inapropiado**
-5. **Moderar como Admin**
-
-#### 💳 Flujo de Suscripciones
-1. **Ver Planes Disponibles**
-2. **Suscribirse a Plan Premium**
-3. **Verificar Límites**
-4. **Gestionar Suscripción**
-
-### 6. Automatización y Scripts
-
-#### Variables que se Actualizan Automáticamente
-Las colecciones incluyen scripts que guardan automáticamente:
-
-```javascript
-// Ejemplo de script en el request de Login
-if (pm.response.code === 200) {
-    const response = pm.response.json();
-    pm.environment.set('access_token', response.data.accessToken);
-    pm.environment.set('refresh_token', response.data.refreshToken);
-    pm.environment.set('user_id', response.data.user.id);
-    console.log('Token guardado:', response.data.accessToken.substring(0, 20) + '...');
-}
-```
-
-#### Ejecutar Colecciones Completas
-Puedes ejecutar colecciones completas usando el **Collection Runner**:
-
-1. **Haz clic derecho** en una colección
-2. **Selecciona "Run collection"**
-3. **Configura el orden** de ejecución
-4. **Ejecuta automáticamente** todos los tests
-
-### 7. Testing de Diferentes Roles
-
-#### 👤 Usuario Normal (Participante)
-```bash
-Email: test@webfestival.com
-Password: TestPassword123!
-Permisos: Participar en concursos, subir medios, interacciones sociales
-```
-
-#### 👨‍💼 Administrador
-```bash
-Email: admin@webfestival.com
-Password: AdminPassword123!
-Permisos: Gestión completa de concursos, usuarios, configuración
-```
-
-#### 👨‍⚖️ Jurado
-```bash
-# Crear jurado usando el endpoint de admin
-POST {{base_url}}/users/create-jurado
-Permisos: Evaluar medios, asignar calificaciones
-```
-
-#### ✍️ Content Admin
-```bash
-# Crear content admin usando el endpoint de admin
-POST {{base_url}}/users/create-content-admin
-Permisos: Gestión de CMS, moderación de contenido
-```
-
-### 8. Validación de Respuestas
-
-#### Códigos de Estado Esperados
-- **200**: Operación exitosa
-- **201**: Recurso creado exitosamente
-- **400**: Error de validación (revisar datos enviados)
-- **401**: No autenticado (verificar token)
-- **403**: Sin permisos (verificar rol de usuario)
-- **404**: Recurso no encontrado
-- **409**: Conflicto (ej: email ya existe)
-- **500**: Error interno del servidor
-
-#### Estructura de Respuestas
-```json
-{
-  "success": true,
-  "data": {
-    // Datos de la respuesta
-  },
-  "message": "Operación completada exitosamente"
-}
-```
-
-#### Estructura de Errores
-```json
-{
-  "success": false,
-  "message": "Descripción del error",
-  "errors": [
-    // Detalles específicos del error
-  ]
-}
-```
-
-## 🔧 Configuración del Servidor
-
-Asegúrate de que el servidor esté ejecutándose:
-
-```bash
-cd webfestival-api
-npm run dev
-```
-
-El servidor estará disponible en: `http://localhost:3001`
-
-## 📚 Documentación Adicional
-
-- **Swagger UI**: http://localhost:3001/api-docs
-- **API JSON**: http://localhost:3001/api-docs.json
-- **Health Check**: http://localhost:3001/health
-
-## 📤 Subida de Archivos a Immich
-
-### 🚀 Flujo Completo de Subida (3 Pasos)
-
-**IMPORTANTE:** La subida de archivos requiere 3 pasos específicos. Usa la colección `WebFestival-Upload-Complete.postman_collection.json` que incluye el proceso completo.
-
-#### Paso 1: Generar URL de Subida
-```http
-POST {{base_url}}/media/contests/{{concurso_id}}/upload-url
-Authorization: Bearer {{access_token}}
-Content-Type: application/json
-
-{
-  "titulo": "Mi Fotografía",
-  "tipo_medio": "fotografia",
-  "categoria_id": 1,
-  "formato": "image/jpeg",
-  "tamaño_archivo": 2048576
-}
-```
-
-#### Paso 2: Subir Archivo Real a Immich
-```http
-POST {{upload_url}}
-x-api-key: {{immich_api_key}}
-Content-Type: multipart/form-data
-
-# Body: form-data
-# assetData: [FILE] - Seleccionar archivo
-# deviceAssetId: {{upload_id}}
-# deviceId: webfestival-api
-# fileCreatedAt: 2025-01-15T10:30:00.000Z
-# fileModifiedAt: 2025-01-15T10:30:00.000Z
-```
-
-#### Paso 3: Procesar Subida Completada
-```http
-POST {{base_url}}/media/contests/{{concurso_id}}/process-upload
-Authorization: Bearer {{access_token}}
-Content-Type: application/json
-
-{
-  "uploadId": "{{upload_id}}",
-  "immichAssetId": "{{immich_asset_id}}"
-}
-```
-
-### 📋 Instrucciones Detalladas
-
-1. **Importa la colección:** `WebFestival-Upload-Complete.postman_collection.json`
-2. **Ejecuta el flujo:** Carpeta "🚀 Flujo Completo de Subida"
-3. **Selecciona archivo:** En el paso 2, selecciona un archivo real en Body > form-data > assetData
-4. **Sigue los logs:** Los scripts muestran instrucciones paso a paso
-
-### 📚 Documentación Completa
-
-Ver `EJEMPLOS-SUBIDA-ARCHIVOS-IMMICH.md` para:
-- Ejemplos detallados por tipo de medio
-- Configuración de variables de entorno
-- Troubleshooting y solución de problemas
-- Scripts de automatización
-
-## 🧪 Ejemplos de Pruebas
-
-### Flujo Completo de Concurso
-1. **Autenticación**: Login como admin
-2. **Crear Concurso**: POST /concursos
-3. **Crear Categorías**: POST /concursos/{id}/categorias
-4. **Login como Participante**: Cambiar token
-5. **Inscribirse**: POST /concursos/inscripcion
-6. **Subir Medio**: POST /media/contests/{id}/upload-url
-7. **Procesar Subida**: POST /media/contests/{id}/process-upload
-
-### Flujo de Evaluación
-1. **Login como Jurado**: Obtener token de jurado
-2. **Ver Asignaciones**: GET /jurado-asignaciones/mis-asignaciones
-3. **Obtener Criterios**: GET /criterios/tipo/{tipoMedio}
-4. **Calificar Medio**: POST /calificaciones
-5. **Ver Progreso**: GET /calificaciones/progreso
-
-### Flujo de CMS
-1. **Login como Content Admin**: Obtener token
-2. **Crear Contenido**: POST /cms/contenido
-3. **Agregar Taxonomía**: POST /cms/categories
-4. **Publicar**: PUT /cms/contenido/{id}/publish
-5. **Ver Analytics**: GET /cms/analytics/overview
-
-## 🔍 Tips de Uso
-
-### Variables Dinámicas
-Las colecciones incluyen variables que se actualizan automáticamente:
-- `{{access_token}}`: Token de autenticación
-- `{{base_url}}`: URL base de la API
-- `{{user_id}}`: ID del usuario autenticado
-
-### Orden de Ejecución
-Para mejores resultados, ejecuta las colecciones en este orden:
-1. Health (verificar servidor)
-2. Auth (autenticación)
-3. Concursos (crear estructura)
-4. Media (subir contenido)
-5. Criterios (configurar evaluación)
-6. Interactions (probar funciones sociales)
-
-### Datos de Prueba
-Las colecciones incluyen datos de ejemplo realistas:
-- Emails válidos
-- Contraseñas seguras
-- Contenido en español
-- Metadatos apropiados
-
-## 🧪 Casos de Uso Específicos
-
-### 📸 Testing de Subida de Medios por Tipo
-
-#### Fotografía
-```http
-POST {{base_url}}/media/contests/{{concurso_id}}/upload-url
-{
-  "titulo": "Atardecer en la Ciudad",
-  "tipo_medio": "fotografia",
-  "categoria_id": 1,
-  "formato": "image/jpeg",
-  "tamaño_archivo": 3145728
-}
-```
-
-#### Video
-```http
-POST {{base_url}}/media/contests/{{concurso_id}}/upload-url
-{
-  "titulo": "Documental Urbano",
-  "tipo_medio": "video",
-  "categoria_id": 2,
-  "formato": "video/mp4",
-  "tamaño_archivo": 52428800
-}
-```
-
-#### Audio
-```http
-POST {{base_url}}/media/contests/{{concurso_id}}/upload-url
-{
-  "titulo": "Sonidos de la Ciudad",
-  "tipo_medio": "audio",
-  "categoria_id": 3,
-  "formato": "audio/mp3",
-  "tamaño_archivo": 10485760
-}
-```
-
-#### Corto de Cine
-```http
-POST {{base_url}}/media/contests/{{concurso_id}}/upload-url
-{
-  "titulo": "Vida Urbana - Cortometraje",
-  "tipo_medio": "corto_cine",
-  "categoria_id": 4,
-  "formato": "video/mp4",
-  "tamaño_archivo": 104857600
-}
-```
-
-### 🎯 Testing de Criterios por Tipo de Medio
-
-#### Obtener Criterios Específicos
-```http
-# Criterios para fotografía
-GET {{base_url}}/criterios/tipo/fotografia
-
-# Criterios para video
-GET {{base_url}}/criterios/tipo/video
-
-# Criterios para audio
-GET {{base_url}}/criterios/tipo/audio
-
-# Criterios para corto de cine
-GET {{base_url}}/criterios/tipo/corto_cine
-
-# Criterios universales
-GET {{base_url}}/criterios/universales
-```
-
-### 💰 Testing de Suscripciones y Límites
-
-#### Verificar Límites por Plan
-```http
-# Ver límites actuales
-GET {{base_url}}/subscriptions/usage
-
-# Verificar si puede participar en más concursos
-GET {{base_url}}/subscriptions/can-participate
-
-# Ver historial de uso
-GET {{base_url}}/subscriptions/usage-history?period=30d
-```
-
-### 📊 Testing de Analytics y Métricas
-
-#### CMS Analytics
-```http
-# Métricas generales
-GET {{base_url}}/cms/analytics/overview?period=30d
-
-# Análisis de engagement
-GET {{base_url}}/cms/analytics/engagement?tipoContenido=blog_post
-
-# Rendimiento de contenido
-GET {{base_url}}/cms/analytics/content-performance?limit=10
-```
-
-#### Estadísticas de Interacciones
-```http
-# Estadísticas de moderación
-GET {{base_url}}/interactions/stats?fechaInicio=2024-01-01&fechaFin=2024-12-31
-
-# Métricas por tipo de contenido
-GET {{base_url}}/interactions/stats?tipoContenido=blog_post&groupBy=estado
-```
-
-## 🔄 Flujos de Testing Automatizados
-
-### Runner de Postman - Configuración Recomendada
-
-#### 1. Flujo de Smoke Testing (Verificación Básica)
-**Orden de ejecución:**
-1. Health Check
-2. API Info
-3. Login Usuario
-4. Obtener Perfil
-5. Ver Concursos Activos
-6. Logout
-
-**Configuración del Runner:**
-- **Iterations**: 1
-- **Delay**: 500ms entre requests
-- **Data**: No necesario
-- **Environment**: WebFestival Development
-
-#### 2. Flujo de Regresión Completa
-**Orden de ejecución:**
-1. Toda la colección Auth
-2. Toda la colección Concursos
-3. Toda la colección Media
-4. Toda la colección Interactions
-5. Health checks finales
-
-**Configuración del Runner:**
-- **Iterations**: 1
-- **Delay**: 1000ms entre requests
-- **Stop on error**: Habilitado
-- **Save responses**: Habilitado
-
-### Scripts de Validación Personalizados
-
-#### Validar Estructura de Respuesta
-```javascript
-// Agregar en la pestaña "Tests" de cualquier request
-pm.test("Response has correct structure", function () {
-    const response = pm.response.json();
-    pm.expect(response).to.have.property('success');
-    pm.expect(response).to.have.property('data');
-    pm.expect(response.success).to.be.a('boolean');
-});
-
-pm.test("Response time is acceptable", function () {
-    pm.expect(pm.response.responseTime).to.be.below(2000);
-});
-```
-
-#### Validar Autenticación
-```javascript
-// Para requests que requieren autenticación
-pm.test("User is authenticated", function () {
-    const response = pm.response.json();
-    if (pm.response.code === 401) {
-        pm.expect.fail("Authentication failed - check token");
-    }
-    pm.expect(pm.response.code).to.be.oneOf([200, 201]);
-});
-```
-
-## 🐛 Troubleshooting Detallado
-
-### Problemas de Servidor
-
-#### Error: "ECONNREFUSED" o "Network Error"
-**Causa**: El servidor no está ejecutándose
-**Solución**:
-```bash
-cd webfestival-api
-npm run dev
-# Verificar que aparezca: "🚀 WebFestival API running on port 3001"
-```
-
-#### Error: "Database connection failed"
-**Causa**: PostgreSQL no está ejecutándose o mal configurado
-**Solución**:
-```bash
-# Verificar PostgreSQL
-pg_isready -h localhost -p 5432
-
-# Verificar variables de entorno
-cat webfestival-api/.env | grep DATABASE_URL
-
-# Sincronizar base de datos
-cd webfestival-api
-npx prisma db push
-```
-
-### Problemas de Autenticación
-
-#### Error 401: "Token expired"
-**Solución Automática**:
-```http
-POST {{base_url}}/auth/refresh
-{
-  "refreshToken": "{{refresh_token}}"
-}
-```
-
-#### Error 401: "Invalid token"
-**Solución**: Hacer login nuevamente
-```http
-POST {{base_url}}/auth/login
-{
-  "email": "{{test_email}}",
-  "password": "{{test_password}}"
-}
-```
-
-#### Error 403: "Insufficient permissions"
-**Causa**: El usuario no tiene el rol necesario
-**Solución**: Usar el token correcto según el endpoint:
-- Endpoints de admin: `{{admin_token}}`
-- Endpoints de content admin: `{{content_admin_token}}`
-- Endpoints de jurado: `{{jurado_token}}`
-
-### Problemas de Datos
-
-#### Error 404: "Concurso not found"
-**Causa**: El ID del concurso no existe
-**Solución**:
-```http
-# Crear un concurso primero (como admin)
-POST {{base_url}}/concursos
-Authorization: Bearer {{admin_token}}
-
-# O usar un ID existente
-GET {{base_url}}/concursos/activos
-```
-
-#### Error 400: "Validation failed"
-**Causa**: Datos enviados no cumplen las validaciones
-**Solución**: Revisar la documentación Swagger para ver los campos requeridos:
-```
-http://localhost:3001/api-docs
-```
-
-### Problemas de Medios
-
-#### Error: "File too large"
-**Causa**: El archivo excede el límite del tipo de medio
-**Solución**: Verificar límites por tipo:
-```http
-GET {{base_url}}/media/validation-config
-```
-
-#### Error: "Invalid file format"
-**Causa**: El formato no está permitido para el tipo de medio
-**Solución**: Usar formatos válidos:
-- **Fotografía**: JPEG, PNG, WebP
-- **Video**: MP4, WebM, MOV
-- **Audio**: MP3, WAV, FLAC
-- **Corto de cine**: MP4, WebM, MOV
-
-### Problemas de Suscripciones
-
-#### Error: "Subscription limit exceeded"
-**Causa**: El usuario ha alcanzado los límites de su plan
-**Solución**:
-```http
-# Verificar límites actuales
-GET {{base_url}}/subscriptions/usage
-
-# Upgrade a un plan superior
-POST {{base_url}}/subscriptions/upgrade
-{
-  "planId": "plan_premium"
-}
-```
-
-## 📈 Monitoreo y Métricas
-
-### Health Checks Periódicos
-Ejecuta estos endpoints regularmente para monitorear el sistema:
-
-```http
-# Estado general
-GET {{server_url}}/health
-
-# Estado de base de datos
-GET {{server_url}}/health/database
-
-# Estado de Immich
-GET {{server_url}}/health/immich
-
-# Estado de email
-GET {{server_url}}/health/email
-```
-
-### Métricas de Rendimiento
-```http
-# Estadísticas de base de datos
-GET {{server_url}}/health/database/stats
-
-# Información del sistema
-GET {{base_url}}/
-```
-
-### Logs y Debugging
-Para debugging avanzado, revisa los logs del servidor:
-```bash
-# En la terminal donde ejecutas npm run dev
-# Los logs aparecerán automáticamente
-```
-
-## 🎓 Mejores Prácticas
-
-### Organización de Testing
-1. **Usa nombres descriptivos** para tus requests personalizados
-2. **Agrupa requests relacionados** en carpetas
-3. **Documenta casos de uso específicos** en las descripciones
-4. **Mantén los datos de prueba consistentes**
-
-### Gestión de Tokens
-```javascript
-// Script recomendado para manejar tokens expirados
-pm.sendRequest({
-    url: pm.environment.get('base_url') + '/auth/refresh',
-    method: 'POST',
-    header: {
-        'Content-Type': 'application/json'
-    },
-    body: {
-        mode: 'raw',
-        raw: JSON.stringify({
-            refreshToken: pm.environment.get('refresh_token')
-        })
-    }
-}, function (err, response) {
-    if (response.code === 200) {
-        const newToken = response.json().data.accessToken;
-        pm.environment.set('access_token', newToken);
-        console.log('Token renovado automáticamente');
-    }
-});
-```
-
-### Validaciones Personalizadas
-```javascript
-// Validar que los medios tengan metadatos correctos
-pm.test("Media has required metadata", function () {
-    const response = pm.response.json();
-    if (response.data && response.data.tipo_medio) {
-        pm.expect(response.data).to.have.property('formato');
-        pm.expect(response.data).to.have.property('tamano_archivo');
-        pm.expect(response.data).to.have.property('fecha_subida');
-    }
-});
-
-// Validar estructura de paginación
-pm.test("Pagination structure is correct", function () {
-    const response = pm.response.json();
-    if (response.pagination) {
-        pm.expect(response.pagination).to.have.property('page');
-        pm.expect(response.pagination).to.have.property('limit');
-        pm.expect(response.pagination).to.have.property('total');
-        pm.expect(response.pagination).to.have.property('totalPages');
-    }
-});
-```
-
-## 📚 Recursos Adicionales
-
-### Documentación Oficial
-- **Swagger UI**: http://localhost:3001/api-docs
-- **OpenAPI JSON**: http://localhost:3001/api-docs.json
-- **Documentación de Implementación**: `../webfestival-api/docs/Ejecucion.md`
-
-### Herramientas Complementarias
-- **Newman** (CLI de Postman): Para ejecutar colecciones desde línea de comandos
-- **Postman Monitors**: Para ejecutar tests automáticamente
-- **Postman Flows**: Para crear flujos visuales de testing
-
-### Comandos Útiles con Newman
-```bash
-# Instalar Newman
-npm install -g newman
-
-# Ejecutar una colección
-newman run WebFestival-API-Auth.postman_collection.json \
-  -e WebFestival-Development.postman_environment.json
-
-# Ejecutar con reporte HTML
-newman run WebFestival-API-Workspace.postman_collection.json \
-  -e WebFestival-Development.postman_environment.json \
-  -r html --reporter-html-export report.html
-
-# Ejecutar solo la carpeta Quick Start
-newman run WebFestival-API-Workspace.postman_collection.json \
-  -e WebFestival-Development.postman_environment.json \
-  --folder "🚀 Quick Start - Flujo Completo"
-```
-
-### Integración con CI/CD
-```yaml
-# Ejemplo para GitHub Actions
-name: API Testing
-on: [push, pull_request]
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install Newman
-        run: npm install -g newman
-      - name: Run API Tests
-        run: |
-          newman run postman/WebFestival-API-Workspace.postman_collection.json \
-            -e postman/WebFestival-Development.postman_environment.json \
-            --reporters cli,json --reporter-json-export results.json
-```
-
-## 🔧 Personalización Avanzada
-
-### Crear Variables Dinámicas
-```javascript
-// Generar email único para cada test
-pm.environment.set('unique_email', 
-  'test_' + Date.now() + '@webfestival.com');
-
-// Generar ID de transacción único
-pm.environment.set('transaction_id', 
-  'txn_' + Math.random().toString(36).substr(2, 9));
-
-// Fecha actual en formato ISO
-pm.environment.set('current_date', 
-  new Date().toISOString());
-```
-
-### Scripts de Limpieza
-```javascript
-// Limpiar datos de prueba después del testing
-pm.sendRequest({
-    url: pm.environment.get('base_url') + '/test/cleanup',
-    method: 'POST',
-    header: {
-        'Authorization': 'Bearer ' + pm.environment.get('admin_token')
-    }
-}, function (err, response) {
-    console.log('Datos de prueba limpiados');
-});
-```
-
-### Configuración de Múltiples Entornos
-```json
-// Entorno de Staging
-{
-  "name": "WebFestival Staging",
-  "values": [
-    {
-      "key": "base_url",
-      "value": "https://api-staging.webfestival.com/api/v1"
-    },
-    {
-      "key": "server_url",
-      "value": "https://api-staging.webfestival.com"
-    }
-  ]
-}
-
-// Entorno de Producción
-{
-  "name": "WebFestival Production",
-  "values": [
-    {
-      "key": "base_url",
-      "value": "https://api.webfestival.com/api/v1"
-    },
-    {
-      "key": "server_url",
-      "value": "https://api.webfestival.com"
-    }
-  ]
-}
-```
-
-## 📞 Soporte y Contribución
-
-### Para Problemas o Preguntas
-1. **Revisa la documentación Swagger**: http://localhost:3001/api-docs
-2. **Consulta los logs del servidor** en la terminal donde ejecutas `npm run dev`
-3. **Verifica la configuración** de variables de entorno en `.env`
-4. **Revisa el archivo de implementación**: `../webfestival-api/docs/Ejecucion.md`
-5. **Verifica el estado del servidor**: http://localhost:3001/health
-
-### Reportar Issues
-Si encuentras problemas con las colecciones:
-1. **Describe el problema** específico
-2. **Incluye el request** que está fallando
-3. **Proporciona la respuesta** del servidor
-4. **Menciona tu configuración** de entorno
-
-### Contribuir Mejoras
-Para agregar nuevos tests o mejorar existentes:
-1. **Sigue la estructura** de naming existente
-2. **Incluye validaciones** apropiadas
-3. **Documenta casos de uso** específicos
-4. **Prueba en múltiples escenarios**
-
-## 📊 Estadísticas de las Colecciones
-
-### Cobertura por Módulo
-- **Autenticación**: 100% (7/7 endpoints)
-- **Concursos**: 100% (8/8 endpoints)
-- **Medios**: 100% (5/5 endpoints)
-- **Criterios**: 100% (10/10 endpoints)
-- **CMS**: 95% (19/20 endpoints)
-- **Interacciones**: 100% (15/15 endpoints)
-- **Suscripciones**: 100% (10/10 endpoints)
-- **Notificaciones**: 100% (10/10 endpoints)
-- **Newsletter**: 90% (7/8 endpoints)
-- **Redes Sociales**: 100% (3/3 endpoints)
-- **Health**: 100% (5/5 endpoints)
-
-### Métricas de Testing
-- **Total de requests**: 150+
-- **Flujos automatizados**: 15+
-- **Scripts de validación**: 25+
-- **Variables dinámicas**: 20+
-- **Casos de uso documentados**: 30+
+**Beneficios:**
+- ✅ Carga más rápida con thumbnails
+- ✅ Múltiples tamaños disponibles
+- ✅ Gestión centralizada en Immich
+- ✅ Compatible con URLs antiguas
+
+### Documentación Adicional
+
+Ver `ACTUALIZACION-IMMICH.md` para detalles completos sobre:
+- Cómo usar los nuevos endpoints
+- Tests automáticos incluidos
+- Ejemplos de respuestas
+- Flujos de integración
 
 ---
 
-**Última actualización**: 5 de octubre de 2025  
-**Versión de la API**: 1.0.0  
-**Total de endpoints cubiertos**: 80+  
-**Mantenido por**: Equipo WebFestival  
-
-**¡Happy Testing! 🚀**
+**Versión:** 2.0.0  
+**Última actualización:** Noviembre 9, 2024

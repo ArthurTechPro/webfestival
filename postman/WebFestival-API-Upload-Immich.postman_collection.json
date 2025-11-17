@@ -1,0 +1,314 @@
+{
+	"info": {
+		"_postman_id": "upload-immich-001",
+		"name": "WebFestival API - Upload Immich",
+		"description": "Colección para probar los endpoints de subida de imágenes a Immich",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Upload Avatar Usuario",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response has success true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Response has success message\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.include('exitosamente');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "avatar",
+							"type": "file",
+							"src": [],
+							"description": "Archivo de imagen (JPG, PNG, WebP) - Máximo 5MB"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/users/:userId/avatar",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users",
+						":userId",
+						"avatar"
+					],
+					"variable": [
+						{
+							"key": "userId",
+							"value": "{{currentUserId}}",
+							"description": "ID del usuario (usar currentUserId del environment)"
+						}
+					]
+				},
+				"description": "Sube un avatar de usuario a Immich. Máximo 5MB. Formatos: JPG, PNG, WebP.\n\nEl campo debe llamarse 'avatar' (no 'file')."
+			},
+			"response": []
+		},
+		{
+			"name": "Upload Poster Concurso",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response has success true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Response has success message\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.include('exitosamente');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "imagen",
+							"type": "file",
+							"src": [],
+							"description": "Archivo de imagen (JPG, PNG, WebP) - Máximo 10MB"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/concursos/:concursoId/imagen",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"concursos",
+						":concursoId",
+						"imagen"
+					],
+					"variable": [
+						{
+							"key": "concursoId",
+							"value": "1",
+							"description": "ID del concurso"
+						}
+					]
+				},
+				"description": "Sube un poster de concurso a Immich. Máximo 10MB. Formatos: JPG, PNG, WebP.\n\nEl campo debe llamarse 'imagen' (no 'file').\n\nRequiere rol ADMIN."
+			},
+			"response": []
+		},
+		{
+			"name": "Upload Imagen CMS",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response has success true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Response has success message\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.include('exitosamente');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "imagen",
+							"type": "file",
+							"src": [],
+							"description": "Archivo de imagen (JPG, PNG, WebP) - Máximo 10MB"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/cms/contenido/:contenidoId/imagen",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"cms",
+						"contenido",
+						":contenidoId",
+						"imagen"
+					],
+					"variable": [
+						{
+							"key": "contenidoId",
+							"value": "1",
+							"description": "ID del contenido CMS"
+						}
+					]
+				},
+				"description": "Sube una imagen destacada de contenido CMS a Immich. Máximo 10MB. Formatos: JPG, PNG, WebP.\n\nEl campo debe llamarse 'imagen' (no 'file').\n\nRequiere rol ADMIN o CONTENT_ADMIN."
+			},
+			"response": []
+		},
+		{
+			"name": "Upload Portfolio Jurado",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response has success true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.eql(true);",
+							"});",
+							"",
+							"pm.test(\"Response has success message\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.include('exitosamente');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "portfolio",
+							"type": "file",
+							"src": [],
+							"description": "Archivo de imagen (JPG, PNG, WebP) - Máximo 5MB"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/jurados/:juradoId/portfolio",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"jurados",
+						":juradoId",
+						"portfolio"
+					],
+					"variable": [
+						{
+							"key": "juradoId",
+							"value": "1",
+							"description": "ID de la especialización del jurado"
+						}
+					]
+				},
+				"description": "Sube un portfolio de jurado a Immich. Máximo 5MB. Formatos: JPG, PNG, WebP.\n\nEl campo debe llamarse 'portfolio' (no 'file').\n\nRequiere rol JURADO o ADMIN."
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3001",
+			"type": "string"
+		}
+	]
+}

@@ -186,7 +186,16 @@ export class ConcursoService {
       throw new Error('Concurso no encontrado');
     }
 
-    return concurso;
+    // Convertir BigInt a Number en medios
+    const concursoTransformado = {
+      ...concurso,
+      medios: concurso.medios.map(medio => ({
+        ...medio,
+        tamano_archivo: Number(medio.tamano_archivo)
+      }))
+    };
+
+    return concursoTransformado;
   }
 
   // Actualizar un concurso (solo ADMIN)

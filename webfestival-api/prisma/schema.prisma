@@ -15,33 +15,34 @@ datasource db {
 // ============================================================================
 
 model Usuario {
-  id         String   @id @default(cuid())
-  nombre     String?
-  email      String   @unique
-  password   String?
-  role       Role     @default(PARTICIPANTE)
-  picture_url String?
-  bio        String?
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  id               String   @id @default(cuid())
+  nombre           String?
+  email            String   @unique
+  password         String?
+  role             Role     @default(PARTICIPANTE)
+  picture_url      String?
+  picture_asset_id String? // ID del asset en Immich
+  bio              String?
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
 
   // Relaciones
-  inscripciones         Inscripcion[]
-  medios               Medio[]
-  calificaciones       Calificacion[]
-  seguimientos_seguidor Seguimiento[] @relation("SeguidorRelation")
-  seguimientos_seguido  Seguimiento[] @relation("SeguidoRelation")
-  comentarios          Comentario[]
-  notificaciones       Notificacion[]
+  inscripciones            Inscripcion[]
+  medios                   Medio[]
+  calificaciones           Calificacion[]
+  seguimientos_seguidor    Seguimiento[]           @relation("SeguidorRelation")
+  seguimientos_seguido     Seguimiento[]           @relation("SeguidoRelation")
+  comentarios              Comentario[]
+  notificaciones           Notificacion[]
   jurado_especializaciones JuradoEspecializacion[]
-  jurado_asignaciones  JuradoAsignacion[]
-  user_subscriptions   UserSubscription[]
-  contenido_autor      Contenido[] @relation("ContenidoAutor")
-  contenido_updated_by Contenido[] @relation("ContenidoUpdatedBy")
-  contenido_comentarios ContenidoComentario[]
-  contenido_likes      ContenidoLike[]
-  contenido_reportes   ContenidoReporte[]
-  newsletter_suscriptores NewsletterSuscriptor[]
+  jurado_asignaciones      JuradoAsignacion[]
+  user_subscriptions       UserSubscription[]
+  contenido_autor          Contenido[]             @relation("ContenidoAutor")
+  contenido_updated_by     Contenido[]             @relation("ContenidoUpdatedBy")
+  contenido_comentarios    ContenidoComentario[]
+  contenido_likes          ContenidoLike[]
+  contenido_reportes       ContenidoReporte[]
+  newsletter_suscriptores  NewsletterSuscriptor[]
 
   @@map("usuarios")
 }
@@ -58,12 +59,13 @@ enum Role {
 // ============================================================================
 
 model JuradoEspecializacion {
-  id                Int      @id @default(autoincrement())
-  usuario_id        String
-  especializacion   TipoMedio
-  experiencia_anios Int      @default(0)
-  certificaciones   String[]
-  portfolio_url     String?
+  id                 Int       @id @default(autoincrement())
+  usuario_id         String
+  especializacion    TipoMedio
+  experiencia_anios  Int       @default(0)
+  certificaciones    String[]
+  portfolio_url      String?
+  portfolio_asset_id String? // ID del asset en Immich
 
   // Relaciones
   usuario Usuario @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
@@ -76,14 +78,14 @@ model JuradoEspecializacion {
 // ============================================================================
 
 model SubscriptionPlan {
-  id       String  @id
-  name     String
-  price    Decimal @db.Decimal(10, 2)
-  currency String  @default("USD")
-  interval String
-  features Json
-  limits   Json
-  active   Boolean @default(true)
+  id         String   @id
+  name       String
+  price      Decimal  @db.Decimal(10, 2)
+  currency   String   @default("USD")
+  interval   String
+  features   Json
+  limits     Json
+  active     Boolean  @default(true)
   created_at DateTime @default(now())
 
   // Relaciones
@@ -105,8 +107,8 @@ model UserSubscription {
   updated_at             DateTime @updatedAt
 
   // Relaciones
-  user Usuario @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  plan SubscriptionPlan @relation(fields: [plan_id], references: [id])
+  user  Usuario             @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  plan  SubscriptionPlan    @relation(fields: [plan_id], references: [id])
   usage SubscriptionUsage[]
 
   @@map("user_subscriptions")
@@ -133,17 +135,18 @@ model SubscriptionUsage {
 // ============================================================================
 
 model Concurso {
-  id             Int      @id @default(autoincrement())
-  titulo         String
-  descripcion    String
-  reglas         String?
-  fecha_inicio   DateTime
-  fecha_final    DateTime
-  status         StatusConcurso @default(PROXIMAMENTE)
-  imagen_url     String?
-  max_envios     Int      @default(3)
-  tamano_max_mb  Int      @default(10)
-  created_at     DateTime @default(now())
+  id              Int            @id @default(autoincrement())
+  titulo          String
+  descripcion     String
+  reglas          String?
+  fecha_inicio    DateTime
+  fecha_final     DateTime
+  status          StatusConcurso @default(PROXIMAMENTE)
+  imagen_url      String?
+  imagen_asset_id String? // ID del asset en Immich
+  max_envios      Int            @default(3)
+  tamano_max_mb   Int            @default(10)
+  created_at      DateTime       @default(now())
 
   // Relaciones
   categorias    Categoria[]
@@ -161,7 +164,7 @@ enum StatusConcurso {
 }
 
 model Categoria {
-  id          Int @id @default(autoincrement())
+  id          Int    @id @default(autoincrement())
   nombre      String
   concurso_id Int
 
@@ -178,10 +181,10 @@ model Categoria {
 // ============================================================================
 
 model Inscripcion {
-  id                 Int      @id @default(autoincrement())
-  usuario_id         String
-  concurso_id        Int
-  fecha_inscripcion  DateTime @default(now())
+  id                Int      @id @default(autoincrement())
+  usuario_id        String
+  concurso_id       Int
+  fecha_inscripcion DateTime @default(now())
 
   // Relaciones
   usuario  Usuario  @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
@@ -196,20 +199,22 @@ model Inscripcion {
 // ============================================================================
 
 model Medio {
-  id             Int       @id @default(autoincrement())
-  titulo         String
-  tipo_medio     TipoMedio
-  usuario_id     String
-  concurso_id    Int
-  categoria_id   Int
-  medio_url      String
-  thumbnail_url  String?
-  preview_url    String?
-  duracion       Int?      // para videos y audios en segundos
-  formato        String
-  tamano_archivo BigInt
-  metadatos      Json?
-  fecha_subida   DateTime  @default(now())
+  id              Int       @id @default(autoincrement())
+  titulo          String
+  tipo_medio      TipoMedio
+  usuario_id      String
+  concurso_id     Int
+  categoria_id    Int
+  medio_url       String
+  thumbnail_url   String?
+  preview_url     String?
+  duracion        Int? // para videos y audios en segundos
+  formato         String
+  tamano_archivo  BigInt
+  metadatos       Json?
+  fecha_subida    DateTime  @default(now())
+  immich_album_id String? // ID del álbum en Immich
+  immich_asset_id String? // ID del asset en Immich
 
   // Relaciones
   usuario        Usuario        @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
@@ -218,6 +223,8 @@ model Medio {
   calificaciones Calificacion[]
   comentarios    Comentario[]
 
+  @@index([immich_album_id])
+  @@index([immich_asset_id])
   @@map("medios")
 }
 
@@ -233,7 +240,7 @@ enum TipoMedio {
 // ============================================================================
 
 model JuradoAsignacion {
-  id           Int @id @default(autoincrement())
+  id           Int    @id @default(autoincrement())
   usuario_id   String
   categoria_id Int
 
@@ -269,11 +276,11 @@ model Criterio {
 // ============================================================================
 
 model Calificacion {
-  id                  Int      @id @default(autoincrement())
-  medio_id            Int
-  jurado_id           String
-  comentarios         String?
-  fecha_calificacion  DateTime @default(now())
+  id                 Int      @id @default(autoincrement())
+  medio_id           Int
+  jurado_id          String
+  comentarios        String?
+  fecha_calificacion DateTime @default(now())
 
   // Relaciones
   medio    Medio                 @relation(fields: [medio_id], references: [id], onDelete: Cascade)
@@ -303,10 +310,10 @@ model CalificacionDetalle {
 // ============================================================================
 
 model Seguimiento {
-  id                 Int      @id @default(autoincrement())
-  seguidor_id        String
-  seguido_id         String
-  fecha_seguimiento  DateTime @default(now())
+  id                Int      @id @default(autoincrement())
+  seguidor_id       String
+  seguido_id        String
+  fecha_seguimiento DateTime @default(now())
 
   // Relaciones
   seguidor Usuario @relation("SeguidorRelation", fields: [seguidor_id], references: [id], onDelete: Cascade)
@@ -336,13 +343,13 @@ model Comentario {
 // ============================================================================
 
 model Notificacion {
-  id              Int      @id @default(autoincrement())
-  usuario_id      String
-  tipo            String
-  titulo          String
-  mensaje         String
-  leida           Boolean  @default(false)
-  fecha_creacion  DateTime @default(now())
+  id             Int      @id @default(autoincrement())
+  usuario_id     String
+  tipo           String
+  titulo         String
+  mensaje        String
+  leida          Boolean  @default(false)
+  fecha_creacion DateTime @default(now())
 
   // Relaciones
   usuario Usuario @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
@@ -355,30 +362,31 @@ model Notificacion {
 // ============================================================================
 
 model Contenido {
-  id                 Int       @id @default(autoincrement())
-  tipo               String
-  slug               String    @unique
-  titulo             String
-  contenido          String?
-  resumen            String?
-  imagen_destacada   String?
-  autor_id           String
-  estado             EstadoContenido @default(BORRADOR)
-  fecha_publicacion  DateTime?
-  created_at         DateTime  @default(now())
-  updated_at         DateTime  @updatedAt
-  updated_by         String?
+  id                        Int             @id @default(autoincrement())
+  tipo                      String
+  slug                      String          @unique
+  titulo                    String
+  contenido                 String?
+  resumen                   String?
+  imagen_destacada          String?
+  imagen_destacada_asset_id String? // ID del asset en Immich
+  autor_id                  String
+  estado                    EstadoContenido @default(BORRADOR)
+  fecha_publicacion         DateTime?
+  created_at                DateTime        @default(now())
+  updated_at                DateTime        @updatedAt
+  updated_by                String?
 
   // Relaciones
-  autor                Usuario                @relation("ContenidoAutor", fields: [autor_id], references: [id], onDelete: Cascade)
-  updated_by_user      Usuario?               @relation("ContenidoUpdatedBy", fields: [updated_by], references: [id])
-  configuracion        ContenidoConfiguracion?
-  seo                  ContenidoSEO?
-  metricas             ContenidoMetricas?
-  taxonomia            ContenidoTaxonomia[]
-  comentarios          ContenidoComentario[]
-  likes                ContenidoLike[]
-  reportes             ContenidoReporte[]
+  autor           Usuario                 @relation("ContenidoAutor", fields: [autor_id], references: [id], onDelete: Cascade)
+  updated_by_user Usuario?                @relation("ContenidoUpdatedBy", fields: [updated_by], references: [id])
+  configuracion   ContenidoConfiguracion?
+  seo             ContenidoSEO?
+  metricas        ContenidoMetricas?
+  taxonomia       ContenidoTaxonomia[]
+  comentarios     ContenidoComentario[]
+  likes           ContenidoLike[]
+  reportes        ContenidoReporte[]
 
   @@map("contenido")
 }
@@ -405,12 +413,12 @@ model ContenidoConfiguracion {
 }
 
 model ContenidoSEO {
-  contenido_id     Int      @id
-  seo_titulo       String?
-  seo_descripcion  String?
-  seo_keywords     String[]
-  meta_tags        Json?
-  structured_data  Json?
+  contenido_id    Int      @id
+  seo_titulo      String?
+  seo_descripcion String?
+  seo_keywords    String[]
+  meta_tags       Json?
+  structured_data Json?
 
   // Relaciones
   contenido Contenido @relation(fields: [contenido_id], references: [id], onDelete: Cascade)
@@ -434,11 +442,11 @@ model ContenidoMetricas {
 }
 
 model ContenidoTaxonomia {
-  id               Int    @id @default(autoincrement())
-  contenido_id     Int
-  categoria        String?
-  etiqueta         String?
-  tipo_taxonomia   TipoTaxonomia
+  id             Int           @id @default(autoincrement())
+  contenido_id   Int
+  categoria      String?
+  etiqueta       String?
+  tipo_taxonomia TipoTaxonomia
 
   // Relaciones
   contenido Contenido @relation(fields: [contenido_id], references: [id], onDelete: Cascade)
@@ -456,31 +464,31 @@ enum TipoTaxonomia {
 // ============================================================================
 
 model ContenidoComentario {
-  id                Int      @id @default(autoincrement())
-  contenido_id      Int
-  tipo_contenido    String
-  usuario_id        String
-  contenido_texto   String
-  aprobado          Boolean  @default(false)
-  reportado         Boolean  @default(false)
-  parent_id         Int?
-  fecha_comentario  DateTime @default(now())
+  id               Int      @id @default(autoincrement())
+  contenido_id     Int
+  tipo_contenido   String
+  usuario_id       String
+  contenido_texto  String
+  aprobado         Boolean  @default(false)
+  reportado        Boolean  @default(false)
+  parent_id        Int?
+  fecha_comentario DateTime @default(now())
 
   // Relaciones
-  contenido Contenido @relation(fields: [contenido_id], references: [id], onDelete: Cascade)
-  usuario   Usuario   @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
-  parent    ContenidoComentario? @relation("ComentarioParent", fields: [parent_id], references: [id])
+  contenido Contenido             @relation(fields: [contenido_id], references: [id], onDelete: Cascade)
+  usuario   Usuario               @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+  parent    ContenidoComentario?  @relation("ComentarioParent", fields: [parent_id], references: [id])
   replies   ContenidoComentario[] @relation("ComentarioParent")
 
   @@map("contenido_comentarios")
 }
 
 model ContenidoLike {
-  id               Int      @id @default(autoincrement())
-  contenido_id     Int
-  tipo_contenido   String
-  usuario_id       String
-  fecha_like       DateTime @default(now())
+  id             Int      @id @default(autoincrement())
+  contenido_id   Int
+  tipo_contenido String
+  usuario_id     String
+  fecha_like     DateTime @default(now())
 
   // Relaciones
   contenido Contenido @relation(fields: [contenido_id], references: [id], onDelete: Cascade)
@@ -491,14 +499,14 @@ model ContenidoLike {
 }
 
 model ContenidoReporte {
-  id               Int      @id @default(autoincrement())
+  id               Int           @id @default(autoincrement())
   elemento_id      Int
   tipo_elemento    String
   usuario_id       String
   razon            String
   descripcion      String?
   estado           EstadoReporte @default(PENDIENTE)
-  fecha_reporte    DateTime @default(now())
+  fecha_reporte    DateTime      @default(now())
   fecha_resolucion DateTime?
   resuelto_por     String?
 
@@ -522,15 +530,15 @@ enum EstadoReporte {
 // ============================================================================
 
 model NewsletterSuscriptor {
-  id                Int       @id @default(autoincrement())
-  email             String    @unique
-  usuario_id        String?
-  activo            Boolean   @default(true)
-  confirmado        Boolean   @default(false)
-  token_confirmacion String?  @unique
-  fecha_suscripcion DateTime  @default(now())
+  id                 Int       @id @default(autoincrement())
+  email              String    @unique
+  usuario_id         String?
+  activo             Boolean   @default(true)
+  confirmado         Boolean   @default(false)
+  token_confirmacion String?   @unique
+  fecha_suscripcion  DateTime  @default(now())
   fecha_confirmacion DateTime?
-  fecha_cancelacion DateTime?
+  fecha_cancelacion  DateTime?
 
   // Relaciones
   usuario Usuario? @relation(fields: [usuario_id], references: [id], onDelete: SetNull)

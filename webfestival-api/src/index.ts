@@ -82,6 +82,10 @@ app.get('/api-docs.json', (_req, res) => {
 import healthRoutes from './routes/health';
 app.use('/health', healthRoutes);
 
+// Proxy routes (sin /api/v1 para URLs más cortas)
+import proxyMediaRoutes from './routes/proxy-media.routes';
+app.use('/proxy', proxyMediaRoutes);
+
 // API routes
 import apiRoutes from './routes';
 app.use('/api/v1', apiRoutes);

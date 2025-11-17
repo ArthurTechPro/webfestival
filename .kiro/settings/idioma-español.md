@@ -25,39 +25,6 @@ inclusion: always
 ## Generación de Documentación Técnica
 - **SIEMPRE crear documentación en la carpeta `docs/`** para servicios y componentes importantes
 - **NUNCA documentar detalles de implementación en archivos de tareas** (`tasks.md`)
-- **Los archivos de tareas deben mantener solo información esencial** de la tarea completada
-
-
-### Estructura de Documentación Obligatoria
-```
-proyecto/
-├── docs/
-│   ├── [numero-tarea]-[descripcion-api]-README.md
-│   ├── [numero-tarea]-[descripcion-principal]-README.md
-├── src/
-└── tests/
-```
-
-### Convenciones para Archivos de Documentación
-- **Formato de nombres**: `[numero-tarea]-[descripcion-kebab-case]-README.md`
-- **Ejemplos correctos**:
-  - `8-2-notification-system-README.md` (documentación principal,deployment)
-  - `8-2-notification-api-README.md` (documentación de API, Ejemplos)
-
-### Contenido Obligatorio por Tipo de Documentación
-**Documentación Principal (`-README.md`):**
-- Descripción general del sistema/servicio
-- Arquitectura y componentes
-- Configuración básica
-- Ejemplos de uso
-
-**Documentación de API (`-api-README.md`):**
-- Todos los endpoints con ejemplos
-- Parámetros y respuestas detalladas
-- Códigos de error y soluciones
-- Ejemplos de integración con JavaScript/frameworks
-- Configuración de variables de entorno
-- Instrucciones para diferentes entornos
 
 
 ### Actualización de Archivos de Tareas
@@ -142,31 +109,3 @@ proyecto/
   │   │  └── RegisterForm.tsx
   │   └── hooks/
   ```
-
-### Configuración de Tipos para Testing
-
-**Para Vitest (webfestival-app):**
-```typescript
-// tests/setup.ts
-import '@testing-library/jest-dom';
-import { vi } from 'vitest';
-
-// Extender los matchers de Vitest con jest-dom
-import type { TestingLibraryMatchers } from '@testing-library/jest-dom/matchers';
-
-declare module 'vitest' {
-  interface Assertion<T = any> extends TestingLibraryMatchers<T, void> {}
-  interface AsymmetricMatchersContaining extends TestingLibraryMatchers<any, void> {}
-}
-```
-
-**Para Jest (webfestival-api):**
-```typescript
-/// <reference types="jest" />
-
-// NOTA: No importar funciones de 'node:test' - usar Jest globals
-// Jest proporciona describe, it, expect, beforeEach, afterEach globalmente
-
-import { MiServicio } from '../src/services/mi-servicio';
-```
-

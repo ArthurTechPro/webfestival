@@ -68,6 +68,7 @@ export interface UploadUrlRequest {
 export interface UploadUrlResponse {
   upload_token: string;
   upload_url: string;
+  immich_api_key: string;
   expires_at: Date;
   max_file_size: number;
   allowed_formats: readonly string[];
@@ -133,17 +134,25 @@ export class MediaService {
     // Verificar conexión con Immich
     immichService.ensureConnection();
     
+    // Obtener API key de Immich desde variables de entorno
+    const immichApiKey = process.env['IMMICH_API_KEY'];
+    
+    if (!immichApiKey) {
+      throw new Error('IMMICH_API_KEY no está configurado en las variables de entorno');
+    }
+    
     // Generar token de subida temporal (válido por 1 hora)
     const uploadToken = this.generateUploadToken(userId, concursoId, validatedRequest);
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hora
     
-    // En una implementación real, aquí generaríamos una URL pre-firmada
-    // Por ahora, devolvemos la URL del endpoint de procesamiento
-    const uploadUrl = `/api/media/process-upload`;
+    // URL del servidor Immich para subir archivos
+    const immichServerUrl = process.env['IMMICH_SERVER_URL'] || 'https://medios.webfestival.art';
+    const uploadUrl = `${immichServerUrl}/api/assets`;
     
     return {
       upload_token: uploadToken,
       upload_url: uploadUrl,
+      immich_api_key: immichApiKey,
       expires_at: expiresAt,
       max_file_size: validationRules.maxSizeMB * 1024 * 1024,
       allowed_formats: validationRules.allowedFormats,
@@ -169,6 +178,60 @@ export class MediaService {
     // Verificar que el asset existe en Immich y obtener metadatos
     const assetInfo = await this.getAssetFromImmich(validatedRequest.asset_id);
     
+    // Obtener información del concurso y usuario para crear álbum
+    const concurso = await prisma.concurso.findUnique({
+      where: { id: concursoId },
+      select: { titulo: true }
+    });
+
+    const usuario = await prisma.usuario.findUnique({
+      where: { id: userId },
+      select: { nombre: true, email: true }
+    });
+
+    if (!concurso || !usuario) {
+      throw new Error('Concurso o usuario no encontrado');
+    }
+
+    // Crear o obtener álbumes en Immich
+    const albumName = immichService.generateAlbumName(
+      concurso.titulo,
+      usuario.nombre || usuario.email
+    );
+    const albumDescription = `Medios de ${usuario.nombre || usuario.email} para el concurso "${concurso.titulo}"`;
+    
+    // Intentar crear álbumes en Immich (opcional, no bloquea si falla)
+    let albumId: string | null = null;
+    try {
+      // 1. Crear/obtener álbum del concurso/usuario
+      console.log(`📁 Creando/obteniendo álbum: "${albumName}"`);
+      albumId = await immichService.getOrCreateAlbum(albumName, albumDescription);
+      console.log(`📁 Álbum ID obtenido: ${albumId}`);
+
+      // Agregar asset al álbum del concurso
+      console.log(`📤 Agregando asset ${validatedRequest.asset_id} al álbum ${albumId}`);
+      await immichService.addAssetsToAlbum(albumId, [validatedRequest.asset_id]);
+      console.log(`✅ Asset ${validatedRequest.asset_id} agregado al álbum ${albumId}`);
+
+      // 2. También agregar al álbum "Sistema" (álbum general)
+      try {
+        console.log(`📁 Agregando también al álbum "Sistema"`);
+        const sistemaAlbumId = await immichService.getOrCreateAlbum(
+          'Sistema',
+          'Álbum general del sistema WebFestival - Todos los medios'
+        );
+        await immichService.addAssetsToAlbum(sistemaAlbumId, [validatedRequest.asset_id]);
+        console.log(`✅ Asset también agregado al álbum Sistema`);
+      } catch (sistemaError) {
+        console.warn(`⚠️ No se pudo agregar al álbum Sistema:`, sistemaError);
+        // No es crítico, continuamos
+      }
+    } catch (albumError) {
+      console.warn(`⚠️ No se pudo crear/agregar al álbum en Immich:`, albumError);
+      console.log(`ℹ️ El medio se guardará sin álbum. Puedes organizarlo manualmente en Immich.`);
+      // Continuamos sin álbum
+    }
+    
     // Procesar metadatos específicos por tipo de medio
     const processedMetadata = await this.processMediaMetadata(
       assetInfo, 
@@ -182,7 +245,7 @@ export class MediaService {
       validatedRequest.tipo_medio
     );
     
-    // Guardar en base de datos
+    // Guardar en base de datos con información del álbum
     const medio = await prisma.medio.create({
       data: {
         titulo: validatedRequest.titulo,
@@ -196,9 +259,13 @@ export class MediaService {
         duracion: processedMetadata.duration || null,
         formato: processedMetadata.format,
         tamano_archivo: BigInt(processedMetadata.fileSize),
-        metadatos: processedMetadata as any
+        metadatos: processedMetadata as any,
+        immich_album_id: albumId,
+        immich_asset_id: validatedRequest.asset_id
       }
     });
+
+    console.log(`📁 Medio guardado en BD con álbum: ${albumName}`);
 
     return this.mapPrismaToMedio(medio);
   }
@@ -603,10 +670,9 @@ export class MediaService {
     assetInfo: AssetResponseDto,
     tipoMedio: TipoMedio
   ): Promise<OptimizedVersions> {
-    // TODO: Implementar generación real de versiones optimizadas con Immich
-    // Por ahora devolvemos URLs simuladas
-    
-    const baseUrl = `${process.env['IMMICH_SERVER_URL']}/api/asset/file/${assetInfo.id}`;
+    // Usar el proxy de la API para servir imágenes públicamente
+    const serverUrl = process.env['SERVER_URL'] || 'http://localhost:3000';
+    const baseUrl = `${serverUrl}/proxy/media/${assetInfo.id}`;
     
     const versions: OptimizedVersions = {
       original: baseUrl
@@ -621,8 +687,8 @@ export class MediaService {
         
       case 'video':
       case 'corto_cine':
-        versions.thumbnail = `${baseUrl}/thumbnail`;
-        versions.preview = `${baseUrl}/preview`;
+        versions.thumbnail = `${baseUrl}?size=400x225`;
+        versions.preview = `${baseUrl}?size=1280x720`;
         break;
         
       case 'audio':

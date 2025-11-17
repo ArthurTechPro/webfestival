@@ -1,6 +1,7 @@
 import { Response } from 'express';
 import { AuthenticatedRequest } from '../types';
 import { cmsService } from '../services/cms.service';
+import { getImageUrls } from '../utils/image-url.helper';
 import {
     CreateContenidoSchema,
     UpdateContenidoSchema,
@@ -73,6 +74,31 @@ export class CMSController {
     }
 
     /**
+     * Agrega URLs de imagen de Immich a un contenido
+     */
+    private addImageUrls(contenido: any): any {
+        if (!contenido) return contenido;
+
+        const imageUrls = getImageUrls(contenido.imagen_destacada_asset_id);
+        
+        return {
+            ...contenido,
+            // Actualizar imagen_destacada con URL de Immich si existe asset_id
+            imagen_destacada: imageUrls?.original || contenido.imagen_destacada,
+            // Agregar URLs adicionales
+            imagen_destacada_thumbnail: imageUrls?.thumbnail,
+            imagen_destacada_preview: imageUrls?.preview
+        };
+    }
+
+    /**
+     * Agrega URLs de Immich a un array de contenidos
+     */
+    private addImageUrlsToArray(contenidos: any[]): any[] {
+        return contenidos.map(contenido => this.addImageUrls(contenido));
+    }
+
+    /**
      * Obtiene contenido con filtros y paginación
      * GET /api/cms/content
      */
@@ -86,9 +112,15 @@ export class CMSController {
 
             const result = await cmsService.getContent(filters);
 
+            // Agregar URLs de Immich a los contenidos
+            const resultWithImages = {
+                ...result,
+                contenido: this.addImageUrlsToArray(result.contenido)
+            };
+
             return res.json({
                 success: true,
-                data: result,
+                data: resultWithImages,
                 message: 'Contenido obtenido exitosamente'
             });
         } catch (error) {
@@ -128,7 +160,7 @@ export class CMSController {
 
             return res.json({
                 success: true,
-                data: contenido,
+                data: this.addImageUrls(contenido),
                 message: 'Contenido obtenido exitosamente'
             });
         } catch (error) {
@@ -161,7 +193,7 @@ export class CMSController {
 
             return res.status(201).json({
                 success: true,
-                data: contenido,
+                data: this.addImageUrls(contenido),
                 message: 'Contenido creado exitosamente'
             });
         } catch (error) {
@@ -205,7 +237,7 @@ export class CMSController {
 
             return res.json({
                 success: true,
-                data: contenido,
+                data: this.addImageUrls(contenido),
                 message: 'Contenido actualizado exitosamente'
             });
         } catch (error) {
@@ -287,7 +319,7 @@ export class CMSController {
 
             return res.json({
                 success: true,
-                data: contenido,
+                data: this.addImageUrls(contenido),
                 message: 'Contenido publicado exitosamente'
             });
         } catch (error) {

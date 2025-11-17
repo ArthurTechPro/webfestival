@@ -35,7 +35,9 @@
     "test-email": "tsx src/scripts/test-email-service.ts",
     "init-notifications": "tsx src/scripts/init-notification-system.ts",
     "test-notifications": "tsx src/scripts/test-notification-system.ts",
-    "test-social-media": "tsx src/scripts/test-social-media-integration.ts"
+    "test-social-media": "tsx src/scripts/test-social-media-integration.ts",
+    "organize-albums": "tsx src/scripts/organize-existing-media-albums.ts",
+    "verify-albums": "tsx src/scripts/verify-albums-organization.ts"
   },
   "keywords": [
     "webfestival",
@@ -59,10 +61,12 @@
     "dotenv": "^16.4.5",
     "express": "^4.21.2",
     "express-rate-limit": "^7.1.5",
+    "form-data": "^4.0.4",
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
     "module-alias": "^2.2.3",
     "morgan": "^1.10.0",
+    "multer": "^2.0.2",
     "node-cron": "^4.2.1",
     "resend": "^6.1.2",
     "stripe": "^18.5.0",
@@ -78,6 +82,7 @@
     "@types/jest": "^29.5.14",
     "@types/jsonwebtoken": "^9.0.5",
     "@types/morgan": "^1.9.9",
+    "@types/multer": "^2.0.0",
     "@types/node": "^20.11.5",
     "@types/sendgrid": "^4.3.0",
     "@types/supertest": "^6.0.2",
@@ -99,6 +104,6 @@
     "seed": "tsx prisma/seed.ts"
   },
   "_moduleAliases": {
-  "@": "dist"
-}
+    "@": "dist"
+  }
 }

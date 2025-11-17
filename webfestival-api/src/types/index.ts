@@ -83,6 +83,8 @@ export interface Medio {
   tamaño_archivo: number;
   metadatos: Record<string, any>;
   fecha_subida: Date;
+  immich_album_id?: string;
+  immich_asset_id?: string;
 }
 
 // Evaluation types

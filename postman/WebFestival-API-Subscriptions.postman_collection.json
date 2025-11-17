@@ -1,482 +1,153 @@
 {
   "info": {
-    "name": "WebFestival API - Suscripciones y Pagos",
-    "description": "Colección de endpoints para gestión de suscripciones y monetización",
+    "name": "WebFestival-API - Subscriptions",
+    "description": "# 💳 Sistema de Suscripciones\n\nPlanes de suscripción y límites de uso.\n\n## Planes\n- Free\n- Basic\n- Premium\n- Enterprise\n\n## Funcionalidades\n- Gestión de planes\n- Procesamiento de pagos (Stripe/PayPal)\n- Límites de uso\n- Webhooks de pago",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
-  "auth": {
-    "type": "bearer",
-    "bearer": [
-      {
-        "key": "token",
-        "value": "{{accessToken}}",
-        "type": "string"
-      }
-    ]
-  },
-  "variable": [
-    {
-      "key": "baseUrl",
-      "value": "http://localhost:3001/api/v1",
-      "type": "string"
-    },
-    {
-      "key": "accessToken",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "planId",
-      "value": "plan_professional",
-      "type": "string"
-    },
-    {
-      "key": "subscriptionId",
-      "value": "",
-      "type": "string"
-    }
-  ],
   "item": [
     {
-      "name": "Planes de Suscripción",
+      "name": "Planes",
       "item": [
         {
-          "name": "1. Obtener Todos los Planes",
+          "name": "Listar Planes",
+          "event": [{
+            "listen": "test",
+            "script": {"exec": ["if (pm.response.code === 200) {", "    const res = pm.response.json();", "    if (res.data && res.data.length > 0) {", "        pm.environment.set('planId', res.data[0].id);", "    }", "}"]}
+          }],
           "request": {
             "method": "GET",
             "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/subscriptions/plans",
-              "host": ["{{baseUrl}}"],
-              "path": ["subscriptions", "plans"]
-            }
+            "url": {"raw": "{{baseUrl}}/subscriptions/plans", "host": ["{{baseUrl}}"], "path": ["subscriptions", "plans"]},
+            "description": "**Listar planes disponibles**\n\nPlanes públicos activos."
           }
         },
         {
-          "name": "2. Obtener Planes Activos",
+          "name": "Plan por ID",
           "request": {
             "method": "GET",
             "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/subscriptions/plans?active=true",
-              "host": ["{{baseUrl}}"],
-              "path": ["subscriptions", "plans"],
-              "query": [
-                {
-                  "key": "active",
-                  "value": "true"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "3. Obtener Plan por ID",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/subscriptions/plans/{{planId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["subscriptions", "plans", "{{planId}}"]
-            }
-          }
-        },
-        {
-          "name": "4. Comparar Planes",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/subscriptions/plans/compare?plans=plan_basic,plan_professional,plan_premium",
-              "host": ["{{baseUrl}}"],
-              "path": ["subscriptions", "plans", "compare"],
-              "query": [
-                {
-                  "key": "plans",
-                  "value": "plan_basic,plan_professional,plan_premium"
-                }
-              ]
-            }
+            "url": {"raw": "{{baseUrl}}/subscriptions/plans/{{planId}}", "host": ["{{baseUrl}}"], "path": ["subscriptions", "plans", "{{planId}}"]},
+            "description": "**Obtener plan específico**"
           }
         }
       ]
     },
     {
-      "name": "Gestión de Suscripciones",
+      "name": "Mi Suscripción",
       "item": [
         {
-          "name": "1. Obtener Mi Suscripción",
+          "name": "Ver Mi Suscripción",
           "request": {
             "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{accessToken}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/subscriptions/my-subscription",
-              "host": ["{{baseUrl}}"],
-              "path": ["subscriptions", "my-subscription"]
-            }
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/subscriptions/my-subscription", "host": ["{{baseUrl}}"], "path": ["subscriptions", "my-subscription"]},
+            "description": "**Ver suscripción activa**\n\nIncluye plan, uso y límites."
           }
         },
         {
-          "name": "2. Crear Suscripción",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "if (pm.response.code === 200) {",
-                  "    const response = pm.response.json();",
-                  "    if (response.data && response.data.subscriptionId) {",
-                  "        pm.collectionVariables.set('subscriptionId', response.data.subscriptionId);",
-                  "    }",
-                  "}"
-                ]
-              }
-            }
-          ],
+          "name": "Mejorar Suscripción",
           "request": {
             "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{accessToken}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"planId\": \"{{planId}}\",\n  \"paymentMethod\": \"stripe\",\n  \"paymentToken\": \"pm_card_visa\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/subscriptions/subscribe",
-              "host": ["{{baseUrl}}"],
-              "path": ["subscriptions", "subscribe"]
-            }
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"planId\": \"plan_premium\",\n  \"paymentMethodId\": \"pm_123\",\n  \"provider\": \"stripe\"\n}"},
+            "url": {"raw": "{{baseUrl}}/subscriptions/upgrade", "host": ["{{baseUrl}}"], "path": ["subscriptions", "upgrade"]},
+            "description": "**Mejorar a plan superior**"
           }
         },
         {
-          "name": "3. Actualizar Suscripción",
+          "name": "Cancelar Suscripción",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"reason\": \"No uso suficiente\",\n  \"feedback\": \"Comentarios adicionales\",\n  \"cancel_immediately\": false\n}"},
+            "url": {"raw": "{{baseUrl}}/subscriptions/cancel", "host": ["{{baseUrl}}"], "path": ["subscriptions", "cancel"]},
+            "description": "**Cancelar suscripción**\n\nCancela al final del período o inmediatamente."
+          }
+        },
+        {
+          "name": "Ver Límites",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/subscriptions/limits", "host": ["{{baseUrl}}"], "path": ["subscriptions", "limits"]},
+            "description": "**Ver límites de uso**\n\nLímites, uso actual y restante."
+          }
+        },
+        {
+          "name": "Verificar Permiso",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/subscriptions/can/create_contest", "host": ["{{baseUrl}}"], "path": ["subscriptions", "can", "create_contest"]},
+            "description": "**Verificar si puede realizar acción**\n\nAcciones: create_contest, upload_media, create_private_contest"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Pagos",
+      "item": [
+        {
+          "name": "Procesar Pago",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"planId\": \"plan_premium\",\n  \"paymentMethodId\": \"pm_123\",\n  \"return_url\": \"https://webfestival.com/success\",\n  \"cancel_url\": \"https://webfestival.com/cancel\"\n}"},
+            "url": {"raw": "{{baseUrl}}/subscriptions/process-payment?provider=stripe", "host": ["{{baseUrl}}"], "path": ["subscriptions", "process-payment"], "query": [{"key": "provider", "value": "stripe"}]},
+            "description": "**Procesar pago de suscripción**\n\nProviders: stripe, paypal"
+          }
+        },
+        {
+          "name": "Confirmar PayPal",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"subscriptionId\": \"I-BW452GLLEP1G\",\n  \"token\": \"EC-60U79048BN7719609\"\n}"},
+            "url": {"raw": "{{baseUrl}}/subscriptions/confirm-paypal", "host": ["{{baseUrl}}"], "path": ["subscriptions", "confirm-paypal"]},
+            "description": "**Confirmar suscripción PayPal**\n\nDespués de aprobación del usuario."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Administración (Admin)",
+      "item": [
+        {
+          "name": "Crear Plan",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"id\": \"plan_enterprise\",\n  \"nombre\": \"Enterprise\",\n  \"descripcion\": \"Plan para empresas\",\n  \"precio_mensual\": 99.99,\n  \"limite_concursos_mes\": 50,\n  \"limite_uploads_mes\": 1000,\n  \"limite_concursos_privados\": 20\n}"},
+            "url": {"raw": "{{baseUrl}}/subscriptions/plans", "host": ["{{baseUrl}}"], "path": ["subscriptions", "plans"]},
+            "description": "**Crear plan (Admin)**"
+          }
+        },
+        {
+          "name": "Actualizar Plan",
           "request": {
             "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{accessToken}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"newPlanId\": \"plan_premium\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/subscriptions/upgrade",
-              "host": ["{{baseUrl}}"],
-              "path": ["subscriptions", "upgrade"]
-            }
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"precio_mensual\": 39.99\n}"},
+            "url": {"raw": "{{baseUrl}}/subscriptions/plans/{{planId}}", "host": ["{{baseUrl}}"], "path": ["subscriptions", "plans", "{{planId}}"]},
+            "description": "**Actualizar plan (Admin)**"
           }
         },
         {
-          "name": "4. Cancelar Suscripción",
+          "name": "Eliminar Plan",
           "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{accessToken}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"cancelAtPeriodEnd\": true,\n  \"reason\": \"No longer needed\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/subscriptions/cancel",
-              "host": ["{{baseUrl}}"],
-              "path": ["subscriptions", "cancel"]
-            }
+            "method": "DELETE",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/subscriptions/plans/{{planId}}", "host": ["{{baseUrl}}"], "path": ["subscriptions", "plans", "{{planId}}"]},
+            "description": "**Eliminar plan (Admin)**"
           }
         },
         {
-          "name": "5. Reactivar Suscripción",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{accessToken}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/subscriptions/reactivate",
-              "host": ["{{baseUrl}}"],
-              "path": ["subscriptions", "reactivate"]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "Límites y Uso",
-      "item": [
-        {
-          "name": "1. Obtener Límites Actuales",
+          "name": "Métricas",
           "request": {
             "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{accessToken}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/subscriptions/limits",
-              "host": ["{{baseUrl}}"],
-              "path": ["subscriptions", "limits"]
-            }
-          }
-        },
-        {
-          "name": "2. Obtener Uso Actual",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{accessToken}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/subscriptions/usage",
-              "host": ["{{baseUrl}}"],
-              "path": ["subscriptions", "usage"]
-            }
-          }
-        },
-        {
-          "name": "3. Verificar Límite Específico",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{accessToken}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/subscriptions/check-limit/concursos_participacion",
-              "host": ["{{baseUrl}}"],
-              "path": ["subscriptions", "check-limit", "concursos_participacion"]
-            }
-          }
-        },
-        {
-          "name": "4. Historial de Uso",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{accessToken}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/subscriptions/usage-history?months=6",
-              "host": ["{{baseUrl}}"],
-              "path": ["subscriptions", "usage-history"],
-              "query": [
-                {
-                  "key": "months",
-                  "value": "6"
-                }
-              ]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "Facturación",
-      "item": [
-        {
-          "name": "1. Obtener Historial de Facturas",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{accessToken}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/billing/invoices?page=1&limit=10",
-              "host": ["{{baseUrl}}"],
-              "path": ["billing", "invoices"],
-              "query": [
-                {
-                  "key": "page",
-                  "value": "1"
-                },
-                {
-                  "key": "limit",
-                  "value": "10"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "2. Descargar Factura",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{accessToken}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/billing/invoices/inv_123456/download",
-              "host": ["{{baseUrl}}"],
-              "path": ["billing", "invoices", "inv_123456", "download"]
-            }
-          }
-        },
-        {
-          "name": "3. Obtener Métodos de Pago",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{accessToken}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/billing/payment-methods",
-              "host": ["{{baseUrl}}"],
-              "path": ["billing", "payment-methods"]
-            }
-          }
-        },
-        {
-          "name": "4. Agregar Método de Pago",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{accessToken}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"paymentMethodId\": \"pm_card_mastercard\",\n  \"setAsDefault\": true\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/billing/payment-methods",
-              "host": ["{{baseUrl}}"],
-              "path": ["billing", "payment-methods"]
-            }
-          }
-        },
-        {
-          "name": "5. Actualizar Información de Facturación",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{accessToken}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Juan Pérez\",\n  \"email\": \"juan@example.com\",\n  \"address\": {\n    \"line1\": \"Calle Principal 123\",\n    \"city\": \"Madrid\",\n    \"postal_code\": \"28001\",\n    \"country\": \"ES\"\n  }\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/billing/billing-info",
-              "host": ["{{baseUrl}}"],
-              "path": ["billing", "billing-info"]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "Webhooks de Stripe",
-      "item": [
-        {
-          "name": "1. Webhook - Pago Exitoso",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "stripe-signature",
-                "value": "t=1234567890,v1=signature_here"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"id\": \"evt_test_webhook\",\n  \"object\": \"event\",\n  \"type\": \"invoice.payment_succeeded\",\n  \"data\": {\n    \"object\": {\n      \"id\": \"in_test_invoice\",\n      \"subscription\": \"sub_test_subscription\",\n      \"amount_paid\": 999,\n      \"currency\": \"usd\",\n      \"status\": \"paid\"\n    }\n  }\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/billing/webhooks/stripe",
-              "host": ["{{baseUrl}}"],
-              "path": ["billing", "webhooks", "stripe"]
-            }
-          }
-        },
-        {
-          "name": "2. Webhook - Pago Fallido",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "stripe-signature",
-                "value": "t=1234567890,v1=signature_here"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"id\": \"evt_test_webhook\",\n  \"object\": \"event\",\n  \"type\": \"invoice.payment_failed\",\n  \"data\": {\n    \"object\": {\n      \"id\": \"in_test_invoice\",\n      \"subscription\": \"sub_test_subscription\",\n      \"amount_due\": 999,\n      \"currency\": \"usd\",\n      \"status\": \"open\",\n      \"attempt_count\": 1\n    }\n  }\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/billing/webhooks/stripe",
-              "host": ["{{baseUrl}}"],
-              "path": ["billing", "webhooks", "stripe"]
-            }
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/subscriptions/metrics", "host": ["{{baseUrl}}"], "path": ["subscriptions", "metrics"]},
+            "description": "**Métricas de suscripciones (Admin)**\n\nMRR, ARR, churn rate, etc."
           }
         }
       ]

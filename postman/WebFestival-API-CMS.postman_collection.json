@@ -1,488 +1,163 @@
 {
   "info": {
-    "name": "WebFestival API - CMS y Contenido",
-    "description": "Colección de endpoints para gestión de contenido, interacciones y búsqueda",
+    "name": "WebFestival-API - CMS",
+    "description": "# 📝 Sistema de Gestión de Contenido\n\nCMS completo con taxonomía, SEO y analytics.\n\n## Tipos de Contenido\n- Blog posts\n- Páginas estáticas\n- Secciones CMS\n\n## Funcionalidades\n- CRUD de contenido\n- Taxonomía (categorías y etiquetas)\n- SEO y metadatos\n- Analytics y métricas\n- Búsqueda avanzada",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
-  "auth": {
-    "type": "bearer",
-    "bearer": [
-      {
-        "key": "token",
-        "value": "{{accessToken}}",
-        "type": "string"
-      }
-    ]
-  },
-  "variable": [
-    {
-      "key": "baseUrl",
-      "value": "http://localhost:3001/api/v1",
-      "type": "string"
-    },
-    {
-      "key": "accessToken",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "contenidoId",
-      "value": "1",
-      "type": "string"
-    },
-    {
-      "key": "commentId",
-      "value": "1",
-      "type": "string"
-    }
-  ],
   "item": [
     {
-      "name": "CMS Principal",
+      "name": "Contenido Público",
       "item": [
         {
-          "name": "1. Obtener Todo el Contenido",
+          "name": "Listar Contenido",
           "request": {
             "method": "GET",
             "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/cms/content?page=1&limit=10",
-              "host": ["{{baseUrl}}"],
-              "path": ["cms", "content"],
-              "query": [
-                {
-                  "key": "page",
-                  "value": "1"
-                },
-                {
-                  "key": "limit",
-                  "value": "10"
-                }
-              ]
-            }
+            "url": {"raw": "{{baseUrl}}/cms/content?page=1&limit=10&tipo=blog_post", "host": ["{{baseUrl}}"], "path": ["cms", "content"], "query": [{"key": "page", "value": "1"}, {"key": "limit", "value": "10"}, {"key": "tipo", "value": "blog_post"}, {"key": "categoria", "value": "", "disabled": true}, {"key": "etiqueta", "value": "", "disabled": true}, {"key": "busqueda", "value": "", "disabled": true}]},
+            "description": "**Listar contenido con filtros**\n\nFiltros: tipo, categoría, etiqueta, búsqueda, estado, destacado"
           }
         },
         {
-          "name": "2. Obtener Contenido por Tipo",
+          "name": "Contenido por Slug",
+          "event": [{
+            "listen": "test",
+            "script": {"exec": ["if (pm.response.code === 200) {", "    const res = pm.response.json();", "    if (res.data) {", "        pm.environment.set('contenidoId', res.data.id);", "    }", "}"]}
+          }],
           "request": {
             "method": "GET",
             "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/cms/content?tipo=blog_post&estado=publicado",
-              "host": ["{{baseUrl}}"],
-              "path": ["cms", "content"],
-              "query": [
-                {
-                  "key": "tipo",
-                  "value": "blog_post"
-                },
-                {
-                  "key": "estado",
-                  "value": "publicado"
-                }
-              ]
-            }
+            "url": {"raw": "{{baseUrl}}/cms/content/mi-articulo-blog", "host": ["{{baseUrl}}"], "path": ["cms", "content", "mi-articulo-blog"]},
+            "description": "**Obtener contenido por slug**\n\nIncluye autor, SEO, métricas y configuración."
           }
         },
         {
-          "name": "3. [CONTENT_ADMIN] Crear Contenido",
+          "name": "Categorías",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {"raw": "{{baseUrl}}/cms/categories?tipo=blog_post", "host": ["{{baseUrl}}"], "path": ["cms", "categories"], "query": [{"key": "tipo", "value": "blog_post", "disabled": true}]},
+            "description": "**Obtener categorías únicas**"
+          }
+        },
+        {
+          "name": "Etiquetas (Autocompletado)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {"raw": "{{baseUrl}}/cms/tags?query=java&limit=10", "host": ["{{baseUrl}}"], "path": ["cms", "tags"], "query": [{"key": "query", "value": "java"}, {"key": "limit", "value": "10"}]},
+            "description": "**Autocompletado de etiquetas**"
+          }
+        },
+        {
+          "name": "Tipos de Contenido",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {"raw": "{{baseUrl}}/cms/content-types", "host": ["{{baseUrl}}"], "path": ["cms", "content-types"]},
+            "description": "**Tipos de contenido disponibles**"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Administración (Content Admin)",
+      "item": [
+        {
+          "name": "Crear Contenido",
           "request": {
             "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{accessToken}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"titulo\": \"Guía de Fotografía Urbana\",\n  \"contenido\": \"La fotografía urbana es un arte que captura la esencia de la vida en la ciudad...\",\n  \"tipo\": \"blog_post\",\n  \"estado\": \"borrador\",\n  \"configuracion\": {\n    \"permitir_comentarios\": true,\n    \"destacado\": false,\n    \"template\": \"blog-post-default\"\n  },\n  \"seo\": {\n    \"meta_title\": \"Guía Completa de Fotografía Urbana - WebFestival\",\n    \"meta_description\": \"Aprende las técnicas esenciales para capturar la vida urbana en tus fotografías\",\n    \"keywords\": [\"fotografía\", \"urbana\", \"ciudad\", \"técnicas\"]\n  },\n  \"taxonomia\": {\n    \"categorias\": [\"Fotografía\", \"Tutoriales\"],\n    \"etiquetas\": [\"urbano\", \"técnicas\", \"principiantes\"]\n  }\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/cms/content",
-              "host": ["{{baseUrl}}"],
-              "path": ["cms", "content"]
-            }
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"titulo\": \"Mi Nuevo Artículo\",\n  \"slug\": \"mi-nuevo-articulo\",\n  \"contenido\": \"<p>Contenido del artículo...</p>\",\n  \"resumen\": \"Resumen breve\",\n  \"tipo\": \"blog_post\",\n  \"estado\": \"BORRADOR\",\n  \"categorias\": [\"tecnología\", \"web\"],\n  \"etiquetas\": [\"javascript\", \"react\"],\n  \"imagen_destacada\": \"https://...\",\n  \"configuracion\": {\n    \"comentarios_habilitados\": true,\n    \"compartir_habilitado\": true,\n    \"destacado\": false\n  },\n  \"seo\": {\n    \"meta_title\": \"Título SEO\",\n    \"meta_description\": \"Descripción SEO\",\n    \"keywords\": [\"keyword1\", \"keyword2\"]\n  }\n}"},
+            "url": {"raw": "{{baseUrl}}/cms/content", "host": ["{{baseUrl}}"], "path": ["cms", "content"]},
+            "description": "**Crear contenido (Content Admin)**"
           }
         },
         {
-          "name": "4. [CONTENT_ADMIN] Actualizar Contenido",
+          "name": "Actualizar Contenido",
           "request": {
             "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{accessToken}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"titulo\": \"Guía Avanzada de Fotografía Urbana\",\n  \"estado\": \"publicado\",\n  \"configuracion\": {\n    \"destacado\": true\n  }\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/cms/content/{{contenidoId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["cms", "content", "{{contenidoId}}"]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "Interacciones",
-      "item": [
-        {
-          "name": "1. Dar Like a Contenido",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{accessToken}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"contenidoId\": {{contenidoId}},\n  \"tipoContenido\": \"blog_post\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/interactions/like",
-              "host": ["{{baseUrl}}"],
-              "path": ["interactions", "like"]
-            }
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"titulo\": \"Título Actualizado\",\n  \"contenido\": \"<p>Contenido actualizado...</p>\"\n}"},
+            "url": {"raw": "{{baseUrl}}/cms/content/{{contenidoId}}", "host": ["{{baseUrl}}"], "path": ["cms", "content", "{{contenidoId}}"]},
+            "description": "**Actualizar contenido (Content Admin)**"
           }
         },
         {
-          "name": "2. Quitar Like",
+          "name": "Eliminar Contenido",
           "request": {
             "method": "DELETE",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{accessToken}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"contenidoId\": {{contenidoId}},\n  \"tipoContenido\": \"blog_post\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/interactions/like",
-              "host": ["{{baseUrl}}"],
-              "path": ["interactions", "like"]
-            }
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/cms/content/{{contenidoId}}", "host": ["{{baseUrl}}"], "path": ["cms", "content", "{{contenidoId}}"]},
+            "description": "**Eliminar contenido (Content Admin)**"
           }
         },
         {
-          "name": "3. Crear Comentario",
+          "name": "Publicar Contenido",
           "request": {
             "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{accessToken}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"contenidoId\": {{contenidoId}},\n  \"tipoContenido\": \"blog_post\",\n  \"contenido\": \"Excelente guía, muy útil para principiantes en fotografía urbana.\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/interactions/comments",
-              "host": ["{{baseUrl}}"],
-              "path": ["interactions", "comments"]
-            }
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/cms/content/{{contenidoId}}/publish", "host": ["{{baseUrl}}"], "path": ["cms", "content", "{{contenidoId}}", "publish"]},
+            "description": "**Publicar contenido (Content Admin)**\n\nCambia estado a PUBLICADO."
           }
         },
         {
-          "name": "4. Obtener Comentarios",
+          "name": "Actualizar SEO",
           "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/interactions/comments?contenidoId={{contenidoId}}&tipoContenido=blog_post&page=1&limit=10",
-              "host": ["{{baseUrl}}"],
-              "path": ["interactions", "comments"],
-              "query": [
-                {
-                  "key": "contenidoId",
-                  "value": "{{contenidoId}}"
-                },
-                {
-                  "key": "tipoContenido",
-                  "value": "blog_post"
-                },
-                {
-                  "key": "page",
-                  "value": "1"
-                },
-                {
-                  "key": "limit",
-                  "value": "10"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "5. Reportar Contenido",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{accessToken}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"contenidoId\": {{contenidoId}},\n  \"tipoContenido\": \"blog_post\",\n  \"razon\": \"spam\",\n  \"descripcion\": \"Este contenido parece ser spam promocional\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/interactions/reports",
-              "host": ["{{baseUrl}}"],
-              "path": ["interactions", "reports"]
-            }
-          }
-        },
-        {
-          "name": "6. [ADMIN] Obtener Estadísticas",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{accessToken}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/interactions/stats?tipoContenido=blog_post&fechaInicio=2025-01-01&fechaFin=2025-12-31",
-              "host": ["{{baseUrl}}"],
-              "path": ["interactions", "stats"],
-              "query": [
-                {
-                  "key": "tipoContenido",
-                  "value": "blog_post"
-                },
-                {
-                  "key": "fechaInicio",
-                  "value": "2025-01-01"
-                },
-                {
-                  "key": "fechaFin",
-                  "value": "2025-12-31"
-                }
-              ]
-            }
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"meta_title\": \"Nuevo título SEO\",\n  \"meta_description\": \"Nueva descripción\",\n  \"keywords\": [\"keyword1\", \"keyword2\"]\n}"},
+            "url": {"raw": "{{baseUrl}}/cms/content/{{contenidoId}}/seo", "host": ["{{baseUrl}}"], "path": ["cms", "content", "{{contenidoId}}", "seo"]},
+            "description": "**Actualizar SEO (Content Admin)**"
           }
         }
       ]
     },
     {
-      "name": "Búsqueda y Analytics",
+      "name": "Analytics",
       "item": [
         {
-          "name": "1. Búsqueda Avanzada",
+          "name": "Métricas de Contenido",
           "request": {
             "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/cms/search?q=fotografía&tipo=blog_post&categorias=Fotografía,Tutoriales&orderBy=popularidad",
-              "host": ["{{baseUrl}}"],
-              "path": ["cms", "search"],
-              "query": [
-                {
-                  "key": "q",
-                  "value": "fotografía"
-                },
-                {
-                  "key": "tipo",
-                  "value": "blog_post"
-                },
-                {
-                  "key": "categorias",
-                  "value": "Fotografía,Tutoriales"
-                },
-                {
-                  "key": "orderBy",
-                  "value": "popularidad"
-                }
-              ]
-            }
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/cms/content/{{contenidoId}}/metrics", "host": ["{{baseUrl}}"], "path": ["cms", "content", "{{contenidoId}}", "metrics"]},
+            "description": "**Métricas de contenido específico**"
           }
         },
         {
-          "name": "2. Autocompletado de Etiquetas",
+          "name": "Overview Analytics",
           "request": {
             "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/cms/tags/autocomplete?q=foto&limit=10",
-              "host": ["{{baseUrl}}"],
-              "path": ["cms", "tags", "autocomplete"],
-              "query": [
-                {
-                  "key": "q",
-                  "value": "foto"
-                },
-                {
-                  "key": "limit",
-                  "value": "10"
-                }
-              ]
-            }
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/cms/analytics/overview", "host": ["{{baseUrl}}"], "path": ["cms", "analytics", "overview"]},
+            "description": "**Métricas generales del CMS**"
           }
         },
         {
-          "name": "3. Etiquetas Populares",
+          "name": "Rendimiento de Contenido",
           "request": {
             "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/cms/tags/popular?periodo=30d&limit=20",
-              "host": ["{{baseUrl}}"],
-              "path": ["cms", "tags", "popular"],
-              "query": [
-                {
-                  "key": "periodo",
-                  "value": "30d"
-                },
-                {
-                  "key": "limit",
-                  "value": "20"
-                }
-              ]
-            }
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/cms/analytics/content-performance?limit=10&metric=vistas", "host": ["{{baseUrl}}"], "path": ["cms", "analytics", "content-performance"], "query": [{"key": "limit", "value": "10"}, {"key": "metric", "value": "vistas"}]},
+            "description": "**Top contenido por métrica**"
           }
         },
         {
-          "name": "4. [CONTENT_ADMIN] Analytics Overview",
+          "name": "Estadísticas de Taxonomía",
           "request": {
             "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{accessToken}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/cms/analytics/overview?fechaInicio=2025-01-01&fechaFin=2025-12-31",
-              "host": ["{{baseUrl}}"],
-              "path": ["cms", "analytics", "overview"],
-              "query": [
-                {
-                  "key": "fechaInicio",
-                  "value": "2025-01-01"
-                },
-                {
-                  "key": "fechaFin",
-                  "value": "2025-12-31"
-                }
-              ]
-            }
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/cms/analytics/taxonomy-stats", "host": ["{{baseUrl}}"], "path": ["cms", "analytics", "taxonomy-stats"]},
+            "description": "**Categorías y etiquetas más populares**"
           }
         },
         {
-          "name": "5. [CONTENT_ADMIN] Analytics de Engagement",
+          "name": "Tendencias de Crecimiento",
           "request": {
             "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{accessToken}}"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/cms/analytics/engagement?tipo=blog_post&periodo=30d",
-              "host": ["{{baseUrl}}"],
-              "path": ["cms", "analytics", "engagement"],
-              "query": [
-                {
-                  "key": "tipo",
-                  "value": "blog_post"
-                },
-                {
-                  "key": "periodo",
-                  "value": "30d"
-                }
-              ]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "Categorías",
-      "item": [
-        {
-          "name": "1. Obtener Categorías",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/cms/categories?tipo=blog_post&activo=true",
-              "host": ["{{baseUrl}}"],
-              "path": ["cms", "categories"],
-              "query": [
-                {
-                  "key": "tipo",
-                  "value": "blog_post"
-                },
-                {
-                  "key": "activo",
-                  "value": "true"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "2. [CONTENT_ADMIN] Crear Categoría",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{accessToken}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Técnicas Avanzadas\",\n  \"descripcion\": \"Contenido sobre técnicas avanzadas de fotografía y video\",\n  \"tipo_taxonomia\": \"categoria\",\n  \"tipo_contenido\": \"blog_post\",\n  \"activo\": true\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/cms/categories",
-              "host": ["{{baseUrl}}"],
-              "path": ["cms", "categories"]
-            }
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/cms/analytics/growth-trends?periodo=monthly&meses=12", "host": ["{{baseUrl}}"], "path": ["cms", "analytics", "growth-trends"], "query": [{"key": "periodo", "value": "monthly"}, {"key": "meses", "value": "12"}]},
+            "description": "**Tendencias de crecimiento**"
           }
         }
       ]

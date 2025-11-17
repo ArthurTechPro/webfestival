@@ -1,372 +1,158 @@
 {
-	"info": {
-		"_postman_id": "interactions-api-collection",
-		"name": "WebFestival API - Interactions",
-		"description": "Colección de endpoints para interacciones unificadas (likes, comentarios, reportes, moderación)",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
-	"auth": {
-		"type": "bearer",
-		"bearer": [
-			{
-				"key": "token",
-				"value": "{{access_token}}",
-				"type": "string"
-			}
-		]
-	},
-	"variable": [
-		{
-			"key": "base_url",
-			"value": "http://localhost:3001/api/v1",
-			"type": "string"
-		},
-		{
-			"key": "access_token",
-			"value": "",
-			"type": "string"
-		}
-	],
-	"item": [
-		{
-			"name": "Likes",
-			"item": [
-				{
-					"name": "Dar Like a Contenido",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"contenidoId\": 1,\n  \"tipoContenido\": \"blog_post\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/interactions/like",
-							"host": ["{{base_url}}"],
-							"path": ["interactions", "like"]
-						},
-						"description": "Dar like a cualquier tipo de contenido"
-					},
-					"response": []
-				},
-				{
-					"name": "Quitar Like",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/interactions/like?contenidoId=1&tipoContenido=blog_post",
-							"host": ["{{base_url}}"],
-							"path": ["interactions", "like"],
-							"query": [
-								{
-									"key": "contenidoId",
-									"value": "1"
-								},
-								{
-									"key": "tipoContenido",
-									"value": "blog_post"
-								}
-							]
-						},
-						"description": "Quitar like de contenido"
-					},
-					"response": []
-				},
-				{
-					"name": "Obtener Likes de Contenido",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/interactions/likes/1/blog_post?page=1&limit=20",
-							"host": ["{{base_url}}"],
-							"path": ["interactions", "likes", "1", "blog_post"],
-							"query": [
-								{
-									"key": "page",
-									"value": "1"
-								},
-								{
-									"key": "limit",
-									"value": "20"
-								}
-							]
-						},
-						"description": "Obtener likes de contenido con paginación"
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Comentarios",
-			"item": [
-				{
-					"name": "Crear Comentario",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"contenidoId\": 1,\n  \"tipoContenido\": \"blog_post\",\n  \"contenido\": \"¡Excelente artículo! Me ha sido muy útil.\",\n  \"parentId\": null\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/interactions/comments",
-							"host": ["{{base_url}}"],
-							"path": ["interactions", "comments"]
-						},
-						"description": "Crear comentario (máx. 1000 caracteres)"
-					},
-					"response": []
-				},
-				{
-					"name": "Obtener Comentarios",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/interactions/comments?contenidoId=1&tipoContenido=blog_post&page=1&limit=20&orderBy=fecha_desc",
-							"host": ["{{base_url}}"],
-							"path": ["interactions", "comments"],
-							"query": [
-								{
-									"key": "contenidoId",
-									"value": "1"
-								},
-								{
-									"key": "tipoContenido",
-									"value": "blog_post"
-								},
-								{
-									"key": "page",
-									"value": "1"
-								},
-								{
-									"key": "limit",
-									"value": "20"
-								},
-								{
-									"key": "orderBy",
-									"value": "fecha_desc"
-								}
-							]
-						},
-						"description": "Obtener comentarios con filtros avanzados"
-					},
-					"response": []
-				},
-				{
-					"name": "Editar Comentario",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"contenido\": \"Comentario editado con nueva información.\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/interactions/comments/1",
-							"host": ["{{base_url}}"],
-							"path": ["interactions", "comments", "1"]
-						},
-						"description": "Editar comentario (solo autor)"
-					},
-					"response": []
-				},
-				{
-					"name": "Eliminar Comentario",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/interactions/comments/1",
-							"host": ["{{base_url}}"],
-							"path": ["interactions", "comments", "1"]
-						},
-						"description": "Eliminar comentario (autor/admin)"
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Reportes",
-			"item": [
-				{
-					"name": "Crear Reporte",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"contenidoId\": 1,\n  \"tipoContenido\": \"blog_post\",\n  \"razon\": \"spam\",\n  \"descripcion\": \"Este contenido parece ser spam promocional.\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/interactions/reports",
-							"host": ["{{base_url}}"],
-							"path": ["interactions", "reports"]
-						},
-						"description": "Crear reporte con múltiples razones"
-					},
-					"response": []
-				},
-				{
-					"name": "Obtener Reportes (Moderadores)",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/interactions/reports?estado=PENDIENTE&page=1&limit=20",
-							"host": ["{{base_url}}"],
-							"path": ["interactions", "reports"],
-							"query": [
-								{
-									"key": "estado",
-									"value": "PENDIENTE"
-								},
-								{
-									"key": "page",
-									"value": "1"
-								},
-								{
-									"key": "limit",
-									"value": "20"
-								}
-							]
-						},
-						"description": "Obtener reportes con filtros (solo moderadores)"
-					},
-					"response": []
-				},
-				{
-					"name": "Resolver Reporte",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"accion\": \"APROBADO\",\n  \"comentarios\": \"Reporte revisado y aprobado. Contenido removido.\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/interactions/reports/1/resolve",
-							"host": ["{{base_url}}"],
-							"path": ["interactions", "reports", "1", "resolve"]
-						},
-						"description": "Resolver reporte"
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Moderación",
-			"item": [
-				{
-					"name": "Moderar Comentario Individual",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"accion\": \"aprobar\",\n  \"comentarios\": \"Comentario aprobado tras revisión.\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/interactions/moderate/comment/1",
-							"host": ["{{base_url}}"],
-							"path": ["interactions", "moderate", "comment", "1"]
-						},
-						"description": "Moderación individual de comentario"
-					},
-					"response": []
-				},
-				{
-					"name": "Moderación Masiva",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"elementos\": [\n    {\n      \"id\": 1,\n      \"tipo\": \"comentario\",\n      \"accion\": \"aprobar\"\n    },\n    {\n      \"id\": 2,\n      \"tipo\": \"comentario\",\n      \"accion\": \"rechazar\"\n    }\n  ],\n  \"comentarios\": \"Moderación masiva de comentarios pendientes.\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/interactions/moderate/bulk",
-							"host": ["{{base_url}}"],
-							"path": ["interactions", "moderate", "bulk"]
-						},
-						"description": "Moderación masiva (hasta 50 elementos)"
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Estadísticas",
-			"item": [
-				{
-					"name": "Obtener Estadísticas de Interacciones",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/interactions/stats?tipoContenido=blog_post&fechaInicio=2024-01-01&fechaFin=2024-12-31",
-							"host": ["{{base_url}}"],
-							"path": ["interactions", "stats"],
-							"query": [
-								{
-									"key": "tipoContenido",
-									"value": "blog_post"
-								},
-								{
-									"key": "fechaInicio",
-									"value": "2024-01-01"
-								},
-								{
-									"key": "fechaFin",
-									"value": "2024-12-31"
-								}
-							]
-						},
-						"description": "Métricas detalladas (solo moderadores)"
-					},
-					"response": []
-				}
-			]
-		}
-	]
+  "info": {
+    "name": "WebFestival-API - Interactions",
+    "description": "# 💬 Sistema de Interacciones\n\nLikes, comentarios y reportes unificados.\n\n## Funcionalidades\n- Likes en cualquier contenido\n- Comentarios anidados\n- Sistema de reportes\n- Moderación centralizada",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Likes",
+      "item": [
+        {
+          "name": "Dar Like",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"contenidoId\": 1,\n  \"tipoContenido\": \"blog_post\"\n}"},
+            "url": {"raw": "{{baseUrl}}/interactions/like", "host": ["{{baseUrl}}"], "path": ["interactions", "like"]},
+            "description": "**Dar like a contenido**\n\nTipos: blog_post, pagina_estatica, seccion_cms, medio, concurso"
+          }
+        },
+        {
+          "name": "Quitar Like",
+          "request": {
+            "method": "DELETE",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"contenidoId\": 1,\n  \"tipoContenido\": \"blog_post\"\n}"},
+            "url": {"raw": "{{baseUrl}}/interactions/like", "host": ["{{baseUrl}}"], "path": ["interactions", "like"]},
+            "description": "**Quitar like**"
+          }
+        },
+        {
+          "name": "Obtener Likes",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/interactions/likes/1/blog_post?page=1&limit=20", "host": ["{{baseUrl}}"], "path": ["interactions", "likes", "1", "blog_post"], "query": [{"key": "page", "value": "1"}, {"key": "limit", "value": "20"}]},
+            "description": "**Obtener likes de contenido**\n\nIncluye total y si el usuario dio like."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Comentarios",
+      "item": [
+        {
+          "name": "Crear Comentario",
+          "event": [{
+            "listen": "test",
+            "script": {"exec": ["if (pm.response.code === 201) {", "    const res = pm.response.json();", "    if (res.data) {", "        pm.environment.set('comentarioId', res.data.id);", "    }", "}"]}
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"contenidoId\": 1,\n  \"tipoContenido\": \"blog_post\",\n  \"contenido\": \"¡Excelente artículo!\",\n  \"parentId\": null\n}"},
+            "url": {"raw": "{{baseUrl}}/interactions/comments", "host": ["{{baseUrl}}"], "path": ["interactions", "comments"]},
+            "description": "**Crear comentario**\n\nSoporte para comentarios anidados con parentId."
+          }
+        },
+        {
+          "name": "Listar Comentarios",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/interactions/comments?contenidoId=1&tipoContenido=blog_post&page=1&limit=20", "host": ["{{baseUrl}}"], "path": ["interactions", "comments"], "query": [{"key": "contenidoId", "value": "1"}, {"key": "tipoContenido", "value": "blog_post"}, {"key": "page", "value": "1"}, {"key": "limit", "value": "20"}, {"key": "parentId", "value": "", "disabled": true}, {"key": "orderBy", "value": "fecha_creacion", "disabled": true}]},
+            "description": "**Listar comentarios con filtros**"
+          }
+        },
+        {
+          "name": "Actualizar Comentario",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"contenido\": \"Comentario actualizado\"\n}"},
+            "url": {"raw": "{{baseUrl}}/interactions/comments/{{comentarioId}}", "host": ["{{baseUrl}}"], "path": ["interactions", "comments", "{{comentarioId}}"]},
+            "description": "**Actualizar comentario (solo autor)**"
+          }
+        },
+        {
+          "name": "Eliminar Comentario",
+          "request": {
+            "method": "DELETE",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/interactions/comments/{{comentarioId}}", "host": ["{{baseUrl}}"], "path": ["interactions", "comments", "{{comentarioId}}"]},
+            "description": "**Eliminar comentario (autor o admin)**"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reportes",
+      "item": [
+        {
+          "name": "Crear Reporte",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"tipoElemento\": \"comentario\",\n  \"elementoId\": 1,\n  \"motivo\": \"contenido_inapropiado\",\n  \"descripcion\": \"Este comentario contiene lenguaje ofensivo\"\n}"},
+            "url": {"raw": "{{baseUrl}}/interactions/reports", "host": ["{{baseUrl}}"], "path": ["interactions", "reports"]},
+            "description": "**Crear reporte**\n\nMotivos: spam, contenido_inapropiado, acoso, derechos_autor, otro"
+          }
+        },
+        {
+          "name": "Listar Reportes (Moderadores)",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/interactions/reports?estado=pendiente&page=1&limit=20", "host": ["{{baseUrl}}"], "path": ["interactions", "reports"], "query": [{"key": "estado", "value": "pendiente"}, {"key": "page", "value": "1"}, {"key": "limit", "value": "20"}, {"key": "motivo", "value": "", "disabled": true}]},
+            "description": "**Listar reportes (Moderadores/Admin)**"
+          }
+        },
+        {
+          "name": "Resolver Reporte",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"accion\": \"resuelto\",\n  \"notas\": \"Reporte procesado\"\n}"},
+            "url": {"raw": "{{baseUrl}}/interactions/reports/1/resolve", "host": ["{{baseUrl}}"], "path": ["interactions", "reports", "1", "resolve"]},
+            "description": "**Resolver reporte (Moderadores)**"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Moderación",
+      "item": [
+        {
+          "name": "Moderar Comentario",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"accion\": \"aprobar\",\n  \"razon\": \"\",\n  \"notificar_usuario\": false\n}"},
+            "url": {"raw": "{{baseUrl}}/interactions/moderate/comment/{{comentarioId}}", "host": ["{{baseUrl}}"], "path": ["interactions", "moderate", "comment", "{{comentarioId}}"]},
+            "description": "**Moderar comentario (Moderadores)**\n\nAcciones: aprobar, rechazar, eliminar"
+          }
+        },
+        {
+          "name": "Moderación Masiva",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "body": {"mode": "raw", "raw": "{\n  \"commentIds\": [1, 2, 3],\n  \"accion\": \"aprobar\",\n  \"razon\": \"Moderación masiva\",\n  \"notificar_usuarios\": false\n}"},
+            "url": {"raw": "{{baseUrl}}/interactions/moderate/bulk", "host": ["{{baseUrl}}"], "path": ["interactions", "moderate", "bulk"]},
+            "description": "**Moderación masiva (Moderadores)**"
+          }
+        },
+        {
+          "name": "Estadísticas",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/interactions/stats", "host": ["{{baseUrl}}"], "path": ["interactions", "stats"]},
+            "description": "**Estadísticas de interacciones (Moderadores)**"
+          }
+        }
+      ]
+    }
+  ]
 }

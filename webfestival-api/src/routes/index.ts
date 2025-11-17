@@ -13,6 +13,7 @@ import subscriptionRoutes from './subscription.routes';
 import billingRoutes from './billing.routes';
 import notificationRoutes from './notification.routes';
 import socialMediaRoutes from './social-media.routes';
+import uploadRoutes from './upload.routes';
 
 const router = Router();
 
@@ -58,6 +59,9 @@ router.use('/notifications', notificationRoutes);
 // Rutas de redes sociales
 router.use('/social-media', socialMediaRoutes);
 
+// Rutas de subida de imágenes
+router.use('/', uploadRoutes);
+
 // Health check route - estado del los servicios.
 router.get('/health', (_req, res) => {
   res.json({
@@ -89,7 +93,13 @@ router.get('/', (_req, res) => {
       subscriptions: '/api/v1/subscriptions',
       billing: '/api/v1/billing',
       notifications: '/api/v1/notifications',
-      social_media: '/api/v1/social-media'
+      social_media: '/api/v1/social-media',
+      upload: {
+        user_avatar: '/api/v1/users/:id/avatar',
+        concurso_poster: '/api/v1/concursos/:id/imagen',
+        cms_image: '/api/v1/cms/contenido/:id/imagen',
+        jurado_portfolio: '/api/v1/jurados/:id/portfolio'
+      }
     }
   });
 });

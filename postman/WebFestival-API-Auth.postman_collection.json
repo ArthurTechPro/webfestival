@@ -1,211 +1,177 @@
 {
   "info": {
-    "name": "WebFestival API - Authentication",
-    "description": "Colección de endpoints de autenticación y autorización",
+    "name": "WebFestival-API - Auth",
+    "description": "# 🔐 Autenticación y Gestión de Sesiones\n\nSistema completo de autenticación con JWT para WebFestival API.\n\n## Funcionalidades\n- Registro y login de usuarios\n- Gestión de tokens JWT (access y refresh)\n- Validación y renovación de sesiones\n- Cambio de contraseña\n- Cierre de sesión\n\n## Roles Disponibles\n- **PARTICIPANTE** - Usuario regular (por defecto)\n- **JURADO** - Evaluador de medios\n- **ADMIN** - Administrador del sistema\n- **CONTENT_ADMIN** - Administrador de contenido",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
-  "auth": {
-    "type": "bearer",
-    "bearer": [
-      {
-        "key": "token",
-        "value": "{{accessToken}}",
-        "type": "string"
-      }
-    ]
-  },
-  "variable": [
-    {
-      "key": "baseUrl",
-      "value": "http://localhost:3001/api/v1",
-      "type": "string"
-    },
-    {
-      "key": "accessToken",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "refreshToken",
-      "value": "",
-      "type": "string"
-    }
-  ],
   "item": [
     {
-      "name": "1. Registro de Usuario",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"email\": \"participante@test.com\",\n  \"password\": \"password123\",\n  \"nombre\": \"Usuario Participante\",\n  \"bio\": \"Fotógrafo aficionado interesado en concursos\"\n}"
-        },
-        "url": {
-          "raw": "{{baseUrl}}/auth/register",
-          "host": ["{{baseUrl}}"],
-          "path": ["auth", "register"]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "2. Login de Usuario",
-      "event": [
+      "name": "Registro y Login",
+      "item": [
         {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "if (pm.response.code === 200) {",
-              "    const response = pm.response.json();",
-              "    pm.collectionVariables.set('accessToken', response.data.accessToken);",
-              "    pm.collectionVariables.set('refreshToken', response.data.refreshToken);",
-              "    console.log('Tokens guardados exitosamente');",
-              "}"
-            ]
+          "name": "Registrar Usuario",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "if (pm.response.code === 201) {",
+                "    const res = pm.response.json();",
+                "    pm.environment.set('accessToken', res.data.accessToken);",
+                "    pm.environment.set('refreshToken', res.data.refreshToken);",
+                "    pm.environment.set('userId', res.data.user.id);",
+                "}"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"nuevo@ejemplo.com\",\n  \"password\": \"Password123!\",\n  \"nombre\": \"Usuario Nuevo\",\n  \"bio\": \"Descripción opcional\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "description": "**Registrar nuevo usuario**\n\nCrea cuenta con rol PARTICIPANTE.\n\n**Campos:**\n- email (requerido)\n- password (requerido, min 6 caracteres)\n- nombre (requerido)\n- bio (opcional)\n\n**Respuesta:** Usuario + tokens JWT"
           }
-        }
-      ],
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"email\": \"participante@test.com\",\n  \"password\": \"password123\"\n}"
         },
-        "url": {
-          "raw": "{{baseUrl}}/auth/login",
-          "host": ["{{baseUrl}}"],
-          "path": ["auth", "login"]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "3. Obtener Perfil (Me)",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "Authorization",
-            "value": "Bearer {{accessToken}}"
-          }
-        ],
-        "url": {
-          "raw": "{{baseUrl}}/auth/me",
-          "host": ["{{baseUrl}}"],
-          "path": ["auth", "me"]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "4. Renovar Token",
-      "event": [
         {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "if (pm.response.code === 200) {",
-              "    const response = pm.response.json();",
-              "    pm.collectionVariables.set('accessToken', response.data.accessToken);",
-              "    console.log('Token renovado exitosamente');",
-              "}"
-            ]
+          "name": "Iniciar Sesión",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "if (pm.response.code === 200) {",
+                "    const res = pm.response.json();",
+                "    pm.environment.set('accessToken', res.data.accessToken);",
+                "    pm.environment.set('refreshToken', res.data.refreshToken);",
+                "    pm.environment.set('userId', res.data.user.id);",
+                "}"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"usuario@ejemplo.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "**Autenticar usuario**\n\nInicia sesión con email/password.\n\n**Respuesta:** Tokens JWT (access + refresh)"
           }
         }
-      ],
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
+      ]
+    },
+    {
+      "name": "Gestión de Tokens",
+      "item": [
+        {
+          "name": "Renovar Token",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "if (pm.response.code === 200) {",
+                "    const res = pm.response.json();",
+                "    pm.environment.set('accessToken', res.data.accessToken);",
+                "    pm.environment.set('refreshToken', res.data.refreshToken);",
+                "}"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "refresh"]
+            },
+            "description": "**Renovar accessToken**\n\nUsa refreshToken para obtener nuevo accessToken.\n\n**Uso:** Cuando accessToken expira (1 hora)"
           }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
         },
-        "url": {
-          "raw": "{{baseUrl}}/auth/refresh",
-          "host": ["{{baseUrl}}"],
-          "path": ["auth", "refresh"]
+        {
+          "name": "Validar Token",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {
+              "raw": "{{baseUrl}}/auth/validate",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "validate"]
+            },
+            "description": "**Validar token JWT**\n\nVerifica si el token es válido y no ha expirado."
+          }
         }
-      },
-      "response": []
+      ]
     },
     {
-      "name": "5. Cambiar Contraseña",
-      "request": {
-        "method": "PUT",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json"
-          },
-          {
-            "key": "Authorization",
-            "value": "Bearer {{accessToken}}"
+      "name": "Información de Usuario",
+      "item": [
+        {
+          "name": "Obtener Usuario Autenticado",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            },
+            "description": "**Obtener datos del usuario actual**\n\nRetorna perfil completo del usuario autenticado."
           }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"currentPassword\": \"password123\",\n  \"newPassword\": \"newPassword456\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Seguridad",
+      "item": [
+        {
+          "name": "Cambiar Contraseña",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"PasswordActual123!\",\n  \"newPassword\": \"PasswordNueva456!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/change-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "change-password"]
+            },
+            "description": "**Cambiar contraseña**\n\nRequiere contraseña actual para validación."
+          }
         },
-        "url": {
-          "raw": "{{baseUrl}}/auth/change-password",
-          "host": ["{{baseUrl}}"],
-          "path": ["auth", "change-password"]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "6. Validar Token",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "Authorization",
-            "value": "Bearer {{accessToken}}"
+        {
+          "name": "Cerrar Sesión",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "logout"]
+            },
+            "description": "**Cerrar sesión**\n\nInvalida la sesión actual del usuario."
           }
-        ],
-        "url": {
-          "raw": "{{baseUrl}}/auth/validate",
-          "host": ["{{baseUrl}}"],
-          "path": ["auth", "validate"]
         }
-      },
-      "response": []
-    },
-    {
-      "name": "7. Logout",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Authorization",
-            "value": "Bearer {{accessToken}}"
-          }
-        ],
-        "url": {
-          "raw": "{{baseUrl}}/auth/logout",
-          "host": ["{{baseUrl}}"],
-          "path": ["auth", "logout"]
-        }
-      },
-      "response": []
+      ]
     }
   ]
 }

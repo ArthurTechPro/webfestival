@@ -1,125 +1,54 @@
 {
-	"info": {
-		"_postman_id": "health-api-collection",
-		"name": "WebFestival API - Health & System",
-		"description": "Colección de endpoints para health checks y monitoreo del sistema",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
-	"variable": [
-		{
-			"key": "base_url",
-			"value": "http://localhost:3001",
-			"type": "string"
-		}
-	],
-	"item": [
-		{
-			"name": "Health Checks",
-			"item": [
-				{
-					"name": "Health Check Básico",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/health",
-							"host": ["{{base_url}}"],
-							"path": ["health"]
-						},
-						"description": "Health check básico del servidor"
-					},
-					"response": []
-				},
-				{
-					"name": "Health Check de Base de Datos",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/health/database",
-							"host": ["{{base_url}}"],
-							"path": ["health", "database"]
-						},
-						"description": "Verificar conexión a la base de datos"
-					},
-					"response": []
-				},
-				{
-					"name": "Estadísticas de Base de Datos",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/health/database/stats",
-							"host": ["{{base_url}}"],
-							"path": ["health", "database", "stats"]
-						},
-						"description": "Obtener estadísticas de la base de datos"
-					},
-					"response": []
-				},
-				{
-					"name": "Health Check de Immich",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/health/immich",
-							"host": ["{{base_url}}"],
-							"path": ["health", "immich"]
-						},
-						"description": "Verificar conexión con servidor Immich"
-					},
-					"response": []
-				},
-				{
-					"name": "Health Check de Email",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/health/email",
-							"host": ["{{base_url}}"],
-							"path": ["health", "email"]
-						},
-						"description": "Verificar configuración de servicios de email"
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "API Info",
-			"item": [
-				{
-					"name": "Información de la API",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/api/v1",
-							"host": ["{{base_url}}"],
-							"path": ["api", "v1"]
-						},
-						"description": "Obtener información general de la API"
-					},
-					"response": []
-				},
-				{
-					"name": "Documentación Swagger JSON",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/api-docs.json",
-							"host": ["{{base_url}}"],
-							"path": ["api-docs.json"]
-						},
-						"description": "Obtener especificación OpenAPI en formato JSON"
-					},
-					"response": []
-				}
-			]
-		}
-	]
+  "info": {
+    "name": "WebFestival-API - Health",
+    "description": "# 🏥 Health Checks y Diagnósticos\n\nMonitoreo del estado de los servicios de WebFestival API.\n\n## Servicios\n- API Principal\n- Base de Datos PostgreSQL\n- Immich (Gestión de medios)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Estado General",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {"raw": "{{baseUrl}}/health", "host": ["{{baseUrl}}"], "path": ["health"]},
+        "description": "**Estado general del sistema**\n\nVerifica todos los servicios (API, DB, Immich)."
+      }
+    },
+    {
+      "name": "Estado Base de Datos",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {"raw": "{{baseUrl}}/health/database", "host": ["{{baseUrl}}"], "path": ["health", "database"]},
+        "description": "**Estado de PostgreSQL**\n\nConexión, versión y estadísticas de BD."
+      }
+    },
+    {
+      "name": "Estado Immich",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {"raw": "{{baseUrl}}/health/immich", "host": ["{{baseUrl}}"], "path": ["health", "immich"]},
+        "description": "**Estado del servicio Immich**\n\nVerifica conectividad y versión del servidor de medios."
+      }
+    },
+    {
+      "name": "Estadísticas de BD",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {"raw": "{{baseUrl}}/health/database/stats", "host": ["{{baseUrl}}"], "path": ["health", "database", "stats"]},
+        "description": "**Estadísticas de la base de datos**\n\nContadores de usuarios, concursos, medios, etc."
+      }
+    },
+    {
+      "name": "Información de API",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {"raw": "{{baseUrl}}/", "host": ["{{baseUrl}}"], "path": [""]},
+        "description": "**Información general de la API**\n\nVersión, descripción y lista de endpoints disponibles."
+      }
+    }
+  ]
 }
