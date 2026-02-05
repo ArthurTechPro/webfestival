@@ -1,0 +1,562 @@
+{
+  "info": {
+    "name": "WebFestival API - Voting",
+    "description": "Colección de endpoints para el sistema de votaciones públicas de WebFestival",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "voting-api-collection",
+    "version": {
+      "major": 2,
+      "minor": 1,
+      "patch": 0
+    }
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{authToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Auto-set base URL if not defined",
+          "if (!pm.environment.get('baseUrl')) {",
+          "    pm.environment.set('baseUrl', 'http://localhost:3000/api/v1');",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Global test for successful responses",
+          "pm.test('Response status is successful', function () {",
+          "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 204]);",
+          "});",
+          "",
+          "// Global test for response structure",
+          "pm.test('Response has success property', function () {",
+          "    const jsonData = pm.response.json();",
+          "    pm.expect(jsonData).to.have.property('success');",
+          "});"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "{{baseUrl}}",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Concursos Activos",
+      "item": [
+        {
+          "name": "Obtener Concursos Activos",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response contains active contests', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData.data).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test('Contest has required properties', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.data.length > 0) {",
+                  "        const contest = jsonData.data[0];",
+                  "        pm.expect(contest).to.have.property('id');",
+                  "        pm.expect(contest).to.have.property('titulo');",
+                  "        pm.expect(contest).to.have.property('descripcion');",
+                  "        pm.expect(contest).to.have.property('_count');",
+                  "        ",
+                  "        // Save first contest ID for other tests",
+                  "        pm.environment.set('contestId', contest.id);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/concursos/activos",
+              "host": ["{{baseUrl}}"],
+              "path": ["concursos", "activos"]
+            },
+            "description": "Obtiene todos los concursos activos disponibles para votación. No requiere autenticación. NOTA: Este endpoint está en el módulo de concursos y es reutilizado para votaciones."
+          }
+        }
+      ],
+      "description": "Endpoints para obtener información de concursos disponibles para votación"
+    },
+    {
+      "name": "Medios para Votación",
+      "item": [
+        {
+          "name": "Obtener Medios de Concurso",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response contains contest media', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData.data).to.have.property('concurso');",
+                  "    pm.expect(jsonData.data).to.have.property('medios');",
+                  "    pm.expect(jsonData.data.medios).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test('Media has voting information', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.data.medios.length > 0) {",
+                  "        const media = jsonData.data.medios[0];",
+                  "        pm.expect(media).to.have.property('id');",
+                  "        pm.expect(media).to.have.property('titulo');",
+                  "        pm.expect(media).to.have.property('ya_voto');",
+                  "        pm.expect(media).to.have.property('total_votos');",
+                  "        pm.expect(media).to.have.property('usuario');",
+                  "        ",
+                  "        // Save first media ID for voting tests",
+                  "        pm.environment.set('mediaId', media.id);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/voting/contests/{{contestId}}/media",
+              "host": ["{{baseUrl}}"],
+              "path": ["voting", "contests", "{{contestId}}", "media"]
+            },
+            "description": "Obtiene todos los medios de un concurso disponibles para votación. Excluye los medios del usuario logueado. Requiere autenticación."
+          }
+        }
+      ],
+      "description": "Endpoints para obtener medios disponibles para votación"
+    },
+    {
+      "name": "Votaciones",
+      "item": [
+        {
+          "name": "Registrar Voto",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Vote registered successfully', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData.message).to.include('registrado exitosamente');",
+                  "    pm.expect(jsonData.data).to.have.property('voto_id');",
+                  "    pm.expect(jsonData.data).to.have.property('medio');",
+                  "    pm.expect(jsonData.data).to.have.property('total_votos');",
+                  "    ",
+                  "    // Save vote ID for removal test",
+                  "    pm.environment.set('voteId', jsonData.data.voto_id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"medio_id\": {{mediaId}},\n  \"comentario\": \"¡Excelente trabajo! Me encanta la composición.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/voting/vote",
+              "host": ["{{baseUrl}}"],
+              "path": ["voting", "vote"]
+            },
+            "description": "Registra un voto para un medio específico. Cada voto vale 1 punto. Requiere autenticación y roles: PARTICIPANTE, JURADO, ADMIN."
+          }
+        },
+        {
+          "name": "Retirar Voto",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Vote removed successfully', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData.message).to.include('retirado exitosamente');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/voting/vote/{{mediaId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["voting", "vote", "{{mediaId}}"]
+            },
+            "description": "Elimina un voto previamente registrado. Solo se puede retirar mientras el concurso esté activo. Requiere autenticación y roles: PARTICIPANTE, JURADO, ADMIN."
+          }
+        }
+      ],
+      "description": "Endpoints para registrar y retirar votos"
+    },
+    {
+      "name": "Resultados",
+      "item": [
+        {
+          "name": "Obtener Resultados de Concurso",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response contains contest results', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData.data).to.have.property('concurso');",
+                  "    pm.expect(jsonData.data).to.have.property('ranking');",
+                  "    pm.expect(jsonData.data).to.have.property('estadisticas');",
+                  "});",
+                  "",
+                  "pm.test('Ranking has correct structure', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data.ranking).to.be.an('array');",
+                  "    ",
+                  "    if (jsonData.data.ranking.length > 0) {",
+                  "        const firstPlace = jsonData.data.ranking[0];",
+                  "        pm.expect(firstPlace).to.have.property('posicion');",
+                  "        pm.expect(firstPlace).to.have.property('id');",
+                  "        pm.expect(firstPlace).to.have.property('titulo');",
+                  "        pm.expect(firstPlace).to.have.property('total_votos');",
+                  "        pm.expect(firstPlace).to.have.property('usuario');",
+                  "        pm.expect(firstPlace.posicion).to.equal(1);",
+                  "    }",
+                  "});",
+                  "",
+                  "pm.test('Statistics have correct structure', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    const stats = jsonData.data.estadisticas;",
+                  "    pm.expect(stats).to.have.property('total_votos');",
+                  "    pm.expect(stats).to.have.property('total_puntos');",
+                  "    pm.expect(stats).to.have.property('total_votantes');",
+                  "    pm.expect(stats).to.have.property('total_medios');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/voting/contests/{{contestId}}/results",
+              "host": ["{{baseUrl}}"],
+              "path": ["voting", "contests", "{{contestId}}", "results"]
+            },
+            "description": "Obtiene el ranking y estadísticas de un concurso. Muestra los medios ordenados por número de votos. No requiere autenticación."
+          }
+        }
+      ],
+      "description": "Endpoints para obtener resultados y rankings de concursos"
+    },
+    {
+      "name": "Mis Votos",
+      "item": [
+        {
+          "name": "Obtener Mis Votos",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Response contains user votes', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData.data).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test('Vote has correct structure', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.data.length > 0) {",
+                  "        const vote = jsonData.data[0];",
+                  "        pm.expect(vote).to.have.property('id');",
+                  "        pm.expect(vote).to.have.property('puntuacion');",
+                  "        pm.expect(vote).to.have.property('fecha_voto');",
+                  "        pm.expect(vote).to.have.property('medio');",
+                  "        pm.expect(vote.medio).to.have.property('titulo');",
+                  "        pm.expect(vote.medio).to.have.property('concurso');",
+                  "        pm.expect(vote.puntuacion).to.equal(1); // Cada voto vale 1 punto",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/voting/my-votes",
+              "host": ["{{baseUrl}}"],
+              "path": ["voting", "my-votes"]
+            },
+            "description": "Obtiene todos los votos del usuario actual, ordenados por fecha de voto descendente. Requiere autenticación."
+          }
+        }
+      ],
+      "description": "Endpoints para obtener el historial de votos del usuario"
+    },
+    {
+      "name": "Casos de Error",
+      "item": [
+        {
+          "name": "Votar sin Autenticación",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Returns 401 for unauthenticated request', function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});",
+                  "",
+                  "pm.test('Error message is correct', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.be.false;",
+                  "    pm.expect(jsonData.message).to.include('no autenticado');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"medio_id\": 1,\n  \"comentario\": \"Test vote\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/voting/vote",
+              "host": ["{{baseUrl}}"],
+              "path": ["voting", "vote"]
+            },
+            "description": "Intenta votar sin token de autenticación. Debe retornar error 401."
+          }
+        },
+        {
+          "name": "Votar por Medio Inexistente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Returns 404 for non-existent media', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "",
+                  "pm.test('Error message is correct', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.be.false;",
+                  "    pm.expect(jsonData.message).to.include('no encontrado');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"medio_id\": 99999,\n  \"comentario\": \"Test vote for non-existent media\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/voting/vote",
+              "host": ["{{baseUrl}}"],
+              "path": ["voting", "vote"]
+            },
+            "description": "Intenta votar por un medio que no existe. Debe retornar error 404."
+          }
+        },
+        {
+          "name": "Votar Dos Veces por el Mismo Medio",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Returns 400 for duplicate vote', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test('Error message is correct', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.be.false;",
+                  "    pm.expect(jsonData.message).to.include('Ya has votado');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{authToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"medio_id\": {{mediaId}},\n  \"comentario\": \"Segundo intento de voto\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/voting/vote",
+              "host": ["{{baseUrl}}"],
+              "path": ["voting", "vote"]
+            },
+            "description": "Intenta votar dos veces por el mismo medio. Debe retornar error 400. Ejecutar después de 'Registrar Voto'."
+          }
+        }
+      ],
+      "description": "Casos de prueba para validar el manejo de errores"
+    }
+  ]
+}

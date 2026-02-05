@@ -1,0 +1,382 @@
+{
+  "info": {
+    "name": "WebFestival-API - Categorías",
+    "description": "# 📂 Gestión de Categorías de Concursos\n\nSistema de gestión de categorías para concursos.\n\n## Funcionalidades\n- Consulta de categorías por concurso\n- CRUD completo de categorías (Admin)\n- Validación de nombres únicos por concurso\n\n## Roles\n- **Público:** Ver categorías\n- **ADMIN:** Gestión completa",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Consultas Públicas",
+      "item": [
+        {
+          "name": "Obtener Categorías por Concurso",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has success true', function () {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res.success).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('Response has data array', function () {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res.data).to.be.an('array');",
+                  "});",
+                  "",
+                  "// Guardar primera categoría para otros tests",
+                  "if (pm.response.code === 200) {",
+                  "    const res = pm.response.json();",
+                  "    if (res.data && res.data.length > 0) {",
+                  "        pm.environment.set('categoriaId', res.data[0].id);",
+                  "        console.log('✅ Categoría ID guardada:', res.data[0].id);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/categorias/concurso/{{concursoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["categorias", "concurso", "{{concursoId}}"]
+            },
+            "description": "**Obtener todas las categorías de un concurso**\n\nRetorna la lista de categorías disponibles para un concurso específico.\n\n**Parámetros:**\n- `concursoId`: ID del concurso\n\n**Respuesta incluye:**\n- ID de la categoría\n- Nombre\n- Información del concurso\n- Contadores de medios y jurados asignados"
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener Categoría por ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has success true', function () {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res.success).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('Response has categoria data', function () {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res.data).to.have.property('id');",
+                  "    pm.expect(res.data).to.have.property('nombre');",
+                  "    pm.expect(res.data).to.have.property('concurso');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/categorias/{{categoriaId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["categorias", "{{categoriaId}}"]
+            },
+            "description": "**Obtener detalles de una categoría**\n\nRetorna información completa de una categoría específica.\n\n**Parámetros:**\n- `categoriaId`: ID de la categoría\n\n**Respuesta incluye:**\n- Datos de la categoría\n- Información del concurso asociado\n- Contadores de medios y jurados"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Gestión Admin",
+      "item": [
+        {
+          "name": "Crear Categoría",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Response has success true', function () {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res.success).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('Response has categoria data', function () {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res.data).to.have.property('id');",
+                  "    pm.expect(res.data).to.have.property('nombre');",
+                  "});",
+                  "",
+                  "// Guardar ID de la categoría creada",
+                  "if (pm.response.code === 201) {",
+                  "    const res = pm.response.json();",
+                  "    pm.environment.set('nuevaCategoriaId', res.data.id);",
+                  "    console.log('✅ Nueva categoría creada con ID:', res.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{authToken}}", "type": "string"}]
+            },
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Fotografía de Paisaje\",\n  \"concursoId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/categorias",
+              "host": ["{{baseUrl}}"],
+              "path": ["categorias"]
+            },
+            "description": "**Crear nueva categoría (Solo ADMIN)**\n\nCrea una nueva categoría para un concurso.\n\n**⚠️ IMPORTANTE:** Reemplaza el valor `1` con el ID de un concurso existente.\n\n**Requiere:**\n- Token JWT de ADMIN\n- Nombre único dentro del concurso\n- ID de concurso válido (debe existir en la base de datos)\n\n**Body:**\n```json\n{\n  \"nombre\": \"Fotografía de Paisaje\",\n  \"concursoId\": 1\n}\n```\n\n**Nota:** También puedes usar `concurso_id` en lugar de `concursoId`:\n```json\n{\n  \"nombre\": \"Fotografía de Paisaje\",\n  \"concurso_id\": 1\n}\n```\n\n**Validaciones:**\n- Nombre: 3-100 caracteres\n- Concurso debe existir\n- Nombre único por concurso\n\n**Pasos recomendados:**\n1. Ejecuta \"Listar Concursos\" para obtener IDs válidos\n2. Copia un ID de concurso\n3. Reemplaza el `1` en el body con ese ID\n4. Ejecuta este request"
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar Categoría",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has success true', function () {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res.success).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('Categoria was updated', function () {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res.message).to.include('actualizada');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{authToken}}", "type": "string"}]
+            },
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Fotografía de Naturaleza\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/categorias/{{categoriaId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["categorias", "{{categoriaId}}"]
+            },
+            "description": "**Actualizar categoría (Solo ADMIN)**\n\nActualiza el nombre de una categoría existente.\n\n**Requiere:**\n- Token JWT de ADMIN\n- Nombre único dentro del concurso\n\n**Body:**\n```json\n{\n  \"nombre\": \"Fotografía de Naturaleza\"\n}\n```\n\n**Validaciones:**\n- Nombre: 3-100 caracteres\n- Nombre único por concurso"
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar Categoría",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has success true', function () {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res.success).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('Categoria was deleted', function () {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res.message).to.include('eliminada');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{authToken}}", "type": "string"}]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/categorias/{{nuevaCategoriaId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["categorias", "{{nuevaCategoriaId}}"]
+            },
+            "description": "**Eliminar categoría (Solo ADMIN)**\n\nElimina una categoría del sistema.\n\n**Requiere:**\n- Token JWT de ADMIN\n\n**Restricciones:**\n- No se puede eliminar si tiene medios enviados\n- No se puede eliminar si tiene jurados asignados\n\n**Parámetros:**\n- `categoriaId`: ID de la categoría a eliminar"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Casos de Error",
+      "item": [
+        {
+          "name": "Crear Categoría Duplicada",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 400', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test('Response has error message', function () {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res.success).to.be.false;",
+                  "    pm.expect(res.message).to.include('Ya existe');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{authToken}}", "type": "string"}]
+            },
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Fotografía de Paisaje\",\n  \"concursoId\": {{concursoId}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/categorias",
+              "host": ["{{baseUrl}}"],
+              "path": ["categorias"]
+            },
+            "description": "**Test: Crear categoría duplicada**\n\nIntenta crear una categoría con un nombre que ya existe en el concurso.\n\n**Resultado esperado:**\n- Status: 400\n- Error: \"Ya existe una categoría con ese nombre en este concurso\""
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Sin Autenticación",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 401', function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});",
+                  "",
+                  "pm.test('Response has error message', function () {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res.success).to.be.false;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Test Categoría\",\n  \"concursoId\": {{concursoId}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/categorias",
+              "host": ["{{baseUrl}}"],
+              "path": ["categorias"]
+            },
+            "description": "**Test: Crear sin autenticación**\n\nIntenta crear una categoría sin token de autenticación.\n\n**Resultado esperado:**\n- Status: 401\n- Error: No autenticado"
+          },
+          "response": []
+        },
+        {
+          "name": "Categoría No Encontrada",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 404', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "",
+                  "pm.test('Response has error message', function () {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res.success).to.be.false;",
+                  "    pm.expect(res.message).to.include('no encontrada');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/categorias/99999",
+              "host": ["{{baseUrl}}"],
+              "path": ["categorias", "99999"]
+            },
+            "description": "**Test: Categoría no encontrada**\n\nIntenta obtener una categoría con ID inexistente.\n\n**Resultado esperado:**\n- Status: 404\n- Error: \"Categoría no encontrada\""
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3001/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "concursoId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "categoriaId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "nuevaCategoriaId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,206 @@
+{
+  "info": {
+    "title": "WebFestival API - Endpoints Disponibles",
+    "version": "2.1.0",
+    "description": "Referencia rápida de endpoints disponibles en la API WebFestival",
+    "baseUrl": {
+      "local": "http://localhost:3000/api/v1",
+      "production": "https://api.webfestival.art/api/v1"
+    },
+    "authentication": "Bearer Token en header Authorization"
+  },
+  "endpoints": {
+    "auth": {
+      "baseRoute": "/auth",
+      "endpoints": {
+        "login": "POST /login",
+        "register": "POST /register", 
+        "logout": "POST /logout",
+        "me": "GET /me",
+        "refresh": "POST /refresh",
+        "forgot_password": "POST /forgot-password",
+        "reset_password": "POST /reset-password"
+      }
+    },
+    "concursos": {
+      "baseRoute": "/concursos",
+      "endpoints": {
+        "activos": "GET /activos",
+        "finalizados": "GET /finalizados",
+        "detalle": "GET /{id}",
+        "listar_admin": "GET / (Admin)",
+        "crear": "POST / (Admin)",
+        "actualizar": "PUT /{id} (Admin)",
+        "subir_imagen": "POST /{id}/imagen (Admin)",
+        "inscribirse": "POST /inscripcion",
+        "cancelar_inscripcion": "DELETE /inscripcion/{concursoId}",
+        "mis_inscripciones": "GET /mis-inscripciones",
+        "verificar_inscripcion": "GET /{id}/verificar-inscripcion"
+      }
+    },
+    "media": {
+      "baseRoute": "/media",
+      "endpoints": {
+        "validation_config": "GET /validation-config",
+        "upload_url": "POST /contests/{concursoId}/upload-url",
+        "process_upload": "POST /contests/{concursoId}/process-upload",
+        "obtener_medio": "GET /{id}",
+        "medios_usuario": "GET /user/{userId}",
+        "medios_concurso": "GET /contests/{concursoId}",
+        "actualizar_medio": "PUT /{id}",
+        "eliminar_medio": "DELETE /{id}",
+        "galeria_ganadores": "GET /gallery/winners",
+        "galeria_destacada": "GET /gallery/featured",
+        "categorias_por_tipo": "GET /contests/{concursoId}/categories"
+      }
+    },
+    "users": {
+      "baseRoute": "/users",
+      "endpoints": {
+        "estadisticas_sistema": "GET /stats (Admin)",
+        "buscar_usuarios": "GET /search (Admin)",
+        "actualizar_rol": "PATCH /{userId}/role (Admin)",
+        "cambiar_estado": "PATCH /{userId}/toggle-status (Admin)",
+        "jurados_especialidad": "GET /jurados/{especialidad} (Admin)",
+        "asignar_jurado": "POST /jurado/asignar (Admin)",
+        "mis_asignaciones": "GET /jurado/asignaciones (Jurado)"
+      }
+    },
+    "evaluations": {
+      "baseRoute": "/evaluations",
+      "endpoints": {
+        "medios_pendientes": "GET /medios-pendientes (Jurado)",
+        "medio_evaluacion": "GET /media/{medioId} (Jurado)",
+        "criterios_tipo": "GET /criteria/{tipoMedio} (Jurado)",
+        "todos_criterios": "GET /criteria/by-type (Jurado)",
+        "enviar_calificacion": "POST /rate (Jurado)",
+        "actualizar_calificacion": "PUT /rate/{calificacionId} (Jurado)",
+        "progreso_evaluaciones": "GET /progress (Jurado)",
+        "estadisticas_jurado": "GET /stats (Jurado)",
+        "mi_especializacion": "GET /my-specialization (Jurado)",
+        "actualizar_especializacion": "PUT /my-specialization (Jurado)",
+        "metricas_rendimiento": "GET /my-performance-metrics (Jurado)"
+      }
+    },
+    "voting": {
+      "baseRoute": "/voting",
+      "endpoints": {
+        "concursos_activos": "GET /concursos/activos (reutilizado)",
+        "medios_votacion": "GET /contests/{id}/media",
+        "votar": "POST /vote",
+        "retirar_voto": "DELETE /vote/{medioId}",
+        "resultados_concurso": "GET /contests/{id}/results",
+        "mis_votos": "GET /my-votes"
+      }
+    },
+    "subscriptions": {
+      "baseRoute": "/subscriptions",
+      "endpoints": {
+        "planes_disponibles": "GET /plans",
+        "suscripcion_actual": "GET /current",
+        "actualizar_suscripcion": "POST /upgrade",
+        "cancelar_suscripcion": "POST /cancel",
+        "reactivar_suscripcion": "POST /reactivate",
+        "historial_facturacion": "GET /billing-history",
+        "limites_uso": "GET /usage-limits",
+        "crear_checkout": "POST /create-checkout-session",
+        "portal_facturacion": "POST /create-portal-session"
+      }
+    },
+    "interactions": {
+      "baseRoute": "/interactions",
+      "endpoints": {
+        "obtener_comentarios": "GET /comments/{medioId}",
+        "crear_comentario": "POST /comments",
+        "eliminar_comentario": "DELETE /comments/{commentId}",
+        "reportar_comentario": "POST /comments/report",
+        "comentarios_reportados": "GET /comments/reported (Admin)",
+        "moderar_comentario": "POST /comments/{commentId}/moderate (Admin)"
+      }
+    },
+    "proxy": {
+      "baseRoute": "/proxy",
+      "endpoints": {
+        "media": "GET /media/{assetId}",
+        "thumbnail": "GET /media/{assetId}?size=400x225",
+        "preview": "GET /media/{assetId}?size=1280x720"
+      }
+    },
+    "health": {
+      "baseRoute": "/",
+      "endpoints": {
+        "health_check": "GET /health"
+      }
+    }
+  },
+  "common_patterns": {
+    "authentication": {
+      "header": "Authorization: Bearer {token}",
+      "obtain_token": "POST /auth/login"
+    },
+    "pagination": {
+      "query_params": "?page=1&limit=10",
+      "response_format": {
+        "data": "Array<T>",
+        "pagination": {
+          "page": "number",
+          "limit": "number", 
+          "total": "number",
+          "totalPages": "number"
+        }
+      }
+    },
+    "standard_response": {
+      "success": "boolean",
+      "data": "object (optional)",
+      "message": "string (optional)",
+      "error": "string (optional)"
+    },
+    "error_codes": {
+      "400": "Bad Request - Datos inválidos",
+      "401": "Unauthorized - Token inválido",
+      "403": "Forbidden - Sin permisos",
+      "404": "Not Found - Recurso no encontrado",
+      "409": "Conflict - Conflicto (ej: ya inscrito)",
+      "422": "Unprocessable Entity - Validación fallida",
+      "500": "Internal Server Error"
+    }
+  },
+  "key_endpoints_for_frontend": {
+    "landing_page": [
+      "GET /concursos/activos",
+      "GET /media/gallery/featured",
+      "GET /media/gallery/winners"
+    ],
+    "user_dashboard": [
+      "GET /auth/me",
+      "GET /concursos/mis-inscripciones",
+      "GET /media/user/{userId}",
+      "GET /voting/my-votes"
+    ],
+    "contest_participation": [
+      "POST /concursos/inscripcion",
+      "POST /media/contests/{concursoId}/upload-url",
+      "POST /media/contests/{concursoId}/process-upload"
+    ],
+    "voting_system": [
+      "GET /concursos/activos",
+      "GET /voting/contests/{id}/media", 
+      "POST /voting/vote",
+      "GET /voting/contests/{id}/results"
+    ],
+    "admin_panel": [
+      "GET /users/stats",
+      "GET /concursos/ (Admin)",
+      "POST /concursos/ (Admin)",
+      "GET /users/search (Admin)"
+    ]
+  },
+  "notes": {
+    "image_urls": "Las URLs de imágenes se generan dinámicamente usando /proxy/media/{assetId}",
+    "file_uploads": "Usar flujo de 2 pasos: generar URL → procesar subida",
+    "voting_rules": "Un usuario solo puede votar una vez por medio, no puede votar por sus propios medios",
+    "roles": "PARTICIPANTE, JURADO, ADMIN, CONTENT_ADMIN",
+    "contest_status": "PROXIMAMENTE, ACTIVO, CALIFICACION, FINALIZADO"
+  }
+}

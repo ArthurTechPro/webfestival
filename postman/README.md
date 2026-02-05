@@ -181,12 +181,15 @@ La API maneja diferentes roles con permisos específicos:
 - Health check de Immich
 - Estadísticas del sistema
 
-### Upload Immich ✨ **NUEVO**
-- Subida de avatares de usuario
-- Subida de posters de concurso
-- Subida de imágenes CMS
-- Subida de portfolios de jurado
-- URLs optimizadas (original, thumbnail, preview)
+### Upload Immich ⭐ **ACTUALIZADO v2.1.0**
+- Subida segura de medios en un solo paso (POST /api/v1/media/upload)
+- Subida de avatares de usuario (POST /api/v1/users/:id/avatar)
+- Subida de posters de concurso (POST /api/v1/concursos/:id/imagen) - **NUEVO**
+- Subida de imágenes CMS (POST /api/v1/cms/contenido/:id/imagen)
+- Subida de portfolios de jurado (POST /api/v1/jurados/:id/portfolio)
+- URLs dinámicas construidas desde `immich_asset_id`
+- Proxy de imágenes sin autenticación (GET /api/v1/proxy/media/:assetId)
+- Álbumes simplificados: "{Concurso} - {Usuario}"
 - Tests automáticos incluidos
 
 ## 🛠️ Troubleshooting
@@ -206,44 +209,132 @@ Para más información sobre la API, consulta:
 - Documentación Swagger: `http://localhost:3000/api-docs` (Local)
 - Repositorio: [GitHub](https://github.com/tu-repo/webfestival-api)
 
-## 🆕 Novedades - Integración Immich
+## 🆕 Novedades - v2.1.0: URLs Dinámicas y Mejoras
 
-### Nuevos Endpoints de Upload
+### ⭐ Cambios Principales
 
-La API ahora incluye endpoints dedicados para subir imágenes directamente a Immich:
+La API ha sido actualizada con URLs dinámicas y mejoras en la gestión de imágenes:
+
+#### 🔄 URLs Dinámicas
+- Eliminados campos obsoletos: `medio_url`, `thumbnail_url`, `preview_url`, `imagen_url`
+- URLs construidas dinámicamente desde `immich_asset_id`
+- Cambiar dominio solo requiere actualizar `API_BASE_URL`
+- Proxy sin autenticación: GET /api/v1/proxy/media/:assetId
+
+#### 🖼️ Nuevo Endpoint de Imágenes de Concursos
+- POST /api/v1/concursos/:id/imagen - Subir poster de concurso
+- Se almacena en álbum "Sistema - Administrador"
+- Solo guarda `imagen_asset_id` en BD
+- URLs construidas dinámicamente
+
+#### 📁 Álbumes Simplificados
+- Formato anterior: "Concurso: Fotografía 2025 / Usuario: Juan Pérez"
+- Formato nuevo: "Fotografía 2025 - Juan Pérez"
+- Álbum del sistema: "Sistema - Administrador"
+
+### ⭐ Subida Segura en Un Solo Paso (v2.0.0)
+
+La API incluye un sistema simplificado de subida de medios que **no expone credenciales de Immich al cliente**:
+
+#### Endpoint Principal de Subida Segura
+
+- **POST** `/api/v1/media/upload` - **NUEVO** - Subir medio en un solo paso
+  - Sube fotografías, videos, audio o cortometrajes
+  - Validación automática de archivos
+  - Rollback automático en caso de error
+  - Rate limiting (10 uploads cada 15 minutos)
+  - Organización automática en álbumes de Immich
+
+#### Endpoints de Consulta
+
+- **GET** `/api/v1/media/:id` - **NUEVO** - Obtener información de un medio
+- **GET** `/api/v1/media/user/:userId` - **NUEVO** - Listar medios de usuario (paginado)
+
+#### Endpoints de Upload Específicos
 
 - **POST** `/api/v1/users/:userId/avatar` - Subir avatar (máx 5MB)
 - **POST** `/api/v1/concursos/:concursoId/imagen` - Subir poster (máx 10MB)
 - **POST** `/api/v1/cms/contenido/:contenidoId/imagen` - Subir imagen CMS (máx 10MB)
 - **POST** `/api/v1/jurados/:juradoId/portfolio` - Subir portfolio (máx 5MB)
 
-### URLs Optimizadas en Respuestas
+### 🎯 Ventajas del Nuevo Sistema
 
-Todos los endpoints que retornan usuarios, concursos o contenido CMS ahora incluyen URLs optimizadas:
+- ✅ **Seguridad:** Credenciales de Immich permanecen en el servidor
+- ✅ **Simplicidad:** Un solo endpoint para todo el proceso
+- ✅ **Confiabilidad:** Rollback automático si algo falla
+- ✅ **Validación:** Tipos de archivo, tamaños y formatos automáticos
+- ✅ **Rate Limiting:** Protección contra abuso
+- ✅ **Organización:** Álbumes automáticos en Immich
+
+### 📏 Límites y Formatos
+
+| Tipo de Medio | Tamaño Máximo | Formatos Soportados |
+|---------------|---------------|---------------------|
+| Fotografía | 50 MB | JPEG, PNG, HEIC, WebP |
+| Video | 500 MB | MP4, MOV, AVI |
+| Audio | 100 MB | MP3, WAV, AAC |
+| Avatar | 5 MB | JPEG, PNG, WebP |
+| Poster/CMS | 10 MB | JPEG, PNG, WebP |
+
+### 📚 Documentación Completa
+
+Para información detallada, consulta:
+
+- **[README-ENDPOINTS.md](./README-ENDPOINTS.md)** - Índice completo de endpoints
+- **[../webfestival-api/docs/API-MEDIA-UPLOAD-SWAGGER.md](../webfestival-api/docs/API-MEDIA-UPLOAD-SWAGGER.md)** - Documentación con ejemplos de código
+- **Colección Postman:** `WebFestival-API-Upload-Immich.postman_collection.json`
+- **Flujo Completo:** `WebFestival-API-Flujo-Completo-Subida.postman_collection.json`
+
+### 🔄 Migración desde Método Anterior
+
+Si estabas usando el método multi-paso anterior:
+
+**Antes (3 pasos - OBSOLETO):**
+1. ~~Generar URL de subida~~
+2. ~~Subir archivo a Immich~~
+3. ~~Confirmar subida~~
+
+**Ahora (1 paso):**
+1. POST `/api/v1/media/upload` con el archivo
+
+**Nota:** El método multi-paso ha sido eliminado. Usa el método de un solo paso.
+
+### URLs Dinámicas en Respuestas
+
+Todos los endpoints que retornan medios incluyen URLs construidas dinámicamente:
 
 ```json
 {
-  "picture_url": "https://medios.webfestival.art/api/asset/file/xxx",
-  "picture_thumbnail": "https://medios.webfestival.art/api/asset/thumbnail/xxx",
-  "picture_preview": "https://medios.webfestival.art/api/asset/thumbnail/xxx?size=preview"
+  "immich_asset_id": "abc-123-def",
+  "medio_url": "https://api.webfestival.art/api/v1/proxy/media/abc-123-def",
+  "thumbnail_url": "https://api.webfestival.art/api/v1/proxy/media/abc-123-def?size=400x225",
+  "preview_url": "https://api.webfestival.art/api/v1/proxy/media/abc-123-def?size=1280x720"
 }
 ```
 
 **Beneficios:**
-- ✅ Carga más rápida con thumbnails
-- ✅ Múltiples tamaños disponibles
-- ✅ Gestión centralizada en Immich
-- ✅ Compatible con URLs antiguas
+- ✅ Flexibilidad: Cambiar dominio solo requiere actualizar `API_BASE_URL`
+- ✅ Consistencia: Todas las URLs desde una única fuente de verdad
+- ✅ Seguridad: No se exponen credenciales de Immich
+- ✅ Mantenibilidad: Código más limpio y unificado
+- ✅ Escalabilidad: Fácil agregar CDN
 
-### Documentación Adicional
+### 📊 Changelog
 
-Ver `ACTUALIZACION-IMMICH.md` para detalles completos sobre:
-- Cómo usar los nuevos endpoints
-- Tests automáticos incluidos
-- Ejemplos de respuestas
-- Flujos de integración
+#### v2.1.0 (2025-11-29) - URLs Dinámicas
+- ✅ URLs construidas dinámicamente desde `immich_asset_id`
+- ✅ Eliminados campos obsoletos de BD
+- ✅ Nuevo endpoint POST /api/v1/concursos/:id/imagen
+- ✅ Proxy sin autenticación GET /api/v1/proxy/media/:assetId
+- ✅ Formato de álbumes simplificado
+- ✅ Colecciones Postman actualizadas
+
+#### v2.0.0 (2024-01-15) - Subida Segura
+- ✅ Nuevo endpoint POST /api/v1/media/upload
+- ✅ Método de un solo paso
+- ✅ Eliminado método multi-paso
 
 ---
 
-**Versión:** 2.0.0  
-**Última actualización:** Noviembre 9, 2024
+**Versión:** 2.1.0  
+**Última actualización:** Noviembre 29, 2025

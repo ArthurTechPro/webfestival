@@ -2,12 +2,345 @@
 	"info": {
 		"_postman_id": "upload-immich-001",
 		"name": "WebFestival API - Upload Immich",
-		"description": "Colección para probar los endpoints de subida de imágenes a Immich",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"description": "# 📤 WebFestival API - Subida Segura de Medios a Immich\n\nColección completa para probar los endpoints de subida de medios (imágenes, videos, audio) a Immich de forma segura a través de la API Backend.\n\n## 🔐 Seguridad\n\nTodos los endpoints requieren autenticación mediante JWT Bearer token. Las credenciales de Immich nunca se exponen al cliente.\n\n## 📋 Endpoints Disponibles\n\n### Media Upload - Subida Segura\n1. **POST /api/v1/media/upload** - Subir medio (fotografía, video, audio)\n2. **GET /api/v1/media/:id** - Obtener información de un medio\n3. **GET /api/v1/media/user/:userId** - Listar medios de un usuario (paginado)\n\n### Uploads Específicos\n4. **POST /api/v1/users/:userId/avatar** - Subir avatar de usuario\n5. **POST /api/v1/concursos/:concursoId/imagen** - Subir poster de concurso\n6. **POST /api/v1/cms/contenido/:contenidoId/imagen** - Subir imagen CMS\n7. **POST /api/v1/jurados/:juradoId/portfolio** - Subir portfolio de jurado\n\n## 🎯 Características\n\n- ✅ Subida en un solo paso\n- ✅ Validación automática de archivos\n- ✅ Rollback automático en caso de error\n- ✅ Rate limiting para prevenir abuso\n- ✅ Organización automática en álbumes de Immich\n- ✅ Generación de thumbnails y previews\n- ✅ Manejo robusto de errores con reintentos\n\n## 📏 Límites y Formatos\n\n### Imágenes\n- **Tamaño máximo:** 50MB\n- **Formatos:** JPEG, PNG, HEIC, WebP\n- **Tipos MIME:** image/jpeg, image/png, image/heic, image/webp\n\n### Videos\n- **Tamaño máximo:** 500MB\n- **Formatos:** MP4, MOV, AVI\n- **Tipos MIME:** video/mp4, video/quicktime, video/x-msvideo\n\n### Audio\n- **Tamaño máximo:** 100MB\n- **Formatos:** MP3, WAV, AAC\n- **Tipos MIME:** audio/mpeg, audio/wav, audio/aac\n\n## 🔄 Rate Limiting\n\n- **Ventana:** 15 minutos\n- **Límite:** 10 uploads por ventana\n- **Headers:** RateLimit-* headers en respuesta\n\n## 📁 Organización en Immich\n\nLos medios se organizan automáticamente en álbumes con el formato:\n**\"Concurso: [Título] / Usuario: [Nombre]\"**\n\n## 🚨 Códigos de Error\n\n- **400** - Bad Request (archivo inválido, campos faltantes)\n- **401** - Unauthorized (token inválido o ausente)\n- **413** - Payload Too Large (archivo muy grande)\n- **429** - Too Many Requests (rate limit excedido)\n- **500** - Internal Server Error (error inesperado)\n- **502** - Bad Gateway (error comunicándose con Immich)\n- **503** - Service Unavailable (Immich no disponible)\n\n## ⚙️ Variables de Entorno\n\nAsegúrate de configurar:\n- `baseUrl` - URL base de la API (ej: http://localhost:3001)\n- `authToken` - Token JWT de autenticación\n- `currentUserId` - ID del usuario autenticado\n- `lastMediaId` - ID del último medio subido (se guarda automáticamente)\n\n## 📝 Notas\n\n- Los tests automáticos guardan variables de entorno para facilitar el flujo\n- Usa el environment Local o Production según corresponda\n- Revisa la consola de Postman para ver logs detallados",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "upload-immich-001"
 	},
 	"item": [
 		{
-			"name": "Upload Avatar Usuario",
+			"name": "Media Upload - Subida Segura",
+			"item": [
+				{
+					"name": "Upload Media (Fotografía)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Response has success true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.eql(true);",
+									"});",
+									"",
+									"pm.test(\"Response has media data\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property('id');",
+									"    pm.expect(jsonData.data).to.have.property('immichAssetId');",
+									"    pm.expect(jsonData.data).to.have.property('mediaUrl');",
+									"    pm.expect(jsonData.data).to.have.property('thumbnailUrl');",
+									"});",
+									"",
+									"// Guardar el ID del medio para otros tests",
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set('lastMediaId', jsonData.data.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": [],
+									"description": "Archivo multimedia (imagen, video, audio)"
+								},
+								{
+									"key": "titulo",
+									"value": "Mi fotografía del festival",
+									"type": "text",
+									"description": "Título descriptivo del medio"
+								},
+								{
+									"key": "tipoMedio",
+									"value": "fotografia",
+									"type": "text",
+									"description": "Tipo de medio: fotografia, video, audio, corto_cine"
+								},
+								{
+									"key": "concursoId",
+									"value": "1",
+									"type": "text",
+									"description": "ID del concurso"
+								},
+								{
+									"key": "categoriaId",
+									"value": "5",
+									"type": "text",
+									"description": "ID de la categoría"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/media/upload",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"media",
+								"upload"
+							]
+						},
+						"description": "Sube un archivo multimedia (fotografía) a Immich de forma segura.\n\n**Campos requeridos:**\n- file: Archivo multimedia\n- titulo: Título descriptivo\n- tipoMedio: fotografia, video, audio, corto_cine\n- concursoId: ID del concurso\n- categoriaId: ID de la categoría\n\n**Límites:**\n- Imágenes: 50MB\n- Videos: 500MB\n\n**Formatos soportados:**\n- Imágenes: JPEG, PNG, HEIC, WebP\n- Videos: MP4, MOV, AVI"
+					},
+					"response": []
+				},
+				{
+					"name": "Upload Media (Video)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Response has success true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.eql(true);",
+									"});",
+									"",
+									"pm.test(\"Response has media data\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property('id');",
+									"    pm.expect(jsonData.data).to.have.property('immichAssetId');",
+									"    pm.expect(jsonData.data).to.have.property('mediaUrl');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": [],
+									"description": "Archivo de video"
+								},
+								{
+									"key": "titulo",
+									"value": "Mi video del festival",
+									"type": "text",
+									"description": "Título descriptivo del medio"
+								},
+								{
+									"key": "tipoMedio",
+									"value": "video",
+									"type": "text",
+									"description": "Tipo de medio: video"
+								},
+								{
+									"key": "concursoId",
+									"value": "1",
+									"type": "text",
+									"description": "ID del concurso"
+								},
+								{
+									"key": "categoriaId",
+									"value": "5",
+									"type": "text",
+									"description": "ID de la categoría"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/media/upload",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"media",
+								"upload"
+							]
+						},
+						"description": "Sube un archivo de video a Immich de forma segura.\n\n**Límite:** 500MB\n**Formatos:** MP4, MOV, AVI"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Media By ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has success true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.eql(true);",
+									"});",
+									"",
+									"pm.test(\"Response has media data\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.have.property('id');",
+									"    pm.expect(jsonData.data).to.have.property('titulo');",
+									"    pm.expect(jsonData.data).to.have.property('mediaUrl');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/media/:mediaId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"media",
+								":mediaId"
+							],
+							"variable": [
+								{
+									"key": "mediaId",
+									"value": "{{lastMediaId}}",
+									"description": "ID del medio a consultar"
+								}
+							]
+						},
+						"description": "Obtiene la información completa de un medio por su ID.\n\nRetorna:\n- ID del medio\n- Título\n- Tipo de medio\n- URLs (original y thumbnail)\n- Metadata (formato, tamaño, fecha)\n- Información del usuario"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Media (Paginado)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has success true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.eql(true);",
+									"});",
+									"",
+									"pm.test(\"Response has data array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"Response has pagination info\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.pagination).to.have.property('page');",
+									"    pm.expect(jsonData.pagination).to.have.property('limit');",
+									"    pm.expect(jsonData.pagination).to.have.property('total');",
+									"    pm.expect(jsonData.pagination).to.have.property('totalPages');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/media/user/:userId?page=1&limit=20&tipoMedio=fotografia",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"media",
+								"user",
+								":userId"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Número de página (default: 1)"
+								},
+								{
+									"key": "limit",
+									"value": "20",
+									"description": "Resultados por página (default: 20, max: 100)"
+								},
+								{
+									"key": "tipoMedio",
+									"value": "fotografia",
+									"description": "Filtrar por tipo: fotografia, video, audio, corto_cine (opcional)"
+								}
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "{{currentUserId}}",
+									"description": "ID del usuario"
+								}
+							]
+						},
+						"description": "Lista todos los medios de un usuario con paginación y filtros opcionales.\n\n**Query Parameters:**\n- page: Número de página (default: 1)\n- limit: Resultados por página (1-100, default: 20)\n- tipoMedio: Filtrar por tipo (opcional)\n\n**Retorna:**\n- Array de medios\n- Información de paginación (page, limit, total, totalPages)"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para subida segura de medios a Immich sin exponer credenciales al cliente"
+		},
+		{
+			"name": "Uploads Específicos",
+			"item": [
+				{
+					"name": "Upload Avatar Usuario",
 			"event": [
 				{
 					"listen": "test",
@@ -214,74 +547,77 @@
 			},
 			"response": []
 		},
-		{
-			"name": "Upload Portfolio Jurado",
-			"event": [
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"",
-							"pm.test(\"Response has success true\", function () {",
-							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.success).to.eql(true);",
-							"});",
-							"",
-							"pm.test(\"Response has success message\", function () {",
-							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.message).to.include('exitosamente');",
-							"});"
+					"name": "Upload Portfolio Jurado",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has success true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.eql(true);",
+									"});",
+									"",
+									"pm.test(\"Response has success message\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.include('exitosamente');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
 						],
-						"type": "text/javascript"
-					}
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "portfolio",
+									"type": "file",
+									"src": [],
+									"description": "Archivo de imagen (JPG, PNG, WebP) - Máximo 5MB"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/jurados/:juradoId/portfolio",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"jurados",
+								":juradoId",
+								"portfolio"
+							],
+							"variable": [
+								{
+									"key": "juradoId",
+									"value": "1",
+									"description": "ID de la especialización del jurado"
+								}
+							]
+						},
+						"description": "Sube un portfolio de jurado a Immich. Máximo 5MB. Formatos: JPG, PNG, WebP.\n\nEl campo debe llamarse 'portfolio' (no 'file').\n\nRequiere rol JURADO o ADMIN."
+					},
+					"response": []
 				}
 			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer {{authToken}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "portfolio",
-							"type": "file",
-							"src": [],
-							"description": "Archivo de imagen (JPG, PNG, WebP) - Máximo 5MB"
-						}
-					]
-				},
-				"url": {
-					"raw": "{{baseUrl}}/api/v1/jurados/:juradoId/portfolio",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"api",
-						"v1",
-						"jurados",
-						":juradoId",
-						"portfolio"
-					],
-					"variable": [
-						{
-							"key": "juradoId",
-							"value": "1",
-							"description": "ID de la especialización del jurado"
-						}
-					]
-				},
-				"description": "Sube un portfolio de jurado a Immich. Máximo 5MB. Formatos: JPG, PNG, WebP.\n\nEl campo debe llamarse 'portfolio' (no 'file').\n\nRequiere rol JURADO o ADMIN."
-			},
-			"response": []
+			"description": "Endpoints específicos para subida de imágenes en contextos particulares (avatares, posters, etc.)"
 		}
 	],
 	"event": [

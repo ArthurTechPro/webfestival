@@ -1248,9 +1248,9 @@ ls -la ~/app/build/static/
 
 ```bash
 # Dar permisos correctos
-chmod -R 755 ~/app/build
+chmod -R 755 ~/webfestival-app/dist
 
-# Verificar permisos
+# Verificar permis
 ls -la ~/app/build
 ```
 

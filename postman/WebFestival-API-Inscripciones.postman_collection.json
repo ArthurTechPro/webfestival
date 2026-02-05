@@ -1,0 +1,451 @@
+{
+  "info": {
+    "name": "WebFestival-API - Inscripciones",
+    "description": "# 📝 Sistema de Inscripciones\n\nGestión completa de inscripciones a concursos.\n\n## 🎯 Funcionalidades\n- Inscripción a concursos activos\n- Consulta de mis inscripciones\n- Verificación de estado de inscripción\n- Cancelación de inscripciones\n- Estadísticas de participación\n\n## 👥 Roles y Permisos\n- **PARTICIPANTE:** Inscribirse, ver sus inscripciones, cancelar\n- **ADMIN:** Ver todas las inscripciones, gestión completa\n- **JURADO:** Ver inscripciones de concursos asignados\n\n## 🔗 Relación con otros módulos\n- **Concursos:** Debe existir y estar activo\n- **Medios:** Requiere inscripción previa para subir\n- **Usuarios:** Autenticación obligatoria\n\n## 📊 Métricas incluidas\n- Contador de medios enviados por usuario\n- Fecha de inscripción\n- Estado del concurso\n- Información de categorías disponibles",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Gestión de Inscripciones",
+      "item": [
+        {
+          "name": "Inscribirse a Concurso",
+          "event": [{
+            "listen": "prerequest",
+            "script": {
+              "exec": [
+                "// Verificar que tenemos un concursoId",
+                "if (!pm.environment.get('concursoId')) {",
+                "    console.log('⚠️ Necesitas ejecutar primero \"Concursos Activos\" para obtener un concursoId');",
+                "}"
+              ]
+            }
+          }, {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('Status code is 201', function () {",
+                "    pm.response.to.have.status(201);",
+                "});",
+                "",
+                "pm.test('Response has success true', function () {",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData.success).to.be.true;",
+                "});",
+                "",
+                "pm.test('Response contains inscription data', function () {",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData.data).to.have.property('id');",
+                "    pm.expect(jsonData.data).to.have.property('usuario_id');",
+                "    pm.expect(jsonData.data).to.have.property('concurso_id');",
+                "    pm.expect(jsonData.data).to.have.property('fecha_inscripcion');",
+                "});",
+                "",
+                "if (pm.response.code === 201) {",
+                "    const res = pm.response.json();",
+                "    console.log('✅ Inscripción exitosa');",
+                "    console.log('🆔 ID de inscripción:', res.data.id);",
+                "    console.log('📋 Concurso:', res.data.concurso_id);",
+                "    console.log('👤 Usuario:', res.data.usuario_id);",
+                "    console.log('📅 Fecha:', new Date(res.data.fecha_inscripcion).toLocaleString());",
+                "    ",
+                "    // Guardar ID de inscripción para otros tests",
+                "    pm.environment.set('inscripcionId', res.data.id);",
+                "} else if (pm.response.code === 400) {",
+                "    const res = pm.response.json();",
+                "    console.log('❌ Error de inscripción:', res.message);",
+                "    ",
+                "    // Tests para errores esperados",
+                "    pm.test('Error message is informative', function () {",
+                "        pm.expect(res.message).to.be.a('string');",
+                "        pm.expect(res.message.length).to.be.greaterThan(0);",
+                "    });",
+                "}"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"concurso_id\": {{concursoId}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/concursos/inscripcion",
+              "host": ["{{baseUrl}}"],
+              "path": ["concursos", "inscripcion"]
+            },
+            "description": "**Inscribirse a un concurso**\n\n🎯 **Propósito:** Registrar al usuario autenticado como participante en un concurso específico.\n\n⚠️ **Requisito obligatorio** para poder subir medios al concurso.\n\n## 📋 Validaciones automáticas\n- ✅ El concurso debe existir\n- ✅ El concurso debe estar en estado \"ACTIVO\"\n- ✅ El concurso debe estar dentro del período de inscripción\n- ✅ El usuario no debe estar inscrito previamente\n- ✅ El usuario debe tener rol PARTICIPANTE o superior\n- ✅ El usuario debe estar autenticado\n\n## 📤 Cuerpo de la petición\n```json\n{\n  \"concurso_id\": 6\n}\n```\n\n## 📥 Respuesta exitosa (201)\n```json\n{\n  \"success\": true,\n  \"message\": \"Inscripción realizada exitosamente\",\n  \"data\": {\n    \"id\": 15,\n    \"usuario_id\": \"cmhu5l1a50001tsuk064j1xms\",\n    \"concurso_id\": 6,\n    \"fecha_inscripcion\": \"2025-12-21T13:45:30.123Z\"\n  }\n}\n```\n\n## ❌ Errores comunes\n- **400** - Ya inscrito: \"El usuario ya está inscrito en este concurso\"\n- **400** - Concurso inactivo: \"El concurso no está activo\"\n- **400** - Fuera de período: \"Fuera del período de inscripción\"\n- **401** - Sin autenticación: \"Token de autenticación requerido\"\n- **404** - Concurso no existe: \"Concurso no encontrado\"\n\n## 🔄 Flujo típico\n1. Usuario ve lista de concursos activos\n2. Selecciona un concurso de interés\n3. Hace clic en \"Inscribirse\"\n4. Sistema valida y crea la inscripción\n5. Usuario puede proceder a subir medios"
+          }
+        },
+        {
+          "name": "Mis Inscripciones",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('Status code is 200', function () {",
+                "    pm.response.to.have.status(200);",
+                "});",
+                "",
+                "pm.test('Response has success true', function () {",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData.success).to.be.true;",
+                "});",
+                "",
+                "pm.test('Response contains data array', function () {",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData.data).to.be.an('array');",
+                "});",
+                "",
+                "if (pm.response.code === 200) {",
+                "    const res = pm.response.json();",
+                "    console.log('✅ Consulta exitosa');",
+                "    console.log('📊 Total de inscripciones:', res.data.length);",
+                "    ",
+                "    if (res.data.length > 0) {",
+                "        console.log('\\n📋 Mis inscripciones:');",
+                "        res.data.forEach((inscripcion, index) => {",
+                "            const concurso = inscripcion.concurso;",
+                "            console.log(`\\n${index + 1}. ${concurso.titulo}`);",
+                "            console.log(`   🆔 ID: ${concurso.id}`);",
+                "            console.log(`   📅 Inscrito: ${new Date(inscripcion.fecha_inscripcion).toLocaleDateString()}`);",
+                "            console.log(`   📊 Estado: ${concurso.status}`);",
+                "            console.log(`   📝 Categorías: ${concurso.categorias.length}`);",
+                "            ",
+                "            if (concurso._count && concurso._count.medios > 0) {",
+                "                console.log(`   📸 Medios enviados: ${concurso._count.medios}/${concurso.max_envios}`);",
+                "            } else {",
+                "                console.log(`   📸 Sin medios enviados (máx: ${concurso.max_envios})`);",
+                "            }",
+                "            ",
+                "            if (concurso.imagen_url) {",
+                "                console.log(`   🖼️ Poster: ${concurso.imagen_thumbnail}`);",
+                "            }",
+                "        });",
+                "        ",
+                "        // Guardar datos para otros tests",
+                "        pm.environment.set('concursoId', res.data[0].concurso.id);",
+                "        pm.environment.set('inscripcionId', res.data[0].id);",
+                "        ",
+                "        // Tests adicionales para datos",
+                "        pm.test('Each inscription has required fields', function () {",
+                "            res.data.forEach(inscripcion => {",
+                "                pm.expect(inscripcion).to.have.property('id');",
+                "                pm.expect(inscripcion).to.have.property('fecha_inscripcion');",
+                "                pm.expect(inscripcion).to.have.property('concurso');",
+                "                pm.expect(inscripcion.concurso).to.have.property('titulo');",
+                "                pm.expect(inscripcion.concurso).to.have.property('status');",
+                "            });",
+                "        });",
+                "    } else {",
+                "        console.log('ℹ️ No tienes inscripciones activas');",
+                "        console.log('💡 Tip: Inscríbete a un concurso primero usando \"Inscribirse a Concurso\"');",
+                "    }",
+                "}"
+              ]
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/concursos/mis-inscripciones",
+              "host": ["{{baseUrl}}"],
+              "path": ["concursos", "mis-inscripciones"]
+            },
+            "description": "**Consultar mis inscripciones**\n\n🎯 **Propósito:** Obtener todos los concursos en los que el usuario autenticado está inscrito.\n\n## 📊 Información incluida\n- ✅ **Datos de inscripción:** ID, fecha de inscripción\n- ✅ **Información del concurso:** Título, descripción, fechas, estado\n- ✅ **Categorías disponibles:** Lista completa de categorías\n- ✅ **Contador de medios:** Cuántos medios ha enviado el usuario\n- ✅ **Límites:** Máximo de envíos permitidos\n- ✅ **URLs de imagen:** Poster del concurso (si existe)\n\n## 📥 Respuesta exitosa (200)\n```json\n{\n  \"success\": true,\n  \"data\": [\n    {\n      \"id\": 3,\n      \"usuario_id\": \"cmhu5l1a50001tsuk064j1xms\",\n      \"concurso_id\": 6,\n      \"fecha_inscripcion\": \"2025-12-01T04:15:55.082Z\",\n      \"concurso\": {\n        \"id\": 6,\n        \"titulo\": \"Concurso de Fotografía Infantil 2026\",\n        \"descripcion\": \"Concurso creativo dirigido a niños...\",\n        \"fecha_inicio\": \"2025-12-01T00:00:00.000Z\",\n        \"fecha_final\": \"2026-03-31T23:59:59.000Z\",\n        \"status\": \"ACTIVO\",\n        \"max_envios\": 3,\n        \"tamano_max_mb\": 10,\n        \"imagen_url\": \"https://api.webfestival.art/api/v1/proxy/media/abc-123\",\n        \"imagen_thumbnail\": \"https://api.webfestival.art/api/v1/proxy/media/abc-123?size=400x225\",\n        \"imagen_preview\": \"https://api.webfestival.art/api/v1/proxy/media/abc-123?size=1280x720\",\n        \"categorias\": [\n          {\"id\": 9, \"nombre\": \"Juegos\", \"concurso_id\": 6},\n          {\"id\": 10, \"nombre\": \"Naturaleza\", \"concurso_id\": 6}\n        ],\n        \"_count\": {\n          \"medios\": 2\n        }\n      }\n    }\n  ]\n}\n```\n\n## 📱 Casos de uso\n- **Dashboard del participante:** Mostrar concursos activos\n- **Lista de \"Mis Concursos\":** Navegación rápida\n- **Seguimiento de participación:** Ver progreso de envíos\n- **Verificar límites:** Cuántos medios puedo enviar aún\n- **Acceso rápido:** Links directos para subir medios\n\n## 🔍 Datos útiles para el frontend\n- `concurso._count.medios`: Medios enviados por el usuario\n- `concurso.max_envios`: Límite máximo de envíos\n- `concurso.status`: Estado actual del concurso\n- `concurso.imagen_thumbnail`: URL del poster para mostrar\n- `categorias[]`: Lista de categorías para seleccionar al subir\n\n## 📊 Respuesta vacía\nSi el usuario no tiene inscripciones:\n```json\n{\n  \"success\": true,\n  \"data\": []\n}\n```"
+          }
+        },
+        {
+          "name": "Verificar Inscripción Específica",
+          "event": [{
+            "listen": "prerequest",
+            "script": {
+              "exec": [
+                "// Verificar que tenemos un concursoId",
+                "if (!pm.environment.get('concursoId')) {",
+                "    console.log('⚠️ Necesitas ejecutar primero \"Mis Inscripciones\" para obtener un concursoId');",
+                "}"
+              ]
+            }
+          }, {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('Status code is 200', function () {",
+                "    pm.response.to.have.status(200);",
+                "});",
+                "",
+                "pm.test('Response has success true', function () {",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData.success).to.be.true;",
+                "});",
+                "",
+                "pm.test('Response contains inscription status', function () {",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData.data).to.have.property('inscrito');",
+                "    pm.expect(jsonData.data.inscrito).to.be.a('boolean');",
+                "});",
+                "",
+                "if (pm.response.code === 200) {",
+                "    const res = pm.response.json();",
+                "    ",
+                "    if (res.data.inscrito) {",
+                "        console.log('✅ Usuario INSCRITO en el concurso');",
+                "        console.log('📅 Fecha de inscripción:', new Date(res.data.fecha_inscripcion).toLocaleString());",
+                "        ",
+                "        pm.test('Inscription date is provided when inscrito is true', function () {",
+                "            pm.expect(res.data).to.have.property('fecha_inscripcion');",
+                "            pm.expect(res.data.fecha_inscripcion).to.be.a('string');",
+                "        });",
+                "    } else {",
+                "        console.log('❌ Usuario NO inscrito en el concurso');",
+                "        console.log('💡 Tip: Usa \"Inscribirse a Concurso\" para inscribirte');",
+                "        ",
+                "        pm.test('No inscription date when inscrito is false', function () {",
+                "            pm.expect(res.data).to.not.have.property('fecha_inscripcion');",
+                "        });",
+                "    }",
+                "}"
+              ]
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/concursos/{{concursoId}}/verificar-inscripcion",
+              "host": ["{{baseUrl}}"],
+              "path": ["concursos", "{{concursoId}}", "verificar-inscripcion"]
+            },
+            "description": "**Verificar estado de inscripción**\n\n🎯 **Propósito:** Confirmar si el usuario autenticado está inscrito en un concurso específico.\n\n## 🔍 Casos de uso principales\n- **UI condicional:** Mostrar/ocultar botón \"Inscribirse\"\n- **Validación previa:** Antes de permitir subida de medios\n- **Dashboard:** Indicadores de estado de participación\n- **Navegación:** Redirigir según estado de inscripción\n- **Verificaciones de seguridad:** Validar permisos de acceso\n\n## 📥 Respuesta cuando ESTÁ inscrito (200)\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"inscrito\": true,\n    \"fecha_inscripcion\": \"2025-12-01T04:15:55.082Z\"\n  }\n}\n```\n\n## 📥 Respuesta cuando NO está inscrito (200)\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"inscrito\": false\n  }\n}\n```\n\n## ⚠️ Notas importantes\n- **Siempre retorna 200** si el concurso existe\n- **`inscrito: false` no es un error**, es información válida\n- **Útil para lógica condicional** en el frontend\n- **Rápido y eficiente** para verificaciones frecuentes\n\n## ❌ Errores posibles\n- **401** - Sin autenticación: \"Token requerido\"\n- **404** - Concurso no existe: \"Concurso no encontrado\"\n\n## 💡 Ejemplo de uso en frontend\n```javascript\nconst verificarInscripcion = async (concursoId) => {\n  const response = await fetch(`/api/v1/concursos/${concursoId}/verificar-inscripcion`);\n  const data = await response.json();\n  \n  if (data.data.inscrito) {\n    // Mostrar botón \"Subir Medio\"\n    showUploadButton();\n  } else {\n    // Mostrar botón \"Inscribirse\"\n    showInscribeButton();\n  }\n};\n```"
+          }
+        },
+        {
+          "name": "Cancelar Inscripción",
+          "event": [{
+            "listen": "prerequest",
+            "script": {
+              "exec": [
+                "// Verificar que tenemos un concursoId",
+                "if (!pm.environment.get('concursoId')) {",
+                "    console.log('⚠️ Necesitas ejecutar primero \"Mis Inscripciones\" para obtener un concursoId');",
+                "}"
+              ]
+            }
+          }, {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "if (pm.response.code === 200) {",
+                "    pm.test('Status code is 200', function () {",
+                "        pm.response.to.have.status(200);",
+                "    });",
+                "    ",
+                "    pm.test('Response has success true', function () {",
+                "        const jsonData = pm.response.json();",
+                "        pm.expect(jsonData.success).to.be.true;",
+                "    });",
+                "    ",
+                "    const res = pm.response.json();",
+                "    console.log('✅ Inscripción cancelada exitosamente');",
+                "    console.log('📋 Mensaje:', res.message);",
+                "    ",
+                "} else if (pm.response.code === 404) {",
+                "    pm.test('Status code is 404 for non-existent inscription', function () {",
+                "        pm.response.to.have.status(404);",
+                "    });",
+                "    ",
+                "    console.log('ℹ️ No estabas inscrito en este concurso');",
+                "    console.log('💡 Esto es normal si ya cancelaste o nunca te inscribiste');",
+                "}"
+              ]
+            }
+          }],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/concursos/inscripcion/{{concursoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["concursos", "inscripcion", "{{concursoId}}"]
+            },
+            "description": "**Cancelar inscripción**\n\n🎯 **Propósito:** Eliminar la inscripción del usuario autenticado de un concurso específico.\n\n## ⚠️ Consideraciones importantes\n\n### 📸 **Medios enviados**\n- **NO se eliminan** los medios ya enviados al concurso\n- Los medios **permanecen para evaluación** por el jurado\n- Los medios siguen siendo **visibles en la galería** del concurso\n\n### 🚫 **Restricciones después de cancelar**\n- **No se pueden enviar** nuevos medios\n- **No se pueden editar** medios existentes\n- **No se reciben notificaciones** del concurso\n\n### 🔄 **Para volver a participar**\n- Debes **inscribirte nuevamente** usando el endpoint de inscripción\n- Podrás enviar medios hasta el límite permitido\n- Se mantendrá el historial de medios anteriores\n\n## 📥 Respuesta exitosa (200)\n```json\n{\n  \"success\": true,\n  \"message\": \"Inscripción cancelada exitosamente\"\n}\n```\n\n## ❌ Errores posibles\n- **404** - No inscrito: \"No estás inscrito en este concurso\"\n- **404** - Concurso no existe: \"Concurso no encontrado\"\n- **401** - Sin autenticación: \"Token de autenticación inválido\"\n\n## 📱 Casos de uso\n- **Cambio de planes:** Usuario decide no participar más\n- **Limpieza:** Eliminar inscripciones no utilizadas\n- **Gestión de participación:** Control de concursos activos\n- **Privacidad:** Dejar de recibir notificaciones\n\n## 🔄 Flujo típico\n1. Usuario ve sus inscripciones activas\n2. Decide cancelar participación en un concurso\n3. Confirma la cancelación (recomendado mostrar advertencia)\n4. Sistema elimina la inscripción\n5. Usuario ya no puede enviar nuevos medios\n6. Medios anteriores permanecen en el concurso\n\n## 💡 Recomendación de UX\nMostrar una confirmación antes de cancelar:\n```\n¿Estás seguro de cancelar tu inscripción?\n\n⚠️ Importante:\n• No podrás enviar más medios a este concurso\n• Tus medios actuales permanecerán en evaluación\n• Para volver a participar deberás inscribirte nuevamente\n\n[Cancelar] [Confirmar cancelación]\n```"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Estadísticas y Consultas",
+      "item": [
+        {
+          "name": "Resumen de Participación",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "if (pm.response.code === 200) {",
+                "    const res = pm.response.json();",
+                "    ",
+                "    console.log('📊 RESUMEN DE PARTICIPACIÓN');",
+                "    console.log('================================');",
+                "    console.log('📝 Total inscripciones:', res.data.length);",
+                "    ",
+                "    let totalMedias = 0;",
+                "    let concursosActivos = 0;",
+                "    let concursosFinalizados = 0;",
+                "    ",
+                "    res.data.forEach(inscripcion => {",
+                "        const concurso = inscripcion.concurso;",
+                "        const medias = concurso._count ? concurso._count.medios : 0;",
+                "        totalMedias += medias;",
+                "        ",
+                "        if (concurso.status === 'ACTIVO') {",
+                "            concursosActivos++;",
+                "        } else if (concurso.status === 'FINALIZADO') {",
+                "            concursosFinalizados++;",
+                "        }",
+                "    });",
+                "    ",
+                "    console.log('🏆 Concursos activos:', concursosActivos);",
+                "    console.log('🏁 Concursos finalizados:', concursosFinalizados);",
+                "    console.log('📸 Total medios enviados:', totalMedias);",
+                "    ",
+                "    if (res.data.length > 0) {",
+                "        console.log('\\n📋 DETALLE POR CONCURSO:');",
+                "        res.data.forEach((inscripcion, index) => {",
+                "            const concurso = inscripcion.concurso;",
+                "            const medias = concurso._count ? concurso._count.medios : 0;",
+                "            const progreso = Math.round((medias / concurso.max_envios) * 100);",
+                "            ",
+                "            console.log(`\\n${index + 1}. ${concurso.titulo}`);",
+                "            console.log(`   📊 Estado: ${concurso.status}`);",
+                "            console.log(`   📸 Progreso: ${medias}/${concurso.max_envios} (${progreso}%)`);",
+                "            console.log(`   📅 Inscrito: ${new Date(inscripcion.fecha_inscripcion).toLocaleDateString()}`);",
+                "        });",
+                "    }",
+                "}"
+              ]
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/concursos/mis-inscripciones",
+              "host": ["{{baseUrl}}"],
+              "path": ["concursos", "mis-inscripciones"]
+            },
+            "description": "**Resumen estadístico de participación**\n\n🎯 **Propósito:** Generar un resumen completo de la participación del usuario con métricas útiles.\n\n## 📊 Métricas calculadas\n- **Total de inscripciones:** Número de concursos en los que participa\n- **Concursos activos:** Cuántos están aún en curso\n- **Concursos finalizados:** Cuántos ya terminaron\n- **Total de medios enviados:** Suma de todos los envíos\n- **Progreso por concurso:** Porcentaje de uso del límite de envíos\n\n## 📱 Casos de uso\n- **Dashboard principal:** Mostrar estadísticas generales\n- **Perfil de usuario:** Resumen de actividad\n- **Gamificación:** Mostrar logros y progreso\n- **Análisis de participación:** Identificar patrones de uso\n\n## 💡 Datos útiles para el frontend\nEste endpoint es el mismo que \"Mis Inscripciones\" pero con un script de test que calcula estadísticas útiles:\n\n```javascript\n// Ejemplo de cálculo de métricas\nconst calcularEstadisticas = (inscripciones) => {\n  return {\n    total: inscripciones.length,\n    activos: inscripciones.filter(i => i.concurso.status === 'ACTIVO').length,\n    finalizados: inscripciones.filter(i => i.concurso.status === 'FINALIZADO').length,\n    totalMedias: inscripciones.reduce((sum, i) => sum + (i.concurso._count?.medios || 0), 0),\n    promedioMedias: inscripciones.length > 0 ? \n      inscripciones.reduce((sum, i) => sum + (i.concurso._count?.medios || 0), 0) / inscripciones.length : 0\n  };\n};\n```"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Casos de Prueba",
+      "item": [
+        {
+          "name": "Test: Inscripción Duplicada",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('Should return 400 for duplicate inscription', function () {",
+                "    pm.response.to.have.status(400);",
+                "});",
+                "",
+                "pm.test('Error message should mention duplicate inscription', function () {",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData.message.toLowerCase()).to.include('inscrito');",
+                "});",
+                "",
+                "if (pm.response.code === 400) {",
+                "    const res = pm.response.json();",
+                "    console.log('✅ Test exitoso: Inscripción duplicada rechazada');",
+                "    console.log('📋 Mensaje de error:', res.message);",
+                "} else if (pm.response.code === 201) {",
+                "    console.log('⚠️ Inscripción exitosa - puede que no estuvieras inscrito previamente');",
+                "}"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"concurso_id\": {{concursoId}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/concursos/inscripcion",
+              "host": ["{{baseUrl}}"],
+              "path": ["concursos", "inscripcion"]
+            },
+            "description": "**Test: Validación de inscripción duplicada**\n\n🧪 **Propósito:** Verificar que el sistema rechaza inscripciones duplicadas correctamente.\n\n## 🎯 Comportamiento esperado\n- **Primera inscripción:** `201 Created` - Inscripción exitosa\n- **Segunda inscripción:** `400 Bad Request` - Error de duplicado\n\n## ✅ Validaciones del test\n1. Status code debe ser `400`\n2. Mensaje de error debe mencionar \"inscrito\"\n3. Response debe tener `success: false`\n\n## 📋 Instrucciones de uso\n1. Ejecuta primero \"Inscribirse a Concurso\" (debe ser exitoso)\n2. Ejecuta este test inmediatamente después\n3. Debe fallar con error de inscripción duplicada\n\n## 💡 Casos de prueba adicionales\n- Inscripción a concurso inexistente\n- Inscripción a concurso inactivo\n- Inscripción sin autenticación\n- Inscripción con token expirado"
+          }
+        },
+        {
+          "name": "Test: Verificar Después de Cancelar",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('Status code is 200', function () {",
+                "    pm.response.to.have.status(200);",
+                "});",
+                "",
+                "pm.test('Should show inscrito as false after cancellation', function () {",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData.data.inscrito).to.be.false;",
+                "});",
+                "",
+                "pm.test('Should not have fecha_inscripcion when not inscrito', function () {",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData.data).to.not.have.property('fecha_inscripcion');",
+                "});",
+                "",
+                "if (pm.response.code === 200) {",
+                "    const res = pm.response.json();",
+                "    if (!res.data.inscrito) {",
+                "        console.log('✅ Test exitoso: Verificación después de cancelar');",
+                "        console.log('📋 Estado: NO inscrito (correcto)');",
+                "    } else {",
+                "        console.log('❌ Test fallido: Aún aparece como inscrito');",
+                "    }",
+                "}"
+              ]
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/concursos/{{concursoId}}/verificar-inscripcion",
+              "host": ["{{baseUrl}}"],
+              "path": ["concursos", "{{concursoId}}", "verificar-inscripcion"]
+            },
+            "description": "**Test: Verificación después de cancelar inscripción**\n\n🧪 **Propósito:** Confirmar que la cancelación de inscripción se refleja correctamente en las verificaciones.\n\n## 🎯 Comportamiento esperado\nDespués de cancelar una inscripción:\n- `inscrito` debe ser `false`\n- No debe incluir `fecha_inscripcion`\n- Status code debe ser `200` (no es un error)\n\n## ✅ Validaciones del test\n1. Status code es `200`\n2. `data.inscrito` es `false`\n3. No existe propiedad `fecha_inscripcion`\n\n## 📋 Secuencia de prueba\n1. Inscribirse a un concurso\n2. Verificar inscripción (debe ser `true`)\n3. Cancelar inscripción\n4. Ejecutar este test (debe ser `false`)\n\n## 🔄 Flujo completo de prueba\n```\nInscribirse → Verificar (true) → Cancelar → Verificar (false) → Reinscribirse → Verificar (true)\n```"
+          }
+        }
+      ]
+    }
+  ]
+}

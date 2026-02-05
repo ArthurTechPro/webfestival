@@ -11,7 +11,7 @@ out/
 build/
 dist/
 
-# Proyectos webfestival.
+# Proyectos webfestival (cada uno tiene su propio repositorio Git)
 webfestival-api/
 webfestival-app/
 

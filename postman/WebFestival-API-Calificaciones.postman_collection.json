@@ -1,10 +1,152 @@
 {
   "info": {
     "name": "WebFestival-API - Calificaciones",
-    "description": "# ⭐ Sistema de Calificaciones\n\nSistema de evaluación de medios por jurados.\n\n## Roles\n- **JURADO:** Calificar medios asignados\n- **ADMIN:** Ver todas las calificaciones y resultados\n\n## Funcionalidades\n- Calificación por criterios\n- Asignaciones de medios\n- Progreso de evaluación\n- Resultados finales y rankings",
+    "description": "# ⭐ Sistema de Calificaciones y Asignaciones\n\nSistema de evaluación de medios por jurados y gestión de asignaciones.\n\n## Roles\n- **JURADO:** Calificar medios asignados, ver sus asignaciones\n- **ADMIN:** Ver todas las calificaciones, resultados y gestionar asignaciones\n\n## Funcionalidades\n- Calificación por criterios\n- Asignaciones de jurados a categorías\n- Progreso de evaluación\n- Resultados finales y rankings\n- Asignación automática inteligente",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
+    {
+      "name": "Asignaciones de Jurado",
+      "item": [
+        {
+          "name": "Mis Asignaciones (Jurado)",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {
+              "raw": "{{baseUrl}}/jurado-asignaciones/jurado/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["jurado-asignaciones", "jurado", "me"]
+            },
+            "description": "**Obtener mis asignaciones (Jurado autenticado)**\n\nRetorna los concursos y categorías asignados al jurado autenticado.\n\n**Respuesta incluye:**\n- Concursos asignados\n- Categorías por concurso\n- Información del concurso\n- Tipo de medio de cada categoría"
+          }
+        },
+        {
+          "name": "Asignaciones de un Jurado (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {
+              "raw": "{{baseUrl}}/jurado-asignaciones/jurado/{{usuarioId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["jurado-asignaciones", "jurado", "{{usuarioId}}"]
+            },
+            "description": "**Obtener asignaciones de un jurado específico (Admin)**\n\nRetorna todas las asignaciones de un jurado por su ID."
+          }
+        },
+        {
+          "name": "Jurados de una Categoría",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {
+              "raw": "{{baseUrl}}/jurado-asignaciones/categoria/{{categoriaId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["jurado-asignaciones", "categoria", "{{categoriaId}}"]
+            },
+            "description": "**Obtener jurados asignados a una categoría**\n\nRetorna la lista de jurados asignados a una categoría específica."
+          }
+        },
+        {
+          "name": "Jurados de un Concurso",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {
+              "raw": "{{baseUrl}}/jurado-asignaciones/concurso/{{concursoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["jurado-asignaciones", "concurso", "{{concursoId}}"]
+            },
+            "description": "**Obtener jurados asignados a un concurso**\n\nRetorna todos los jurados asignados a las categorías de un concurso."
+          }
+        },
+        {
+          "name": "Crear Asignación (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario_id\": \"{{usuarioId}}\",\n  \"categoria_id\": {{categoriaId}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/jurado-asignaciones",
+              "host": ["{{baseUrl}}"],
+              "path": ["jurado-asignaciones"]
+            },
+            "description": "**Crear asignación de jurado a categoría (Admin)**\n\nAsigna un jurado a una categoría específica.\n\n**Validaciones:**\n- Usuario debe tener rol JURADO\n- Categoría debe existir\n- No puede estar ya asignado"
+          }
+        },
+        {
+          "name": "Eliminar Asignación (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {
+              "raw": "{{baseUrl}}/jurado-asignaciones/{{usuarioId}}/{{categoriaId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["jurado-asignaciones", "{{usuarioId}}", "{{categoriaId}}"]
+            },
+            "description": "**Eliminar asignación (Admin)**\n\nElimina la asignación de un jurado a una categoría."
+          }
+        },
+        {
+          "name": "Sugerencias Inteligentes (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {
+              "raw": "{{baseUrl}}/jurado-asignaciones/sugerencias/{{concursoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["jurado-asignaciones", "sugerencias", "{{concursoId}}"]
+            },
+            "description": "**Obtener sugerencias inteligentes de asignación (Admin)**\n\nRetorna sugerencias de jurados para cada categoría basado en:\n- Especialización del jurado\n- Experiencia\n- Carga de trabajo actual"
+          }
+        },
+        {
+          "name": "Asignar Automáticamente (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {
+              "raw": "{{baseUrl}}/jurado-asignaciones/asignar-automaticamente/{{concursoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["jurado-asignaciones", "asignar-automaticamente", "{{concursoId}}"]
+            },
+            "description": "**Asignar jurados automáticamente (Admin)**\n\nAsigna jurados a todas las categorías del concurso basado en especialización.\n\n**Retorna:**\n- Número de asignaciones creadas\n- Categorías sin cobertura\n- Detalles de asignaciones"
+          }
+        },
+        {
+          "name": "Validar Cobertura (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {
+              "raw": "{{baseUrl}}/jurado-asignaciones/cobertura/{{concursoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["jurado-asignaciones", "cobertura", "{{concursoId}}"]
+            },
+            "description": "**Validar cobertura de jurados (Admin)**\n\nVerifica que todas las categorías tengan jurados asignados.\n\n**Retorna:**\n- Cobertura completa (true/false)\n- Categorías sin cobertura\n- Estadísticas por categoría"
+          }
+        },
+        {
+          "name": "Estadísticas de Asignaciones",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {
+              "raw": "{{baseUrl}}/jurado-asignaciones/estadisticas",
+              "host": ["{{baseUrl}}"],
+              "path": ["jurado-asignaciones", "estadisticas"]
+            },
+            "description": "**Estadísticas generales de asignaciones**\n\nRetorna métricas del sistema de asignaciones:\n- Total de asignaciones\n- Jurados activos\n- Distribución por especialización\n- Carga promedio"
+          }
+        }
+      ]
+    },
     {
       "name": "Jurado",
       "item": [

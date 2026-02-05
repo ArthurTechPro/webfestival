@@ -18,6 +18,10 @@
                 "    const res = pm.response.json();",
                 "    if (res.data && res.data.length > 0) {",
                 "        pm.environment.set('concursoId', res.data[0].id);",
+                "        console.log('✅ Concursos activos obtenidos:', res.data.length);",
+                "        if (res.data[0].imagen_url) {",
+                "            console.log('📸 Imagen del concurso:', res.data[0].imagen_url);",
+                "        }",
                 "    }",
                 "}"
               ]
@@ -27,7 +31,7 @@
             "method": "GET",
             "header": [],
             "url": {"raw": "{{baseUrl}}/concursos/activos", "host": ["{{baseUrl}}"], "path": ["concursos", "activos"]},
-            "description": "**Obtener concursos activos**\n\nRetorna concursos disponibles para inscripción.\n\n**Filtros automáticos:**\n- Estado: Activo\n- Dentro del período de inscripción"
+            "description": "**Obtener concursos activos**\n\nRetorna concursos disponibles para inscripción.\n\n**Filtros automáticos:**\n- Estado: Activo\n- Dentro del período de inscripción\n\n**URLs de imágenes incluidas:**\nSi el concurso tiene una imagen/poster, la respuesta incluye:\n- `imagen_asset_id` - ID del asset en Immich\n- `imagen_url` - URL original del poster\n- `imagen_thumbnail` - URL del thumbnail (400x225)\n- `imagen_preview` - URL del preview (1280x720)\n\n**Ejemplo de respuesta:**\n```json\n{\n  \"success\": true,\n  \"data\": [{\n    \"id\": 1,\n    \"titulo\": \"Concurso 2025\",\n    \"imagen_asset_id\": \"abc-123\",\n    \"imagen_url\": \"https://api.webfestival.art/api/v1/proxy/media/abc-123\",\n    \"imagen_thumbnail\": \"https://api.webfestival.art/api/v1/proxy/media/abc-123?size=400x225\",\n    \"imagen_preview\": \"https://api.webfestival.art/api/v1/proxy/media/abc-123?size=1280x720\"\n  }]\n}\n```"
           }
         },
         {
@@ -49,6 +53,11 @@
                 "    const res = pm.response.json();",
                 "    if (res.data && res.data.categorias && res.data.categorias.length > 0) {",
                 "        pm.environment.set('categoriaId', res.data.categorias[0].id);",
+                "        console.log('✅ Detalles del concurso obtenidos');",
+                "        console.log('📋 Categorías:', res.data.categorias.length);",
+                "        if (res.data.imagen_url) {",
+                "            console.log('📸 Imagen del concurso:', res.data.imagen_url);",
+                "        }",
                 "    }",
                 "}"
               ]
@@ -58,7 +67,7 @@
             "method": "GET",
             "header": [],
             "url": {"raw": "{{baseUrl}}/concursos/{{concursoId}}", "host": ["{{baseUrl}}"], "path": ["concursos", "{{concursoId}}"]},
-            "description": "**Obtener detalles del concurso**\n\nIncluye:\n- Información completa\n- Categorías disponibles\n- Reglas y límites"
+            "description": "**Obtener detalles del concurso**\n\nIncluye:\n- Información completa del concurso\n- Categorías disponibles\n- Inscripciones y participantes\n- Medios enviados con URLs completas\n- URLs de imagen/poster (si existe)\n\n**URLs de imágenes incluidas:**\nSi el concurso tiene una imagen/poster, la respuesta incluye:\n- `imagen_asset_id` - ID del asset en Immich\n- `imagen_url` - URL original del poster (proxy sin autenticación)\n- `imagen_thumbnail` - URL del thumbnail (400x225)\n- `imagen_preview` - URL del preview (1280x720)\n\n**URLs de medios incluidas:**\nCada medio en el array `medios` incluye:\n- `imagen_url` - URL original del medio\n- `imagen_thumbnail` - URL del thumbnail (400x225)\n- `imagen_preview` - URL del preview (1280x720)\n\n**Nota:** Las URLs se construyen dinámicamente desde `immich_asset_id` y apuntan al proxy público `/api/v1/proxy/media/:assetId`\n\n**Ejemplo de respuesta:**\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"id\": 1,\n    \"titulo\": \"Concurso de Fotografía 2025\",\n    \"descripcion\": \"...\",\n    \"imagen_asset_id\": \"abc-123\",\n    \"imagen_url\": \"https://api.webfestival.art/api/v1/proxy/media/abc-123\",\n    \"imagen_thumbnail\": \"https://api.webfestival.art/api/v1/proxy/media/abc-123?size=400x225\",\n    \"imagen_preview\": \"https://api.webfestival.art/api/v1/proxy/media/abc-123?size=1280x720\",\n    \"categorias\": [...],\n    \"medios\": [{\n      \"id\": 12,\n      \"titulo\": \"Mi Fotografía\",\n      \"immich_asset_id\": \"def-456\",\n      \"imagen_url\": \"https://api.webfestival.art/api/v1/proxy/media/def-456\",\n      \"imagen_thumbnail\": \"https://api.webfestival.art/api/v1/proxy/media/def-456?size=400x225\",\n      \"imagen_preview\": \"https://api.webfestival.art/api/v1/proxy/media/def-456?size=1280x720\",\n      \"usuario\": {...},\n      \"categoria\": {...}\n    }]\n  }\n}\n```"
           }
         }
       ]
@@ -68,42 +77,177 @@
       "item": [
         {
           "name": "Inscribirse",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "if (pm.response.code === 201) {",
+                "    const res = pm.response.json();",
+                "    console.log('✅ Inscripción exitosa');",
+                "    console.log('📋 Concurso:', res.data.concurso_id);",
+                "    console.log('👤 Usuario:', res.data.usuario_id);",
+                "    console.log('📅 Fecha:', new Date(res.data.fecha_inscripcion).toLocaleString());",
+                "} else if (pm.response.code === 400) {",
+                "    const res = pm.response.json();",
+                "    console.log('❌ Error de inscripción:', res.message);",
+                "}"
+              ]
+            }
+          }],
           "request": {
             "method": "POST",
             "header": [
               {"key": "Content-Type", "value": "application/json"},
               {"key": "Authorization", "value": "Bearer {{accessToken}}"}
             ],
-            "body": {"mode": "raw", "raw": "{\n  \"concursoId\": {{concursoId}}\n}"},
+            "body": {"mode": "raw", "raw": "{\n  \"concurso_id\": {{concursoId}}\n}"},
             "url": {"raw": "{{baseUrl}}/concursos/inscripcion", "host": ["{{baseUrl}}"], "path": ["concursos", "inscripcion"]},
-            "description": "**Inscribirse a un concurso**\n\n⚠️ Requisito para subir medios.\n\n**Validaciones:**\n- Concurso activo\n- No inscrito previamente"
+            "description": "**Inscribirse a un concurso**\n\n⚠️ **Requisito obligatorio** para poder subir medios al concurso.\n\n**Validaciones automáticas:**\n- El concurso debe estar activo\n- El usuario no debe estar inscrito previamente\n- El concurso debe estar dentro del período de inscripción\n- El usuario debe tener permisos de PARTICIPANTE\n\n**Ejemplo de respuesta exitosa:**\n```json\n{\n  \"success\": true,\n  \"message\": \"Inscripción realizada exitosamente\",\n  \"data\": {\n    \"id\": 15,\n    \"usuario_id\": \"user123\",\n    \"concurso_id\": 6,\n    \"fecha_inscripcion\": \"2025-12-21T13:45:30.123Z\"\n  }\n}\n```\n\n**Errores comunes:**\n- `400` - Ya inscrito en el concurso\n- `400` - Concurso no activo o fuera de período\n- `401` - Token de autenticación inválido\n- `404` - Concurso no encontrado"
           }
         },
         {
           "name": "Cancelar Inscripción",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "if (pm.response.code === 200) {",
+                "    const res = pm.response.json();",
+                "    console.log('✅ Inscripción cancelada exitosamente');",
+                "    console.log('📋 Mensaje:', res.message);",
+                "} else if (pm.response.code === 404) {",
+                "    console.log('ℹ️ No estabas inscrito en este concurso');",
+                "}"
+              ]
+            }
+          }],
           "request": {
             "method": "DELETE",
             "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
             "url": {"raw": "{{baseUrl}}/concursos/inscripcion/{{concursoId}}", "host": ["{{baseUrl}}"], "path": ["concursos", "inscripcion", "{{concursoId}}"]},
-            "description": "**Cancelar inscripción**\n\nElimina la inscripción al concurso."
+            "description": "**Cancelar inscripción**\n\nElimina la inscripción del usuario autenticado al concurso especificado.\n\n**⚠️ Importante:**\n- Al cancelar la inscripción, **NO se eliminan** los medios ya enviados\n- Los medios permanecen en el concurso para evaluación\n- No se podrán enviar nuevos medios después de cancelar\n- Para volver a participar, deberás inscribirte nuevamente\n\n**Ejemplo de respuesta exitosa:**\n```json\n{\n  \"success\": true,\n  \"message\": \"Inscripción cancelada exitosamente\"\n}\n```\n\n**Casos de error:**\n- `404` - No estás inscrito en este concurso\n- `404` - Concurso no encontrado\n- `401` - Token de autenticación inválido\n\n**Casos de uso:**\n- Usuario decide no participar más\n- Cambio de planes del participante\n- Limpieza de inscripciones no utilizadas"
           }
         },
         {
           "name": "Mis Inscripciones",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "if (pm.response.code === 200) {",
+                "    const res = pm.response.json();",
+                "    if (res.data && res.data.length > 0) {",
+                "        console.log('✅ Inscripciones obtenidas:', res.data.length);",
+                "        res.data.forEach((inscripcion, index) => {",
+                "            console.log(`📋 ${index + 1}. ${inscripcion.concurso.titulo}`);",
+                "            console.log(`   📅 Inscrito: ${new Date(inscripcion.fecha_inscripcion).toLocaleDateString()}`);",
+                "            if (inscripcion.concurso._count && inscripcion.concurso._count.medios > 0) {",
+                "                console.log(`   📸 Medios enviados: ${inscripcion.concurso._count.medios}`);",
+                "            }",
+                "        });",
+                "        // Guardar el primer concurso para otros tests",
+                "        if (res.data[0] && res.data[0].concurso) {",
+                "            pm.environment.set('concursoId', res.data[0].concurso.id);",
+                "        }",
+                "    } else {",
+                "        console.log('ℹ️ No tienes inscripciones activas');",
+                "    }",
+                "}"
+              ]
+            }
+          }],
           "request": {
             "method": "GET",
             "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
             "url": {"raw": "{{baseUrl}}/concursos/mis-inscripciones", "host": ["{{baseUrl}}"], "path": ["concursos", "mis-inscripciones"]},
-            "description": "**Ver mis inscripciones**\n\nLista de concursos donde estoy inscrito."
+            "description": "**Ver mis inscripciones**\n\nRetorna todos los concursos en los que el usuario autenticado está inscrito.\n\n**Incluye:**\n- Información completa del concurso\n- Categorías disponibles\n- Fecha de inscripción\n- Contador de medios enviados por el usuario\n- URLs de imagen/poster (si existe)\n\n**Ejemplo de respuesta:**\n```json\n{\n  \"success\": true,\n  \"data\": [\n    {\n      \"id\": 3,\n      \"usuario_id\": \"user123\",\n      \"concurso_id\": 6,\n      \"fecha_inscripcion\": \"2025-12-01T04:15:55.082Z\",\n      \"concurso\": {\n        \"id\": 6,\n        \"titulo\": \"Concurso de Fotografía Infantil 2026\",\n        \"descripcion\": \"Concurso creativo dirigido a niños...\",\n        \"fecha_inicio\": \"2025-12-01T00:00:00.000Z\",\n        \"fecha_final\": \"2026-03-31T23:59:59.000Z\",\n        \"status\": \"ACTIVO\",\n        \"max_envios\": 3,\n        \"tamano_max_mb\": 10,\n        \"imagen_url\": \"https://api.webfestival.art/api/v1/proxy/media/abc-123\",\n        \"imagen_thumbnail\": \"https://api.webfestival.art/api/v1/proxy/media/abc-123?size=400x225\",\n        \"categorias\": [\n          {\"id\": 9, \"nombre\": \"Juegos\"},\n          {\"id\": 10, \"nombre\": \"Naturaleza\"}\n        ],\n        \"_count\": {\n          \"medios\": 2\n        }\n      }\n    }\n  ]\n}\n```\n\n**Casos de uso:**\n- Dashboard del participante\n- Lista de concursos donde puedo subir medios\n- Seguimiento de mi participación\n- Verificar límites de envíos por concurso"
           }
         },
         {
           "name": "Verificar Inscripción",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "if (pm.response.code === 200) {",
+                "    const res = pm.response.json();",
+                "    if (res.data.inscrito) {",
+                "        console.log('✅ Usuario INSCRITO en el concurso');",
+                "        console.log('📅 Fecha de inscripción:', new Date(res.data.fecha_inscripcion).toLocaleString());",
+                "    } else {",
+                "        console.log('❌ Usuario NO inscrito en el concurso');",
+                "    }",
+                "}"
+              ]
+            }
+          }],
           "request": {
             "method": "GET",
             "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
             "url": {"raw": "{{baseUrl}}/concursos/{{concursoId}}/verificar-inscripcion", "host": ["{{baseUrl}}"], "path": ["concursos", "{{concursoId}}", "verificar-inscripcion"]},
-            "description": "**Verificar estado de inscripción**\n\nConfirma si estás inscrito al concurso."
+            "description": "**Verificar estado de inscripción**\n\nConfirma si el usuario autenticado está inscrito en un concurso específico.\n\n**Casos de uso:**\n- Mostrar/ocultar botón de \"Inscribirse\"\n- Validar antes de permitir subida de medios\n- Dashboard de participante\n- Verificaciones de UI\n\n**Ejemplo de respuesta (inscrito):**\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"inscrito\": true,\n    \"fecha_inscripcion\": \"2025-12-01T04:15:55.082Z\"\n  }\n}\n```\n\n**Ejemplo de respuesta (no inscrito):**\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"inscrito\": false\n  }\n}\n```\n\n**Notas:**\n- Siempre retorna `200` si el concurso existe\n- `inscrito: false` no es un error, es información válida\n- Útil para lógica condicional en el frontend"
+          }
+        },
+        {
+          "name": "Mis Medios en Concurso",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "if (pm.response.code === 200) {",
+                "    const res = pm.response.json();",
+                "    if (res.data) {",
+                "        console.log('✅ Medios del usuario obtenidos exitosamente');",
+                "        console.log('🏆 Concurso:', res.data.concurso.titulo);",
+                "        console.log('📊 Estadísticas:');",
+                "        console.log('   📸 Total enviados:', res.data.estadisticas.total_enviados);",
+                "        console.log('   📝 Límite de envíos:', res.data.estadisticas.limite_envios);",
+                "        console.log('   ⏳ Restantes:', res.data.estadisticas.restantes);",
+                "        console.log('   🔍 En evaluación:', res.data.estadisticas.en_evaluacion);",
+                "        console.log('   ✅ Evaluados:', res.data.estadisticas.evaluados);",
+                "        ",
+                "        if (res.data.medios && res.data.medios.length > 0) {",
+                "            console.log('📋 Medios encontrados:', res.data.medios.length);",
+                "            res.data.medios.forEach((medio, index) => {",
+                "                console.log(`   ${index + 1}. ${medio.titulo} (${medio.tipo_medio})`);",
+                "                console.log(`      Estado: ${medio.estado_evaluacion}`);",
+                "                if (medio.categoria) {",
+                "                    console.log(`      Categoría: ${medio.categoria.nombre}`);",
+                "                }",
+                "                if (medio.imagen_url) {",
+                "                    console.log(`      URL: ${medio.imagen_url}`);",
+                "                }",
+                "            });",
+                "        } else {",
+                "            console.log('ℹ️ No has enviado medios a este concurso aún');",
+                "        }",
+                "        ",
+                "        console.log('📄 Paginación:');",
+                "        console.log('   Página:', res.data.pagination.page);",
+                "        console.log('   Total páginas:', res.data.pagination.totalPages);",
+                "        console.log('   Total elementos:', res.data.pagination.total);",
+                "    }",
+                "} else if (pm.response.code === 403) {",
+                "    console.log('❌ No estás inscrito en este concurso');",
+                "} else if (pm.response.code === 404) {",
+                "    console.log('❌ Concurso no encontrado');",
+                "}"
+              ]
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {
+              "raw": "{{baseUrl}}/concursos/{{concursoId}}/mis-medios?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["concursos", "{{concursoId}}", "mis-medios"],
+              "query": [
+                {"key": "page", "value": "1", "description": "Número de página (default: 1)"},
+                {"key": "limit", "value": "10", "description": "Elementos por página (default: 10, máx: 100)"}
+              ]
+            },
+            "description": "**Obtener mis medios en un concurso específico**\n\nRetorna todos los medios que el usuario autenticado ha enviado a un concurso específico.\n\n**⚠️ Requisitos:**\n- Usuario debe estar autenticado\n- Usuario debe estar inscrito en el concurso\n- Token JWT válido\n\n**Características:**\n- **Paginación**: Soporte para `page` y `limit`\n- **URLs de imagen**: Generación automática desde Immich\n- **Estadísticas completas**: Envíos, límites, estados\n- **Información del concurso**: Título, estado, fechas\n- **Detalles de medios**: Título, tipo, categoría, estado de evaluación\n\n**Parámetros de consulta:**\n- `page` (opcional): Número de página (default: 1)\n- `limit` (opcional): Elementos por página (default: 10, máximo: 100)\n\n**Ejemplo de respuesta exitosa:**\n```json\n{\n  \"success\": true,\n  \"message\": \"Medios del usuario obtenidos exitosamente\",\n  \"data\": {\n    \"concurso\": {\n      \"id\": 5,\n      \"titulo\": \"Concurso de Fotografía 2026\",\n      \"status\": \"ACTIVO\",\n      \"max_envios\": 3,\n      \"fecha_final\": \"2026-03-31T23:59:59.000Z\"\n    },\n    \"medios\": [\n      {\n        \"id\": 12,\n        \"titulo\": \"Mi Fotografía de Paisaje\",\n        \"tipo_medio\": \"fotografia\",\n        \"fecha_subida\": \"2026-01-10T15:30:00.000Z\",\n        \"estado_evaluacion\": \"PENDIENTE\",\n        \"puntaje_promedio\": null,\n        \"posicion\": null,\n        \"imagen_url\": \"https://api.webfestival.art/api/v1/proxy/media/abc-123\",\n        \"imagen_thumbnail\": \"https://api.webfestival.art/api/v1/proxy/media/abc-123?size=400x225\",\n        \"imagen_preview\": \"https://api.webfestival.art/api/v1/proxy/media/abc-123?size=1280x720\",\n        \"categoria\": {\n          \"id\": 1,\n          \"nombre\": \"Paisajes\"\n        }\n      }\n    ],\n    \"estadisticas\": {\n      \"total_enviados\": 1,\n      \"limite_envios\": 3,\n      \"restantes\": 2,\n      \"en_evaluacion\": 1,\n      \"evaluados\": 0\n    },\n    \"pagination\": {\n      \"page\": 1,\n      \"limit\": 10,\n      \"total\": 1,\n      \"totalPages\": 1\n    }\n  }\n}\n```\n\n**Estados de evaluación:**\n- `PENDIENTE`: Medio enviado, esperando evaluación\n- `EN_EVALUACION`: Siendo evaluado por jurados\n- `EVALUADO`: Evaluación completada\n\n**URLs de imagen:**\nCada medio incluye URLs generadas automáticamente:\n- `imagen_url`: URL original del medio\n- `imagen_thumbnail`: Thumbnail (400x225px)\n- `imagen_preview`: Preview (1280x720px)\n\n**Casos de error:**\n- `400`: Parámetros de paginación inválidos\n- `401`: Token de autenticación inválido o expirado\n- `403`: No estás inscrito en este concurso\n- `404`: Concurso no encontrado\n- `500`: Error interno del servidor\n\n**Casos de uso:**\n- Dashboard del participante\n- Página \"Mis Envíos\"\n- Seguimiento de medios por concurso\n- Verificar límites de envío\n- Monitorear estado de evaluación\n- Gestión de portfolio personal"
           }
         }
       ]
@@ -130,7 +274,21 @@
           }
         },
         {
-          "name": "Crear Concurso",
+          "name": "Crear Concurso (Sin Categorías)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "if (pm.response.code === 201) {",
+                "    const res = pm.response.json();",
+                "    if (res.data && res.data.id) {",
+                "        pm.environment.set('concursoId', res.data.id);",
+                "        console.log('✅ Concurso creado con ID:', res.data.id);",
+                "    }",
+                "}"
+              ]
+            }
+          }],
           "request": {
             "method": "POST",
             "header": [
@@ -139,10 +297,78 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"titulo\": \"Concurso de Fotografía 2024\",\n  \"descripcion\": \"Concurso anual de fotografía\",\n  \"reglas\": \"Reglas del concurso...\",\n  \"fecha_inicio\": \"2024-03-01T00:00:00Z\",\n  \"fecha_final\": \"2024-03-31T23:59:59Z\",\n  \"max_envios\": 3,\n  \"tamaño_max_mb\": 10\n}"
+              "raw": "{\n  \"titulo\": \"Concurso de Fotografía 2025\",\n  \"descripcion\": \"Concurso anual de fotografía profesional\",\n  \"reglas\": \"1. Solo fotografías originales\\n2. Máximo 3 envíos por participante\\n3. Formato JPEG o PNG\",\n  \"fecha_inicio\": \"2025-03-01T00:00:00Z\",\n  \"fecha_final\": \"2025-03-31T23:59:59Z\",\n  \"max_envios\": 3,\n  \"tamano_max_mb\": 10\n}"
             },
             "url": {"raw": "{{baseUrl}}/concursos", "host": ["{{baseUrl}}"], "path": ["concursos"]},
-            "description": "**Crear nuevo concurso (Admin)**\n\nCrea un concurso con configuración completa."
+            "description": "**Crear nuevo concurso sin categorías (Admin)**\n\nCrea un concurso básico. Las categorías se pueden agregar después."
+          }
+        },
+        {
+          "name": "Crear Concurso (Con Categorías)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "if (pm.response.code === 201) {",
+                "    const res = pm.response.json();",
+                "    if (res.data && res.data.id) {",
+                "        pm.environment.set('concursoId', res.data.id);",
+                "        console.log('✅ Concurso creado con ID:', res.data.id);",
+                "        ",
+                "        if (res.data.categorias && res.data.categorias.length > 0) {",
+                "            pm.environment.set('categoriaId', res.data.categorias[0].id);",
+                "            console.log('✅ Categorías creadas:', res.data.categorias.length);",
+                "            res.data.categorias.forEach(cat => {",
+                "                console.log('  - ' + cat.nombre + ' (ID: ' + cat.id + ')');",
+                "            });",
+                "        }",
+                "    }",
+                "}"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Concurso de Fotografía de Naturaleza 2025\",\n  \"descripcion\": \"Concurso anual enfocado en fotografía de naturaleza y vida silvestre\",\n  \"reglas\": \"1. Solo fotografías originales\\n2. Máximo 3 envíos por participante\\n3. Formato JPEG o PNG\\n4. Resolución mínima 1920x1080\",\n  \"fecha_inicio\": \"2025-03-01T00:00:00Z\",\n  \"fecha_final\": \"2025-03-31T23:59:59Z\",\n  \"max_envios\": 3,\n  \"tamano_max_mb\": 10,\n  \"categorias\": [\n    {\n      \"nombre\": \"Paisajes\"\n    },\n    {\n      \"nombre\": \"Fauna Silvestre\"\n    },\n    {\n      \"nombre\": \"Flora y Macro\"\n    }\n  ]\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/concursos", "host": ["{{baseUrl}}"], "path": ["concursos"]},
+            "description": "**Crear concurso con categorías (Admin)**\n\nCrea un concurso y sus categorías en una sola operación.\n\n**Ventajas:**\n- Crea concurso y categorías en una transacción\n- Más eficiente que crear por separado\n- Garantiza consistencia de datos\n\n**Campos de categoría:**\n- `nombre` (requerido): Nombre de la categoría (máx 100 caracteres)\n\n**Ejemplo de respuesta:**\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"id\": 1,\n    \"titulo\": \"Concurso de Fotografía de Naturaleza 2025\",\n    \"categorias\": [\n      {\"id\": 1, \"nombre\": \"Paisajes\"},\n      {\"id\": 2, \"nombre\": \"Fauna Silvestre\"},\n      {\"id\": 3, \"nombre\": \"Flora y Macro\"}\n    ]\n  }\n}\n```"
+          }
+        },
+        {
+          "name": "Crear Concurso de Video (Con Categorías)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "if (pm.response.code === 201) {",
+                "    const res = pm.response.json();",
+                "    if (res.data && res.data.id) {",
+                "        pm.environment.set('concursoId', res.data.id);",
+                "        console.log('✅ Concurso de video creado con ID:', res.data.id);",
+                "    }",
+                "}"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Festival de Cortometrajes 2025\",\n  \"descripcion\": \"Festival internacional de cortometrajes y cine independiente\",\n  \"reglas\": \"1. Duración máxima 15 minutos\\n2. Producciones originales\\n3. Formato MP4 o MOV\\n4. Subtítulos en español o inglés\",\n  \"fecha_inicio\": \"2025-06-01T00:00:00Z\",\n  \"fecha_final\": \"2025-08-31T23:59:59Z\",\n  \"max_envios\": 2,\n  \"tamano_max_mb\": 500,\n  \"categorias\": [\n    {\n      \"nombre\": \"Ficción\"\n    },\n    {\n      \"nombre\": \"Documental\"\n    },\n    {\n      \"nombre\": \"Animación\"\n    },\n    {\n      \"nombre\": \"Experimental\"\n    }\n  ]\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/concursos", "host": ["{{baseUrl}}"], "path": ["concursos"]},
+            "description": "**Crear concurso de video/cine con categorías (Admin)**\n\nEjemplo de concurso de video con múltiples categorías especializadas."
           }
         },
         {
@@ -159,6 +385,42 @@
             },
             "url": {"raw": "{{baseUrl}}/concursos/{{concursoId}}", "host": ["{{baseUrl}}"], "path": ["concursos", "{{concursoId}}"]},
             "description": "**Actualizar concurso (Admin)**\n\nModifica datos del concurso."
+          }
+        },
+        {
+          "name": "Subir Imagen de Concurso",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "if (pm.response.code === 200) {",
+                "    const res = pm.response.json();",
+                "    console.log('✅ Imagen subida exitosamente');",
+                "    console.log('Asset ID:', res.data.imagen_asset_id);",
+                "    console.log('URL Original:', res.data.imagen_url);",
+                "    console.log('URL Thumbnail:', res.data.imagen_thumbnail);",
+                "}"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "imagen",
+                  "type": "file",
+                  "src": "",
+                  "description": "Archivo de imagen del concurso (JPEG, PNG, WebP, HEIC)"
+                }
+              ]
+            },
+            "url": {"raw": "{{baseUrl}}/concursos/{{concursoId}}/imagen", "host": ["{{baseUrl}}"], "path": ["concursos", "{{concursoId}}", "imagen"]},
+            "description": "**Subir imagen de concurso (Admin)**\n\nSube o actualiza la imagen/poster del concurso a Immich.\n\n**Características:**\n- Se almacena en Immich en el álbum \"Sistema - Administrador\"\n- Solo se guarda el `imagen_asset_id` en la BD\n- Las URLs se construyen dinámicamente\n- Si ya existe una imagen, se reemplaza\n\n**Formatos permitidos:**\n- JPEG\n- PNG\n- WebP\n- HEIC\n\n**Tamaño máximo:** 10MB\n\n**Respuesta:**\n```json\n{\n  \"success\": true,\n  \"message\": \"Imagen del concurso actualizada exitosamente\",\n  \"data\": {\n    \"imagen_asset_id\": \"abc-123-def\",\n    \"imagen_url\": \"https://api.webfestival.art/api/v1/proxy/media/abc-123-def\",\n    \"imagen_thumbnail\": \"https://api.webfestival.art/api/v1/proxy/media/abc-123-def?size=400x225\",\n    \"imagen_preview\": \"https://api.webfestival.art/api/v1/proxy/media/abc-123-def?size=1280x720\"\n  }\n}\n```"
           }
         },
         {

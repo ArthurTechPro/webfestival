@@ -28,3 +28,15 @@ Sistema de mentorías entre jurados y participantes
 Sin embargo, el plan actual ya es muy ambicioso y completo. Estas tareas adicionales podrían implementarse en una Fase 4 posterior al lanzamiento inicial.
 
 ¿Te gustaría que agregue alguna de estas tareas al plan actual, o prefieres mantener el enfoque en las funcionalidades core para el MVP?
+
+
+
+
+DOMINIOS  www.wbfestival.art 
+
+IP
+185.212.70.215
+
+dns
+ns1.dns-parking.com
+ns2.dns-parking.com

@@ -1,0 +1,1209 @@
+{
+  "info": {
+    "title": "WebFestival API - Referencia Completa de Endpoints",
+    "version": "2.1.0",
+    "description": "Documentación completa de todos los endpoints de la API WebFestival para desarrollo de frontend, landing page y panel de administración",
+    "baseUrl": "{{baseUrl}}",
+    "environments": {
+      "local": "http://localhost:3000",
+      "production": "https://api.webfestival.art"
+    },
+    "authentication": {
+      "type": "Bearer Token",
+      "header": "Authorization: Bearer {token}",
+      "note": "Obtener token mediante /api/v1/auth/login"
+    }
+  },
+  "endpoints": {
+    "auth": {
+      "description": "Autenticación y gestión de usuarios",
+      "baseRoute": "/api/v1/auth",
+      "endpoints": [
+        {
+          "name": "Login",
+          "method": "POST",
+          "path": "/login",
+          "auth": false,
+          "description": "Iniciar sesión con credenciales",
+          "body": {
+            "email": "string (required)",
+            "password": "string (required)"
+          },
+          "response": {
+            "success": "boolean",
+            "data": {
+              "user": "User object",
+              "tokens": {
+                "accessToken": "string",
+                "refreshToken": "string"
+              }
+            }
+          },
+          "roles": ["PUBLIC"]
+        },
+        {
+          "name": "Register",
+          "method": "POST",
+          "path": "/register",
+          "auth": false,
+          "description": "Registrar nuevo usuario",
+          "body": {
+            "email": "string (required)",
+            "password": "string (required)",
+            "nombre": "string (required)",
+            "role": "string (optional, default: PARTICIPANTE)"
+          },
+          "response": {
+            "success": "boolean",
+            "data": {
+              "user": "User object",
+              "tokens": {
+                "accessToken": "string",
+                "refreshToken": "string"
+              }
+            }
+          },
+          "roles": ["PUBLIC"]
+        },
+        {
+          "name": "Logout",
+          "method": "POST",
+          "path": "/logout",
+          "auth": true,
+          "description": "Cerrar sesión",
+          "response": {
+            "success": "boolean"
+          },
+          "roles": ["ALL"]
+        },
+        {
+          "name": "Verify Token",
+          "method": "GET",
+          "path": "/me",
+          "auth": true,
+          "description": "Verificar token y obtener datos del usuario",
+          "response": {
+            "success": "boolean",
+            "data": "User object"
+          },
+          "roles": ["ALL"]
+        },
+        {
+          "name": "Refresh Token",
+          "method": "POST",
+          "path": "/refresh",
+          "auth": false,
+          "description": "Refrescar token de acceso",
+          "body": {
+            "refreshToken": "string (required)"
+          },
+          "response": {
+            "success": "boolean",
+            "data": {
+              "tokens": {
+                "accessToken": "string",
+                "refreshToken": "string"
+              }
+            }
+          },
+          "roles": ["ALL"]
+        },
+        {
+          "name": "Forgot Password",
+          "method": "POST",
+          "path": "/forgot-password",
+          "auth": false,
+          "description": "Solicitar recuperación de contraseña",
+          "body": {
+            "email": "string (required)"
+          },
+          "response": {
+            "success": "boolean"
+          },
+          "roles": ["PUBLIC"]
+        },
+        {
+          "name": "Reset Password",
+          "method": "POST",
+          "path": "/reset-password",
+          "auth": false,
+          "description": "Restablecer contraseña con token",
+          "body": {
+            "token": "string (required)",
+            "password": "string (required)"
+          },
+          "response": {
+            "success": "boolean"
+          },
+          "roles": ["PUBLIC"]
+        }
+      ]
+    },
+    "concursos": {
+      "description": "Gestión de concursos multimedia",
+      "baseRoute": "/api/v1/concursos",
+      "endpoints": [
+        {
+          "name": "Concursos Activos",
+          "method": "GET",
+          "path": "/activos",
+          "auth": false,
+          "description": "Obtener concursos activos disponibles para inscripción. Incluye estadísticas básicas de votación.",
+          "queryParams": {
+            "tipo_medio": "string (optional) - fotografia|video|audio|corto_cine"
+          },
+          "response": {
+            "success": "boolean",
+            "data": "Array<Concurso con estadisticas_votacion>"
+          },
+          "roles": ["PUBLIC"],
+          "note": "Ahora incluye estadísticas_votacion: {total_votos, total_votantes}"
+        },
+        {
+          "name": "Concursos Finalizados",
+          "method": "GET",
+          "path": "/finalizados",
+          "auth": false,
+          "description": "Obtener concursos finalizados con resultados",
+          "response": {
+            "success": "boolean",
+            "data": "Array<Concurso>"
+          },
+          "roles": ["PUBLIC"]
+        },
+        {
+          "name": "Detalle de Concurso",
+          "method": "GET",
+          "path": "/{id}",
+          "auth": false,
+          "description": "Obtener detalles completos de un concurso incluyendo medios con estadísticas de votación",
+          "pathParams": {
+            "id": "number (required) - ID del concurso"
+          },
+          "response": {
+            "success": "boolean",
+            "data": "Concurso con categorías, medios (con total_votos individuales), inscripciones y estadísticas_votacion"
+          },
+          "roles": ["PUBLIC"],
+          "note": "Cada medio incluye: total_votos, total_visualizaciones, puntuacion_promedio"
+        },
+        {
+          "name": "Listar Concursos (Admin)",
+          "method": "GET",
+          "path": "/",
+          "auth": true,
+          "description": "Listar todos los concursos con paginación (Admin)",
+          "queryParams": {
+            "page": "number (optional, default: 1)",
+            "limit": "number (optional, default: 10)"
+          },
+          "response": {
+            "success": "boolean",
+            "data": "Array<ConcursoAdmin>",
+            "pagination": {
+              "page": "number",
+              "limit": "number",
+              "total": "number",
+              "totalPages": "number"
+            }
+          },
+          "roles": ["ADMIN"]
+        },
+        {
+          "name": "Crear Concurso",
+          "method": "POST",
+          "path": "/",
+          "auth": true,
+          "description": "Crear nuevo concurso",
+          "body": {
+            "titulo": "string (required)",
+            "descripcion": "string (required)",
+            "reglas": "string (required)",
+            "fecha_inicio": "string (required) - ISO date",
+            "fecha_final": "string (required) - ISO date",
+            "max_envios": "number (required)",
+            "tamano_max_mb": "number (required)",
+            "categorias": "Array<{nombre: string}> (required)"
+          },
+          "response": {
+            "success": "boolean",
+            "data": {
+              "id": "number",
+              "titulo": "string",
+              "mensaje": "string"
+            }
+          },
+          "roles": ["ADMIN"]
+        },
+        {
+          "name": "Actualizar Concurso",
+          "method": "PUT",
+          "path": "/{id}",
+          "auth": true,
+          "description": "Actualizar concurso existente",
+          "pathParams": {
+            "id": "number (required) - ID del concurso"
+          },
+          "body": {
+            "titulo": "string (optional)",
+            "descripcion": "string (optional)",
+            "reglas": "string (optional)",
+            "fecha_inicio": "string (optional) - ISO date",
+            "fecha_final": "string (optional) - ISO date",
+            "max_envios": "number (optional)",
+            "tamano_max_mb": "number (optional)",
+            "status": "string (optional) - ACTIVO|FINALIZADO|BORRADOR|CANCELADO"
+          },
+          "response": {
+            "success": "boolean",
+            "data": "ConcursoAdmin"
+          },
+          "roles": ["ADMIN"]
+        },
+        {
+          "name": "Subir Imagen de Concurso",
+          "method": "POST",
+          "path": "/{id}/imagen",
+          "auth": true,
+          "description": "Subir imagen/poster para un concurso",
+          "pathParams": {
+            "id": "number (required) - ID del concurso"
+          },
+          "body": "FormData con campo 'imagen'",
+          "response": {
+            "success": "boolean",
+            "data": {
+              "mensaje": "string",
+              "imagen_url": "string"
+            }
+          },
+          "roles": ["ADMIN"]
+        },
+        {
+          "name": "Inscribirse a Concurso",
+          "method": "POST",
+          "path": "/inscripcion",
+          "auth": true,
+          "description": "Inscribirse a un concurso",
+          "body": {
+            "concurso_id": "number (required)"
+          },
+          "response": {
+            "success": "boolean",
+            "data": "Inscripcion object"
+          },
+          "roles": ["PARTICIPANTE"]
+        },
+        {
+          "name": "Cancelar Inscripción",
+          "method": "DELETE",
+          "path": "/inscripcion/{concursoId}",
+          "auth": true,
+          "description": "Cancelar inscripción a un concurso",
+          "pathParams": {
+            "concursoId": "number (required) - ID del concurso"
+          },
+          "response": {
+            "success": "boolean"
+          },
+          "roles": ["PARTICIPANTE"]
+        },
+        {
+          "name": "Mis Inscripciones",
+          "method": "GET",
+          "path": "/mis-inscripciones",
+          "auth": true,
+          "description": "Obtener concursos en los que estoy inscrito",
+          "response": {
+            "success": "boolean",
+            "data": "Array<{id, usuario_id, concurso_id, fecha_inscripcion, concurso: Concurso}>"
+          },
+          "roles": ["PARTICIPANTE"]
+        },
+        {
+          "name": "Verificar Inscripción",
+          "method": "GET",
+          "path": "/{id}/verificar-inscripcion",
+          "auth": true,
+          "description": "Verificar si estoy inscrito a un concurso",
+          "pathParams": {
+            "id": "number (required) - ID del concurso"
+          },
+          "response": {
+            "success": "boolean",
+            "data": {
+              "inscrito": "boolean",
+              "fecha_inscripcion": "string (optional)"
+            }
+          },
+          "roles": ["PARTICIPANTE"]
+        }
+      ]
+    },
+    "media": {
+      "description": "Gestión de medios multimedia",
+      "baseRoute": "/api/v1/media",
+      "endpoints": [
+        {
+          "name": "Configuración de Validación",
+          "method": "GET",
+          "path": "/validation-config",
+          "auth": false,
+          "description": "Obtener configuración para validación de archivos",
+          "response": {
+            "success": "boolean",
+            "data": {
+              "maxFileSize": "number",
+              "allowedFormats": {
+                "fotografia": "Array<string>",
+                "video": "Array<string>",
+                "audio": "Array<string>",
+                "corto_cine": "Array<string>"
+              }
+            }
+          },
+          "roles": ["PUBLIC"]
+        },
+        {
+          "name": "Generar URL de Subida",
+          "method": "POST",
+          "path": "/contests/{concursoId}/upload-url",
+          "auth": true,
+          "description": "Generar URL segura para subir archivo",
+          "pathParams": {
+            "concursoId": "number (required) - ID del concurso"
+          },
+          "body": {
+            "titulo": "string (required)",
+            "tipo_medio": "string (required) - fotografia|video|audio|corto_cine",
+            "categoria_id": "number (required)",
+            "formato": "string (required)",
+            "tamaño_archivo": "number (required)"
+          },
+          "response": {
+            "success": "boolean",
+            "data": {
+              "uploadUrl": "string",
+              "uploadId": "string",
+              "expiresIn": "number"
+            }
+          },
+          "roles": ["PARTICIPANTE"]
+        },
+        {
+          "name": "Procesar Subida",
+          "method": "POST",
+          "path": "/contests/{concursoId}/process-upload",
+          "auth": true,
+          "description": "Procesar subida completada",
+          "pathParams": {
+            "concursoId": "number (required) - ID del concurso"
+          },
+          "body": {
+            "uploadId": "string (required)",
+            "immichAssetId": "string (required)"
+          },
+          "response": {
+            "success": "boolean",
+            "data": "Medio object"
+          },
+          "roles": ["PARTICIPANTE"]
+        },
+        {
+          "name": "Obtener Medio",
+          "method": "GET",
+          "path": "/{id}",
+          "auth": false,
+          "description": "Obtener detalles de un medio",
+          "pathParams": {
+            "id": "number (required) - ID del medio"
+          },
+          "response": {
+            "success": "boolean",
+            "data": "MedioConResultados"
+          },
+          "roles": ["PUBLIC"]
+        },
+        {
+          "name": "Medios por Usuario",
+          "method": "GET",
+          "path": "/user/{userId}",
+          "auth": true,
+          "description": "Obtener medios de un usuario",
+          "pathParams": {
+            "userId": "string (required) - ID del usuario"
+          },
+          "response": {
+            "success": "boolean",
+            "data": "Array<MedioConResultados>"
+          },
+          "roles": ["PARTICIPANTE", "ADMIN"]
+        },
+        {
+          "name": "Medios por Concurso",
+          "method": "GET",
+          "path": "/contests/{concursoId}",
+          "auth": false,
+          "description": "Obtener medios de un concurso",
+          "pathParams": {
+            "concursoId": "number (required) - ID del concurso"
+          },
+          "response": {
+            "success": "boolean",
+            "data": "Array<MedioConResultados>"
+          },
+          "roles": ["PUBLIC"]
+        },
+        {
+          "name": "Actualizar Medio",
+          "method": "PUT",
+          "path": "/{id}",
+          "auth": true,
+          "description": "Actualizar información de un medio",
+          "pathParams": {
+            "id": "number (required) - ID del medio"
+          },
+          "body": {
+            "titulo": "string (optional)",
+            "descripcion": "string (optional)"
+          },
+          "response": {
+            "success": "boolean",
+            "data": "Medio object"
+          },
+          "roles": ["PARTICIPANTE", "ADMIN"]
+        },
+        {
+          "name": "Eliminar Medio",
+          "method": "DELETE",
+          "path": "/{id}",
+          "auth": true,
+          "description": "Eliminar un medio",
+          "pathParams": {
+            "id": "number (required) - ID del medio"
+          },
+          "response": {
+            "success": "boolean"
+          },
+          "roles": ["PARTICIPANTE", "ADMIN"]
+        },
+        {
+          "name": "Galería de Ganadores",
+          "method": "GET",
+          "path": "/gallery/winners",
+          "auth": false,
+          "description": "Obtener galería de medios ganadores",
+          "queryParams": {
+            "tipo_medio": "string (optional)",
+            "concurso_id": "number (optional)",
+            "año": "number (optional)",
+            "page": "number (optional, default: 1)",
+            "limit": "number (optional, default: 20)"
+          },
+          "response": {
+            "success": "boolean",
+            "data": "PaginatedResponse<MedioConResultados>"
+          },
+          "roles": ["PUBLIC"]
+        },
+        {
+          "name": "Galería Destacada",
+          "method": "GET",
+          "path": "/gallery/featured",
+          "auth": false,
+          "description": "Obtener medios destacados",
+          "queryParams": {
+            "limit": "number (optional, default: 10)",
+            "tipo_medio": "string (optional)"
+          },
+          "response": {
+            "success": "boolean",
+            "data": "Array<MedioConResultados>"
+          },
+          "roles": ["PUBLIC"]
+        },
+        {
+          "name": "Categorías por Tipo de Medio",
+          "method": "GET",
+          "path": "/contests/{concursoId}/categories",
+          "auth": false,
+          "description": "Obtener categorías organizadas por tipo de medio",
+          "pathParams": {
+            "concursoId": "number (required) - ID del concurso"
+          },
+          "response": {
+            "success": "boolean",
+            "data": "Record<string, Array<Categoria>>"
+          },
+          "roles": ["PUBLIC"]
+        }
+      ]
+    },
+    "users": {
+      "description": "Gestión de usuarios y administración",
+      "baseRoute": "/api/v1/users",
+      "endpoints": [
+        {
+          "name": "Estadísticas del Sistema",
+          "method": "GET",
+          "path": "/stats",
+          "auth": true,
+          "description": "Obtener estadísticas generales del sistema",
+          "response": {
+            "success": "boolean",
+            "data": {
+              "totalUsuarios": "number",
+              "concursosActivos": "number",
+              "mediosSubidos": "number",
+              "ingresosMensuales": "string",
+              "usuariosPorRol": "Record<string, number>",
+              "crecimientoMensual": "Array<{mes: string, usuarios: number}>"
+            }
+          },
+          "roles": ["ADMIN"]
+        },
+        {
+          "name": "Buscar Usuarios",
+          "method": "GET",
+          "path": "/search",
+          "auth": true,
+          "description": "Buscar usuarios con filtros y paginación",
+          "queryParams": {
+            "page": "number (optional, default: 1)",
+            "limit": "number (optional, default: 10)",
+            "role": "string (optional)",
+            "search": "string (optional)"
+          },
+          "response": {
+            "success": "boolean",
+            "data": "PaginatedResponse<User>"
+          },
+          "roles": ["ADMIN"]
+        },
+        {
+          "name": "Actualizar Rol de Usuario",
+          "method": "PATCH",
+          "path": "/{userId}/role",
+          "auth": true,
+          "description": "Actualizar el rol de un usuario",
+          "pathParams": {
+            "userId": "string (required) - ID del usuario"
+          },
+          "body": {
+            "role": "string (required) - PARTICIPANTE|JURADO|ADMIN|CONTENT_ADMIN"
+          },
+          "response": {
+            "success": "boolean",
+            "data": "User object"
+          },
+          "roles": ["ADMIN"]
+        },
+        {
+          "name": "Cambiar Estado de Usuario",
+          "method": "PATCH",
+          "path": "/{userId}/toggle-status",
+          "auth": true,
+          "description": "Activar/desactivar un usuario",
+          "pathParams": {
+            "userId": "string (required) - ID del usuario"
+          },
+          "response": {
+            "success": "boolean",
+            "data": "User object"
+          },
+          "roles": ["ADMIN"]
+        },
+        {
+          "name": "Jurados por Especialidad",
+          "method": "GET",
+          "path": "/jurados/{especialidad}",
+          "auth": true,
+          "description": "Obtener jurados por especialidad",
+          "pathParams": {
+            "especialidad": "string (optional) - fotografia|video|audio|corto_cine"
+          },
+          "response": {
+            "success": "boolean",
+            "data": "Array<User>"
+          },
+          "roles": ["ADMIN"]
+        },
+        {
+          "name": "Asignar Jurado",
+          "method": "POST",
+          "path": "/jurado/asignar",
+          "auth": true,
+          "description": "Asignar jurado a una categoría",
+          "body": {
+            "usuario_id": "string (required)",
+            "categoria_id": "number (required)"
+          },
+          "response": {
+            "success": "boolean",
+            "data": "JuradoAsignacion object"
+          },
+          "roles": ["ADMIN"]
+        },
+        {
+          "name": "Mis Asignaciones (Jurado)",
+          "method": "GET",
+          "path": "/jurado/asignaciones",
+          "auth": true,
+          "description": "Obtener asignaciones del jurado actual",
+          "response": {
+            "success": "boolean",
+            "data": "Array<AsignacionJurado>"
+          },
+          "roles": ["JURADO"]
+        }
+      ]
+    },
+    "evaluations": {
+      "description": "Sistema de evaluación y calificaciones",
+      "baseRoute": "/api/v1/evaluations",
+      "endpoints": [
+        {
+          "name": "Medios Pendientes de Evaluación",
+          "method": "GET",
+          "path": "/medios-pendientes",
+          "auth": true,
+          "description": "Obtener medios asignados para evaluación",
+          "queryParams": {
+            "categoria_id": "number (optional)",
+            "tipo_medio": "string (optional)",
+            "page": "number (optional, default: 1)",
+            "limit": "number (optional, default: 20)"
+          },
+          "response": {
+            "success": "boolean",
+            "data": "PaginatedResponse<MedioParaEvaluacion>"
+          },
+          "roles": ["JURADO"]
+        },
+        {
+          "name": "Medio para Evaluación",
+          "method": "GET",
+          "path": "/media/{medioId}",
+          "auth": true,
+          "description": "Obtener detalles de un medio para evaluación",
+          "pathParams": {
+            "medioId": "number (required) - ID del medio"
+          },
+          "response": {
+            "success": "boolean",
+            "data": "MedioParaEvaluacion"
+          },
+          "roles": ["JURADO"]
+        },
+        {
+          "name": "Criterios por Tipo de Medio",
+          "method": "GET",
+          "path": "/criteria/{tipoMedio}",
+          "auth": true,
+          "description": "Obtener criterios de evaluación por tipo de medio",
+          "pathParams": {
+            "tipoMedio": "string (required) - fotografia|video|audio|corto_cine"
+          },
+          "response": {
+            "success": "boolean",
+            "data": "Array<Criterio>"
+          },
+          "roles": ["JURADO"]
+        },
+        {
+          "name": "Todos los Criterios por Tipo",
+          "method": "GET",
+          "path": "/criteria/by-type",
+          "auth": true,
+          "description": "Obtener todos los criterios organizados por tipo",
+          "response": {
+            "success": "boolean",
+            "data": {
+              "fotografia": "Array<Criterio>",
+              "video": "Array<Criterio>",
+              "audio": "Array<Criterio>",
+              "corto_cine": "Array<Criterio>",
+              "universales": "Array<Criterio>"
+            }
+          },
+          "roles": ["JURADO", "ADMIN"]
+        },
+        {
+          "name": "Enviar Calificación",
+          "method": "POST",
+          "path": "/rate",
+          "auth": true,
+          "description": "Enviar calificación para un medio",
+          "body": {
+            "medio_id": "number (required)",
+            "comentarios": "string (optional)",
+            "criterios": "Array<{criterio_id: number, puntuacion: number}> (required)"
+          },
+          "response": {
+            "success": "boolean",
+            "data": "ResultadoCalificacion"
+          },
+          "roles": ["JURADO"]
+        },
+        {
+          "name": "Actualizar Calificación",
+          "method": "PUT",
+          "path": "/rate/{calificacionId}",
+          "auth": true,
+          "description": "Actualizar calificación existente",
+          "pathParams": {
+            "calificacionId": "number (required) - ID de la calificación"
+          },
+          "body": {
+            "comentarios": "string (optional)",
+            "criterios": "Array<{criterio_id: number, puntuacion: number}> (required)"
+          },
+          "response": {
+            "success": "boolean",
+            "data": "ResultadoCalificacion"
+          },
+          "roles": ["JURADO"]
+        },
+        {
+          "name": "Progreso de Evaluaciones",
+          "method": "GET",
+          "path": "/progress",
+          "auth": true,
+          "description": "Obtener progreso de evaluaciones del jurado",
+          "response": {
+            "success": "boolean",
+            "data": "Array<ProgresoEvaluacion>"
+          },
+          "roles": ["JURADO"]
+        },
+        {
+          "name": "Estadísticas del Jurado",
+          "method": "GET",
+          "path": "/stats",
+          "auth": true,
+          "description": "Obtener estadísticas completas del jurado",
+          "response": {
+            "success": "boolean",
+            "data": "EstadisticasJurado"
+          },
+          "roles": ["JURADO"]
+        },
+        {
+          "name": "Mi Especialización",
+          "method": "GET",
+          "path": "/my-specialization",
+          "auth": true,
+          "description": "Obtener especialización del jurado actual",
+          "response": {
+            "success": "boolean",
+            "data": "JuradoEspecializacion"
+          },
+          "roles": ["JURADO"]
+        },
+        {
+          "name": "Actualizar Especialización",
+          "method": "PUT",
+          "path": "/my-specialization",
+          "auth": true,
+          "description": "Actualizar especialización del jurado",
+          "body": {
+            "especializaciones": "Array<string> (required)",
+            "experiencia": "string (optional)",
+            "certificaciones": "Array<string> (optional)"
+          },
+          "response": {
+            "success": "boolean",
+            "data": "JuradoEspecializacion"
+          },
+          "roles": ["JURADO"]
+        },
+        {
+          "name": "Métricas de Rendimiento",
+          "method": "GET",
+          "path": "/my-performance-metrics",
+          "auth": true,
+          "description": "Obtener métricas de rendimiento del jurado",
+          "response": {
+            "success": "boolean",
+            "data": "PerformanceMetrics"
+          },
+          "roles": ["JURADO"]
+        }
+      ]
+    },
+    "subscriptions": {
+      "description": "Gestión de suscripciones y facturación",
+      "baseRoute": "/api/v1/subscriptions",
+      "endpoints": [
+        {
+          "name": "Planes Disponibles",
+          "method": "GET",
+          "path": "/plans",
+          "auth": false,
+          "description": "Obtener planes de suscripción disponibles",
+          "response": {
+            "success": "boolean",
+            "data": "Array<SubscriptionPlan>"
+          },
+          "roles": ["PUBLIC"]
+        },
+        {
+          "name": "Suscripción Actual",
+          "method": "GET",
+          "path": "/current",
+          "auth": true,
+          "description": "Obtener suscripción actual del usuario",
+          "response": {
+            "success": "boolean",
+            "data": "UserSubscription"
+          },
+          "roles": ["PARTICIPANTE"]
+        },
+        {
+          "name": "Actualizar Suscripción",
+          "method": "POST",
+          "path": "/upgrade",
+          "auth": true,
+          "description": "Actualizar plan de suscripción",
+          "body": {
+            "planId": "string (required)",
+            "paymentMethodId": "string (optional)"
+          },
+          "response": {
+            "success": "boolean",
+            "data": "UserSubscription"
+          },
+          "roles": ["PARTICIPANTE"]
+        },
+        {
+          "name": "Cancelar Suscripción",
+          "method": "POST",
+          "path": "/cancel",
+          "auth": true,
+          "description": "Cancelar suscripción actual",
+          "response": {
+            "success": "boolean"
+          },
+          "roles": ["PARTICIPANTE"]
+        },
+        {
+          "name": "Reactivar Suscripción",
+          "method": "POST",
+          "path": "/reactivate",
+          "auth": true,
+          "description": "Reactivar suscripción cancelada",
+          "response": {
+            "success": "boolean",
+            "data": "UserSubscription"
+          },
+          "roles": ["PARTICIPANTE"]
+        },
+        {
+          "name": "Historial de Facturación",
+          "method": "GET",
+          "path": "/billing-history",
+          "auth": true,
+          "description": "Obtener historial de facturación",
+          "queryParams": {
+            "page": "number (optional, default: 1)",
+            "limit": "number (optional, default: 20)"
+          },
+          "response": {
+            "success": "boolean",
+            "data": "PaginatedResponse<BillingRecord>"
+          },
+          "roles": ["PARTICIPANTE"]
+        },
+        {
+          "name": "Límites de Uso",
+          "method": "GET",
+          "path": "/usage-limits",
+          "auth": true,
+          "description": "Verificar límites de uso actuales",
+          "response": {
+            "success": "boolean",
+            "data": {
+              "current_usage": "number",
+              "limit": "number",
+              "remaining": "number"
+            }
+          },
+          "roles": ["PARTICIPANTE"]
+        },
+        {
+          "name": "Crear Sesión de Checkout",
+          "method": "POST",
+          "path": "/create-checkout-session",
+          "auth": true,
+          "description": "Crear sesión de pago con Stripe",
+          "body": {
+            "planId": "string (required)"
+          },
+          "response": {
+            "success": "boolean",
+            "data": {
+              "url": "string"
+            }
+          },
+          "roles": ["PARTICIPANTE"]
+        },
+        {
+          "name": "Portal de Facturación",
+          "method": "POST",
+          "path": "/create-portal-session",
+          "auth": true,
+          "description": "Crear sesión del portal de facturación",
+          "response": {
+            "success": "boolean",
+            "data": {
+              "url": "string"
+            }
+          },
+          "roles": ["PARTICIPANTE"]
+        }
+      ]
+    },
+    "interactions": {
+      "description": "Interacciones sociales y comunidad",
+      "baseRoute": "/api/v1/interactions",
+      "endpoints": [
+        {
+          "name": "Obtener Comentarios",
+          "method": "GET",
+          "path": "/comments/{medioId}",
+          "auth": false,
+          "description": "Obtener comentarios de un medio",
+          "pathParams": {
+            "medioId": "number (required) - ID del medio"
+          },
+          "queryParams": {
+            "page": "number (optional, default: 1)",
+            "limit": "number (optional, default: 20)"
+          },
+          "response": {
+            "success": "boolean",
+            "data": "PaginatedResponse<Comment>"
+          },
+          "roles": ["PUBLIC"]
+        },
+        {
+          "name": "Crear Comentario",
+          "method": "POST",
+          "path": "/comments",
+          "auth": true,
+          "description": "Crear comentario en un medio",
+          "body": {
+            "medio_id": "number (required)",
+            "contenido": "string (required)",
+            "parent_id": "number (optional) - Para respuestas"
+          },
+          "response": {
+            "success": "boolean",
+            "data": "Comment"
+          },
+          "roles": ["PARTICIPANTE", "JURADO", "ADMIN"]
+        },
+        {
+          "name": "Eliminar Comentario",
+          "method": "DELETE",
+          "path": "/comments/{commentId}",
+          "auth": true,
+          "description": "Eliminar comentario (autor o admin)",
+          "pathParams": {
+            "commentId": "number (required) - ID del comentario"
+          },
+          "response": {
+            "success": "boolean"
+          },
+          "roles": ["PARTICIPANTE", "JURADO", "ADMIN"]
+        },
+        {
+          "name": "Reportar Comentario",
+          "method": "POST",
+          "path": "/comments/report",
+          "auth": true,
+          "description": "Reportar comentario inapropiado",
+          "body": {
+            "comment_id": "number (required)",
+            "razon": "string (required)",
+            "descripcion": "string (optional)"
+          },
+          "response": {
+            "success": "boolean"
+          },
+          "roles": ["PARTICIPANTE", "JURADO"]
+        },
+        {
+          "name": "Comentarios Reportados",
+          "method": "GET",
+          "path": "/comments/reported",
+          "auth": true,
+          "description": "Obtener comentarios reportados (admin)",
+          "queryParams": {
+            "page": "number (optional, default: 1)",
+            "limit": "number (optional, default: 20)"
+          },
+          "response": {
+            "success": "boolean",
+            "data": "PaginatedResponse<Comment>"
+          },
+          "roles": ["ADMIN"]
+        },
+        {
+          "name": "Moderar Comentario",
+          "method": "POST",
+          "path": "/comments/{commentId}/moderate",
+          "auth": true,
+          "description": "Moderar comentario reportado",
+          "pathParams": {
+            "commentId": "number (required) - ID del comentario"
+          },
+          "body": {
+            "action": "string (required) - approve|reject|delete"
+          },
+          "response": {
+            "success": "boolean"
+          },
+          "roles": ["ADMIN"]
+        }
+      ]
+    },
+    "proxy": {
+      "description": "Proxy para medios de Immich (sin autenticación)",
+      "baseRoute": "/api/v1/proxy",
+      "endpoints": [
+        {
+          "name": "Proxy de Media",
+          "method": "GET",
+          "path": "/media/{assetId}",
+          "auth": false,
+          "description": "Obtener medio desde Immich sin autenticación",
+          "pathParams": {
+            "assetId": "string (required) - ID del asset en Immich"
+          },
+          "queryParams": {
+            "size": "string (optional) - 400x225|1280x720 para thumbnails"
+          },
+          "response": "Binary data (imagen/video)",
+          "roles": ["PUBLIC"],
+          "note": "Este endpoint sirve como proxy público para acceder a los medios almacenados en Immich"
+        }
+      ]
+    },
+    "health": {
+      "description": "Endpoints de salud y monitoreo",
+      "baseRoute": "/api/v1",
+      "endpoints": [
+        {
+          "name": "Health Check",
+          "method": "GET",
+          "path": "/health",
+          "auth": false,
+          "description": "Verificar estado de la API",
+          "response": {
+            "status": "string",
+            "timestamp": "string",
+            "uptime": "number",
+            "services": {
+              "database": "string",
+              "immich": "string",
+              "redis": "string"
+            }
+          },
+          "roles": ["PUBLIC"]
+        }
+      ]
+    }
+  },
+  "dataTypes": {
+    "User": {
+      "id": "string",
+      "email": "string",
+      "nombre": "string",
+      "role": "PARTICIPANTE|JURADO|ADMIN|CONTENT_ADMIN",
+      "picture_url": "string (optional)",
+      "bio": "string (optional)",
+      "activo": "boolean",
+      "created_at": "Date",
+      "updated_at": "Date"
+    },
+    "Concurso": {
+      "id": "number",
+      "titulo": "string",
+      "descripcion": "string",
+      "reglas": "string",
+      "fecha_inicio": "Date",
+      "fecha_final": "Date",
+      "status": "string",
+      "imagen_url": "string (optional)",
+      "imagen_thumbnail": "string (optional)",
+      "imagen_preview": "string (optional)",
+      "imagen_asset_id": "string (optional)",
+      "poster_id": "number (optional)",
+      "max_envios": "number",
+      "tamano_max_mb": "number",
+      "categorias": "Array<Categoria> (optional)",
+      "immich_album_id": "string (optional)",
+      "created_at": "Date (optional)",
+      "_count": "object (optional)",
+      "estadisticas_votacion": {
+        "total_votos": "number",
+        "total_votantes": "number"
+      }
+    },
+    "Categoria": {
+      "id": "number",
+      "nombre": "string",
+      "concurso_id": "number",
+      "tipo_medio": "fotografia|video|audio|corto_cine (optional)"
+    },
+    "Medio": {
+      "id": "number",
+      "titulo": "string",
+      "tipo_medio": "fotografia|video|audio|corto_cine",
+      "usuario_id": "string",
+      "concurso_id": "number",
+      "categoria_id": "number",
+      "medio_url": "string",
+      "thumbnail_url": "string (optional)",
+      "preview_url": "string (optional)",
+      "duracion": "number (optional)",
+      "formato": "string",
+      "tamaño_archivo": "number",
+      "metadatos": "Record<string, unknown>",
+      "fecha_subida": "Date",
+      "total_votos": "number",
+      "total_visualizaciones": "number",
+      "puntuacion_promedio": "number"
+    },
+    "ApiResponse<T>": {
+      "success": "boolean",
+      "data": "T (optional)",
+      "message": "string (optional)",
+      "error": "string (optional)"
+    },
+    "PaginatedResponse<T>": {
+      "data": "Array<T>",
+      "total": "number",
+      "page": "number",
+      "totalPages": "number"
+    }
+  },
+  "errorCodes": {
+    "400": "Bad Request - Datos inválidos",
+    "401": "Unauthorized - Token inválido o faltante",
+    "403": "Forbidden - Sin permisos para esta acción",
+    "404": "Not Found - Recurso no encontrado",
+    "409": "Conflict - Conflicto (ej: ya inscrito)",
+    "422": "Unprocessable Entity - Validación fallida",
+    "429": "Too Many Requests - Límite de rate excedido",
+    "500": "Internal Server Error - Error del servidor"
+  },
+  "notes": {
+    "imageUrls": "Las URLs de imágenes se generan dinámicamente usando el proxy público /api/v1/proxy/media/:assetId",
+    "authentication": "Los endpoints marcados con auth: true requieren header Authorization: Bearer {token}",
+    "roles": "Los roles determinan qué endpoints puede acceder cada usuario",
+    "pagination": "Los endpoints paginados usan page y limit como query parameters",
+    "fileUploads": "Las subidas de archivos usan un flujo de 2 pasos: generar URL → procesar subida"
+  }
+}

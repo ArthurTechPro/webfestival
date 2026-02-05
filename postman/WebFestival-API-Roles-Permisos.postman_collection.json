@@ -1,0 +1,360 @@
+{
+  "info": {
+    "name": "WebFestival-API - Roles y Permisos",
+    "description": "# 👥 Gestión de Roles y Permisos\n\nSistema completo de roles, permisos y gestión de usuarios.\n\n## Roles Disponibles\n- **PARTICIPANTE:** Puede participar en concursos\n- **JURADO:** Puede evaluar concursos + participar\n- **CONTENT_ADMIN:** Gestión de contenido + participar\n- **ADMIN:** Acceso completo al sistema\n\n## Funcionalidades\n- Consulta de usuarios y roles\n- Asignación de roles (Admin)\n- Gestión de jurados y especializaciones\n- Verificación de permisos\n- Búsqueda de usuarios por rol\n\n## Permisos por Rol\n- **PARTICIPANTE:** contest:participate, media:upload\n- **JURADO:** contest:evaluate + PARTICIPANTE\n- **CONTENT_ADMIN:** cms:manage, content:create/edit + PARTICIPANTE\n- **ADMIN:** Todos los permisos",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Consultas de Usuarios",
+      "item": [
+        {
+          "name": "Buscar Usuarios",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "if (pm.response.code === 200) {",
+                "    const res = pm.response.json();",
+                "    if (res.data && res.data.data && res.data.data.length > 0) {",
+                "        pm.environment.set('targetUserId', res.data.data[0].id);",
+                "        console.log('✅ Usuarios encontrados:', res.data.data.length);",
+                "        console.log('📋 Primer usuario:', res.data.data[0].nombre, '- Rol:', res.data.data[0].role);",
+                "    }",
+                "}"
+              ]
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/search?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "search"],
+              "query": [
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "10"},
+                {"key": "role", "value": "", "disabled": true, "description": "PARTICIPANTE, JURADO, CONTENT_ADMIN, ADMIN"},
+                {"key": "search", "value": "", "disabled": true, "description": "Buscar por nombre, email o bio"},
+                {"key": "especialización", "value": "", "disabled": true, "description": "fotografia, video, audio, corto_cine"}
+              ]
+            },
+            "description": "**Buscar usuarios con filtros**\n\nPermite buscar usuarios por diferentes criterios.\n\n**Filtros disponibles:**\n- `role` - Filtrar por rol específico\n- `search` - Búsqueda de texto en nombre, email o bio\n- `especialización` - Solo jurados con especialización específica\n- `page` y `limit` - Paginación\n\n**Respuesta incluye:**\n- Información básica del usuario\n- Roles y rol principal\n- Estadísticas (seguidores, medios, etc.)\n- URLs de imagen de perfil (si existe)\n- Especializaciones (para jurados)\n- Estado de seguimiento (si está autenticado)\n\n**Ejemplo de respuesta:**\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"data\": [{\n      \"id\": \"user123\",\n      \"nombre\": \"Juan Pérez\",\n      \"roles\": [\"JURADO\", \"PARTICIPANTE\"],\n      \"primaryRole\": \"JURADO\",\n      \"role\": \"JURADO\",\n      \"picture_url\": \"https://api.webfestival.art/api/v1/proxy/media/abc-123\",\n      \"especializaciones\": [{\n        \"especializacion\": \"fotografia\",\n        \"experiencia_años\": 5\n      }],\n      \"is_following\": false\n    }],\n    \"pagination\": {...}\n  }\n}\n```"
+          }
+        },
+        {
+          "name": "Perfil de Usuario",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "url": {"raw": "{{baseUrl}}/users/{{targetUserId}}/profile", "host": ["{{baseUrl}}"], "path": ["users", "{{targetUserId}}", "profile"]},
+            "description": "**Obtener perfil público de usuario**\n\nMuestra información detallada del usuario incluyendo roles y permisos.\n\n**Información incluida:**\n- Datos básicos (nombre, bio, imagen)\n- Roles y rol principal\n- Estadísticas de actividad\n- Especializaciones (si es jurado)\n- Estado de seguimiento\n\n**URLs de imagen incluidas:**\nSi el usuario tiene imagen de perfil:\n- `picture_url` - URL original\n- `picture_thumbnail` - Thumbnail 400x225px\n- `picture_preview` - Preview 1280x720px"
+          }
+        },
+        {
+          "name": "Usuarios por Rol",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/search?role=JURADO&page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "search"],
+              "query": [
+                {"key": "role", "value": "JURADO"},
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "20"}
+              ]
+            },
+            "description": "**Obtener usuarios por rol específico**\n\nEjemplo de búsqueda filtrada por rol.\n\n**Roles disponibles:**\n- `PARTICIPANTE` - Usuarios que pueden participar\n- `JURADO` - Usuarios que pueden evaluar\n- `CONTENT_ADMIN` - Gestores de contenido\n- `ADMIN` - Administradores del sistema\n\n**Nota:** Los usuarios pueden tener múltiples roles."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Gestión de Jurados",
+      "item": [
+        {
+          "name": "Jurados por Especialización",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "if (pm.response.code === 200) {",
+                "    const res = pm.response.json();",
+                "    if (res.data && res.data.jurados && res.data.jurados.length > 0) {",
+                "        pm.environment.set('juradoId', res.data.jurados[0].id);",
+                "        console.log('✅ Jurados especializados encontrados:', res.data.jurados.length);",
+                "        res.data.jurados.forEach(jurado => {",
+                "            console.log('👨‍⚖️', jurado.nombre, '- Experiencia:', jurado.especializaciones[0]?.experiencia_años || 0, 'años');",
+                "        });",
+                "    }",
+                "}"
+              ]
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {"raw": "{{baseUrl}}/users/jurados/fotografia", "host": ["{{baseUrl}}"], "path": ["users", "jurados", "fotografia"]},
+            "description": "**Obtener jurados especializados por tipo de medio**\n\nRetorna jurados que tienen especialización en un tipo específico de medio.\n\n**Tipos de medio disponibles:**\n- `fotografia` - Especialistas en fotografía\n- `video` - Especialistas en video\n- `audio` - Especialistas en audio\n- `corto_cine` - Especialistas en cortometrajes\n\n**Información incluida:**\n- Datos del jurado\n- Especializaciones detalladas\n- Años de experiencia\n- Certificaciones\n- URL del portfolio\n\n**Ejemplo de respuesta:**\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"jurados\": [{\n      \"id\": \"jurado123\",\n      \"nombre\": \"Ana García\",\n      \"roles\": [\"JURADO\", \"PARTICIPANTE\"],\n      \"especializaciones\": [{\n        \"especializacion\": \"fotografia\",\n        \"experiencia_años\": 8,\n        \"certificaciones\": [\"Certificado en Fotografía Digital\"],\n        \"portfolio_url\": \"https://portfolio.com/ana\"\n      }]\n    }]\n  }\n}\n```"
+          }
+        },
+        {
+          "name": "Crear Especialización de Jurado",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"especializaciones\": [\"fotografia\", \"video\"],\n  \"experiencia_años\": 5,\n  \"certificaciones\": [\n    \"Certificado en Fotografía Digital\",\n    \"Diploma en Producción Audiovisual\"\n  ],\n  \"portfolio_url\": \"https://miportfolio.com\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/users/jurado/especializacion", "host": ["{{baseUrl}}"], "path": ["users", "jurado", "especializacion"]},
+            "description": "**Crear especialización de jurado (Solo JURADO)**\n\nPermite a un jurado definir sus especializaciones y experiencia.\n\n**Campos requeridos:**\n- `especializaciones` - Array de especializaciones\n\n**Campos opcionales:**\n- `experiencia_años` - Años de experiencia\n- `certificaciones` - Array de certificaciones\n- `portfolio_url` - URL del portfolio\n\n**Especializaciones válidas:**\n- `fotografia`\n- `video`\n- `audio`\n- `corto_cine`\n\n**Nota:** Solo usuarios con rol JURADO pueden crear especializaciones."
+          }
+        },
+        {
+          "name": "Actualizar Especialización",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"experiencia_años\": 7,\n  \"certificaciones\": [\n    \"Certificado en Fotografía Digital\",\n    \"Diploma en Producción Audiovisual\",\n    \"Especialización en Fotografía de Naturaleza\"\n  ],\n  \"portfolio_url\": \"https://miportfolio-actualizado.com\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/users/jurado/especializacion", "host": ["{{baseUrl}}"], "path": ["users", "jurado", "especializacion"]},
+            "description": "**Actualizar especialización de jurado**\n\nPermite actualizar información de especialización existente.\n\n**Opciones de actualización:**\n1. **Actualización parcial:** Solo enviar campos a modificar\n2. **Reemplazo completo:** Incluir `especializaciones` para reemplazar todas\n\n**Campos opcionales:**\n- `especializaciones` - Reemplaza todas las especializaciones\n- `experiencia_años` - Actualiza años de experiencia\n- `certificaciones` - Actualiza certificaciones\n- `portfolio_url` - Actualiza URL del portfolio"
+          }
+        },
+        {
+          "name": "Asignar Jurado a Categoría (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jurado_id\": \"{{juradoId}}\",\n  \"categoria_id\": {{categoriaId}}\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/users/jurado/asignar", "host": ["{{baseUrl}}"], "path": ["users", "jurado", "asignar"]},
+            "description": "**Asignar jurado a categoría (Solo ADMIN)**\n\nAsigna un jurado específico para evaluar una categoría de concurso.\n\n**Campos requeridos:**\n- `jurado_id` - ID del usuario jurado\n- `categoria_id` - ID de la categoría\n\n**Validaciones:**\n- El usuario debe tener rol JURADO\n- La categoría debe existir\n- No puede haber asignación duplicada\n- Solo ADMIN puede realizar asignaciones\n\n**Respuesta:**\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"asignacion\": {\n      \"id\": 1,\n      \"usuario_id\": \"jurado123\",\n      \"categoria_id\": 5\n    }\n  }\n}\n```"
+          }
+        },
+        {
+          "name": "Remover Asignación (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "url": {"raw": "{{baseUrl}}/users/jurado/asignar/{{juradoId}}/{{categoriaId}}", "host": ["{{baseUrl}}"], "path": ["users", "jurado", "asignar", "{{juradoId}}", "{{categoriaId}}"]},
+            "description": "**Remover asignación de jurado (Solo ADMIN)**\n\nElimina la asignación de un jurado a una categoría específica.\n\n**Parámetros de URL:**\n- `juradoId` - ID del usuario jurado\n- `categoriaId` - ID de la categoría\n\n**Validaciones:**\n- La asignación debe existir\n- Solo ADMIN puede remover asignaciones"
+          }
+        },
+        {
+          "name": "Ver Asignaciones de Jurado",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/jurado/asignaciones",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "jurado", "asignaciones"],
+              "query": [
+                {"key": "juradoId", "value": "", "disabled": true, "description": "ID del jurado (solo para ADMIN)"}
+              ]
+            },
+            "description": "**Ver asignaciones de jurado**\n\nMuestra las categorías asignadas a un jurado.\n\n**Permisos:**\n- **JURADO:** Ve sus propias asignaciones\n- **ADMIN:** Puede ver asignaciones de cualquier jurado usando `juradoId`\n\n**Query parameters:**\n- `juradoId` - ID del jurado (opcional, solo para ADMIN)\n\n**Respuesta:**\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"asignaciones\": [{\n      \"id\": 1,\n      \"usuario_id\": \"jurado123\",\n      \"categoria_id\": 5\n    }]\n  }\n}\n```"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Gestión de Roles (Admin)",
+      "item": [
+        {
+          "name": "Listar Todos los Usuarios (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/search?page=1&limit=50",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "search"],
+              "query": [
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "50"}
+              ]
+            },
+            "description": "**Listar todos los usuarios (Admin)**\n\nVista administrativa de todos los usuarios del sistema.\n\n**Información mostrada:**\n- Roles y permisos\n- Estadísticas de actividad\n- Estado de cuenta\n- Especializaciones (jurados)\n\n**Nota:** Este endpoint requiere permisos de ADMIN para ver todos los usuarios sin filtros."
+          }
+        },
+        {
+          "name": "Estadísticas de Roles",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "// Este test simula obtener estadísticas de roles",
+                "if (pm.response.code === 200) {",
+                "    const res = pm.response.json();",
+                "    if (res.data && res.data.data) {",
+                "        const users = res.data.data;",
+                "        const roleStats = {};",
+                "        ",
+                "        users.forEach(user => {",
+                "            user.roles.forEach(role => {",
+                "                roleStats[role] = (roleStats[role] || 0) + 1;",
+                "            });",
+                "        });",
+                "        ",
+                "        console.log('📊 Estadísticas de Roles:');",
+                "        Object.entries(roleStats).forEach(([role, count]) => {",
+                "            console.log(`   ${role}: ${count} usuarios`);",
+                "        });",
+                "    }",
+                "}"
+              ]
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/search?limit=1000",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "search"],
+              "query": [
+                {"key": "limit", "value": "1000"}
+              ]
+            },
+            "description": "**Obtener estadísticas de roles**\n\nEste endpoint utiliza la búsqueda de usuarios para generar estadísticas de roles.\n\n**El test automático calcula:**\n- Cantidad de usuarios por rol\n- Distribución de roles múltiples\n- Estadísticas generales\n\n**Nota:** En un sistema real, esto sería un endpoint dedicado `/admin/stats/roles`"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Seguimiento Social",
+      "item": [
+        {
+          "name": "Seguir Usuario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"seguido_id\": \"{{targetUserId}}\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/users/follow", "host": ["{{baseUrl}}"], "path": ["users", "follow"]},
+            "description": "**Seguir a un usuario**\n\nPermite seguir a otro usuario para ver su actividad.\n\n**Campos requeridos:**\n- `seguido_id` - ID del usuario a seguir\n\n**Validaciones:**\n- No puedes seguirte a ti mismo\n- El usuario debe existir\n- No puedes seguir al mismo usuario dos veces\n\n**Respuesta incluye:**\n- Información del seguimiento\n- Datos básicos del usuario seguido\n- URLs de imagen de perfil"
+          }
+        },
+        {
+          "name": "Dejar de Seguir",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "url": {"raw": "{{baseUrl}}/users/follow/{{targetUserId}}", "host": ["{{baseUrl}}"], "path": ["users", "follow", "{{targetUserId}}"]},
+            "description": "**Dejar de seguir a un usuario**\n\nElimina el seguimiento a un usuario específico.\n\n**Parámetros:**\n- `id` - ID del usuario que dejas de seguir\n\n**Validaciones:**\n- Debes estar siguiendo al usuario\n- El seguimiento debe existir"
+          }
+        },
+        {
+          "name": "Mis Seguidos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/following?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "following"],
+              "query": [
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "20"}
+              ]
+            },
+            "description": "**Obtener usuarios que sigo**\n\nLista de usuarios que el usuario autenticado está siguiendo.\n\n**Paginación:**\n- `page` - Página actual (default: 1)\n- `limit` - Elementos por página (default: 20)\n\n**Información incluida:**\n- Datos de cada usuario seguido\n- Roles y especializaciones\n- Estadísticas de actividad\n- URLs de imagen de perfil"
+          }
+        },
+        {
+          "name": "Mis Seguidores",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/followers?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "followers"],
+              "query": [
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "20"}
+              ]
+            },
+            "description": "**Obtener mis seguidores**\n\nLista de usuarios que siguen al usuario autenticado.\n\n**Paginación:**\n- `page` - Página actual (default: 1)\n- `limit` - Elementos por página (default: 20)\n\n**Información incluida:**\n- Datos de cada seguidor\n- Roles y especializaciones\n- Estadísticas de actividad\n- URLs de imagen de perfil"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Perfil Personal",
+      "item": [
+        {
+          "name": "Mi Perfil",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "url": {"raw": "{{baseUrl}}/auth/me", "host": ["{{baseUrl}}"], "path": ["auth", "me"]},
+            "description": "**Obtener mi perfil completo**\n\nRetorna información completa del usuario autenticado.\n\n**Información incluida:**\n- Datos personales\n- Roles y permisos\n- Estadísticas de actividad\n- Especializaciones (si es jurado)\n- URLs de imagen de perfil\n\n**Nota:** Este endpoint está en la colección de Auth pero es relevante para roles."
+          }
+        },
+        {
+          "name": "Actualizar Mi Perfil",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Mi Nuevo Nombre\",\n  \"bio\": \"Soy un fotógrafo profesional especializado en naturaleza y paisajes urbanos.\",\n  \"picture_url\": \"https://ejemplo.com/mi-nueva-foto.jpg\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/users/profile", "host": ["{{baseUrl}}"], "path": ["users", "profile"]},
+            "description": "**Actualizar mi perfil**\n\nPermite actualizar información personal del usuario.\n\n**Campos opcionales:**\n- `nombre` - Nombre completo\n- `bio` - Biografía o descripción\n- `picture_url` - URL de imagen de perfil\n\n**Nota:** Los roles solo pueden ser modificados por administradores."
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -4,7 +4,9 @@
 Write-Host "Generando colecciones de Postman para WebFestival API..." -ForegroundColor Green
 
 $colecciones = @(
+    "Auth",
     "Concursos",
+    "Inscripciones",
     "Media",
     "Criterios",
     "Calificaciones",
@@ -16,7 +18,8 @@ $colecciones = @(
     "Subscriptions",
     "Billing",
     "Notifications",
-    "Social-Media"
+    "Social-Media",
+    "Voting"
 )
 
 Write-Host "Total de colecciones a crear: $($colecciones.Count)" -ForegroundColor Cyan

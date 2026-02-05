@@ -194,6 +194,736 @@
           }
         }
       ]
+    },
+    {
+      "name": "Administración",
+      "item": [
+        {
+          "name": "Listar Todos los Usuarios",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/usuarios?page=1&limit=20&role=&estado=&search=",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "usuarios"],
+              "query": [
+                {"key": "page", "value": "1", "description": "Número de página"},
+                {"key": "limit", "value": "20", "description": "Elementos por página"},
+                {"key": "role", "value": "", "description": "Filtrar por rol: ADMIN, JURADO, PARTICIPANTE, CONTENT_ADMIN"},
+                {"key": "estado", "value": "", "description": "Filtrar por estado: activo, inactivo, suspendido"},
+                {"key": "search", "value": "", "description": "Buscar por nombre o email"}
+              ]
+            },
+            "description": "**Listar todos los usuarios (Admin)**\n\nObtiene lista completa de usuarios con filtros por rol y estado.\n\n**Respuesta:**\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"data\": [\n      {\n        \"id\": \"user_123\",\n        \"email\": \"usuario@ejemplo.com\",\n        \"nombre\": \"Juan Pérez\",\n        \"roles\": [\"PARTICIPANTE\"],\n        \"primary_role\": \"PARTICIPANTE\",\n        \"activo\": true,\n        \"created_at\": \"2024-01-15T10:30:00Z\",\n        \"updated_at\": \"2024-01-15T10:30:00Z\",\n        \"picture_url\": \"https://ejemplo.com/foto.jpg\",\n        \"bio\": \"Fotógrafo aficionado\"\n      }\n    ],\n    \"total\": 150,\n    \"page\": 1,\n    \"totalPages\": 8\n  },\n  \"message\": \"Usuarios obtenidos exitosamente\"\n}\n```"
+          },
+          "response": [
+            {
+              "name": "Éxito - Lista de usuarios",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/usuarios?page=1&limit=20",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "usuarios"],
+                  "query": [{"key": "page", "value": "1"}, {"key": "limit", "value": "20"}]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"data\": [\n      {\n        \"id\": \"user_123\",\n        \"email\": \"admin@webfestival.com\",\n        \"nombre\": \"Administrador Principal\",\n        \"roles\": [\"ADMIN\"],\n        \"primary_role\": \"ADMIN\",\n        \"activo\": true,\n        \"created_at\": \"2024-01-01T00:00:00Z\",\n        \"updated_at\": \"2024-01-15T10:30:00Z\",\n        \"picture_url\": null,\n        \"bio\": null\n      },\n      {\n        \"id\": \"user_456\",\n        \"email\": \"jurado@webfestival.com\",\n        \"nombre\": \"María García\",\n        \"roles\": [\"JURADO\"],\n        \"primary_role\": \"JURADO\",\n        \"activo\": true,\n        \"created_at\": \"2024-01-10T15:20:00Z\",\n        \"updated_at\": \"2024-01-15T09:45:00Z\",\n        \"picture_url\": \"https://ejemplo.com/maria.jpg\",\n        \"bio\": \"Fotógrafa profesional con 10 años de experiencia\"\n      }\n    ],\n    \"total\": 150,\n    \"page\": 1,\n    \"totalPages\": 8\n  },\n  \"message\": \"Usuarios obtenidos exitosamente\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Obtener Usuario por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "url": {"raw": "{{baseUrl}}/admin/usuarios/{{userId}}", "host": ["{{baseUrl}}"], "path": ["admin", "usuarios", "{{userId}}"]},
+            "description": "**Obtener detalles completos de usuario (Admin)**\n\nInformación completa incluyendo roles, permisos y estado.\n\n**Respuesta:**\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"user_123\",\n    \"email\": \"usuario@ejemplo.com\",\n    \"nombre\": \"Juan Pérez\",\n    \"roles\": [\"PARTICIPANTE\"],\n    \"primary_role\": \"PARTICIPANTE\",\n    \"activo\": true,\n    \"created_at\": \"2024-01-15T10:30:00Z\",\n    \"updated_at\": \"2024-01-15T10:30:00Z\",\n    \"picture_url\": \"https://ejemplo.com/foto.jpg\",\n    \"bio\": \"Fotógrafo aficionado\",\n    \"especializacion\": null,\n    \"_count\": {\n      \"medios\": 5,\n      \"inscripciones\": 3,\n      \"seguidores\": 12,\n      \"siguiendo\": 8\n    }\n  },\n  \"message\": \"Detalles del usuario obtenidos exitosamente\"\n}\n```"
+          },
+          "response": [
+            {
+              "name": "Éxito - Detalles del usuario",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+                "url": {"raw": "{{baseUrl}}/admin/usuarios/user_123", "host": ["{{baseUrl}}"], "path": ["admin", "usuarios", "user_123"]}
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"user_123\",\n    \"email\": \"usuario@ejemplo.com\",\n    \"nombre\": \"Juan Pérez\",\n    \"roles\": [\"PARTICIPANTE\"],\n    \"primary_role\": \"PARTICIPANTE\",\n    \"activo\": true,\n    \"created_at\": \"2024-01-15T10:30:00Z\",\n    \"updated_at\": \"2024-01-15T10:30:00Z\",\n    \"picture_url\": \"https://ejemplo.com/foto.jpg\",\n    \"bio\": \"Fotógrafo aficionado\",\n    \"especializacion\": null,\n    \"_count\": {\n      \"medios\": 5,\n      \"inscripciones\": 3,\n      \"seguidores\": 12,\n      \"siguiendo\": 8\n    }\n  },\n  \"message\": \"Detalles del usuario obtenidos exitosamente\"\n}"
+            },
+            {
+              "name": "Error - Usuario no encontrado",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+                "url": {"raw": "{{baseUrl}}/admin/usuarios/user_999", "host": ["{{baseUrl}}"], "path": ["admin", "usuarios", "user_999"]}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "cookie": [],
+              "body": "{\n  \"success\": false,\n  \"error\": \"Usuario no encontrado\",\n  \"message\": \"El usuario especificado no existe en el sistema\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Actualizar Usuario",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Nombre Actualizado\",\n  \"email\": \"nuevo@email.com\",\n  \"estado\": \"activo\",\n  \"roles\": [\"PARTICIPANTE\", \"JURADO\"]\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/admin/usuarios/{{userId}}", "host": ["{{baseUrl}}"], "path": ["admin", "usuarios", "{{userId}}"]},
+            "description": "**Actualizar usuario (Admin)**\n\nModifica información, estado y roles del usuario.\n\n**Campos opcionales:**\n- `nombre`: Nuevo nombre del usuario\n- `email`: Nuevo email del usuario\n- `estado`: Estado del usuario (activo, inactivo, suspendido)\n- `roles`: Array de roles (ADMIN, JURADO, PARTICIPANTE, CONTENT_ADMIN)\n\n**Respuesta:**\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"user_123\",\n    \"email\": \"nuevo@email.com\",\n    \"nombre\": \"Nombre Actualizado\",\n    \"roles\": [\"PARTICIPANTE\", \"JURADO\"],\n    \"primary_role\": \"PARTICIPANTE\",\n    \"activo\": true,\n    \"updated_at\": \"2024-01-15T14:30:00Z\"\n  },\n  \"message\": \"Usuario actualizado exitosamente\"\n}\n```"
+          },
+          "response": [
+            {
+              "name": "Éxito - Usuario actualizado",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {"key": "Content-Type", "value": "application/json"},
+                  {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nombre\": \"Juan Carlos Pérez\",\n  \"roles\": [\"PARTICIPANTE\", \"JURADO\"]\n}"
+                },
+                "url": {"raw": "{{baseUrl}}/admin/usuarios/user_123", "host": ["{{baseUrl}}"], "path": ["admin", "usuarios", "user_123"]}
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"user_123\",\n    \"email\": \"usuario@ejemplo.com\",\n    \"nombre\": \"Juan Carlos Pérez\",\n    \"roles\": [\"PARTICIPANTE\", \"JURADO\"],\n    \"primary_role\": \"PARTICIPANTE\",\n    \"activo\": true,\n    \"updated_at\": \"2024-01-15T14:30:00Z\"\n  },\n  \"message\": \"Usuario actualizado exitosamente\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Cambiar Estado Usuario",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"suspendido\",\n  \"motivo\": \"Violación de términos de uso\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/admin/usuarios/{{userId}}/estado", "host": ["{{baseUrl}}"], "path": ["admin", "usuarios", "{{userId}}", "estado"]},
+            "description": "**Cambiar estado de usuario (Admin)**\n\nActiva, desactiva o suspende usuarios.\n\n**Estados disponibles:**\n- `activo`: Usuario puede acceder normalmente\n- `inactivo`: Usuario no puede acceder\n- `suspendido`: Usuario suspendido temporalmente\n\n**Campos requeridos:**\n- `estado`: Nuevo estado del usuario\n\n**Campos opcionales:**\n- `motivo`: Razón del cambio de estado\n\n**Respuesta:**\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"user_123\",\n    \"activo\": false,\n    \"updated_at\": \"2024-01-15T14:30:00Z\"\n  },\n  \"message\": \"Estado del usuario actualizado exitosamente\"\n}\n```"
+          },
+          "response": [
+            {
+              "name": "Éxito - Estado cambiado",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {"key": "Content-Type", "value": "application/json"},
+                  {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"estado\": \"inactivo\",\n  \"motivo\": \"Usuario solicitó desactivación temporal\"\n}"
+                },
+                "url": {"raw": "{{baseUrl}}/admin/usuarios/user_123/estado", "host": ["{{baseUrl}}"], "path": ["admin", "usuarios", "user_123", "estado"]}
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"user_123\",\n    \"activo\": false,\n    \"updated_at\": \"2024-01-15T14:30:00Z\"\n  },\n  \"message\": \"Estado del usuario actualizado exitosamente\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Asignar Roles",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roles\": [\"JURADO\", \"PARTICIPANTE\"]\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/admin/usuarios/{{userId}}/roles", "host": ["{{baseUrl}}"], "path": ["admin", "usuarios", "{{userId}}", "roles"]},
+            "description": "**Asignar roles a usuario (Admin)**\n\nAsigna roles específicos al usuario. Los roles existentes serán reemplazados.\n\n**Roles disponibles:**\n- `ADMIN`: Administrador del sistema\n- `JURADO`: Jurado evaluador\n- `PARTICIPANTE`: Participante en concursos\n- `CONTENT_ADMIN`: Administrador de contenido\n\n**Campos requeridos:**\n- `roles`: Array de roles a asignar\n\n**Respuesta:**\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"user_123\",\n    \"roles\": [\"JURADO\", \"PARTICIPANTE\"],\n    \"primary_role\": \"JURADO\",\n    \"updated_at\": \"2024-01-15T14:30:00Z\"\n  },\n  \"message\": \"Roles asignados exitosamente\"\n}\n```"
+          },
+          "response": [
+            {
+              "name": "Éxito - Roles asignados",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {"key": "Content-Type", "value": "application/json"},
+                  {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"roles\": [\"JURADO\", \"PARTICIPANTE\"]\n}"
+                },
+                "url": {"raw": "{{baseUrl}}/admin/usuarios/user_123/roles", "host": ["{{baseUrl}}"], "path": ["admin", "usuarios", "user_123", "roles"]}
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"user_123\",\n    \"roles\": [\"JURADO\", \"PARTICIPANTE\"],\n    \"primary_role\": \"JURADO\",\n    \"updated_at\": \"2024-01-15T14:30:00Z\"\n  },\n  \"message\": \"Roles asignados exitosamente\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Remover Roles",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roles\": [\"JURADO\"]\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/admin/usuarios/{{userId}}/roles", "host": ["{{baseUrl}}"], "path": ["admin", "usuarios", "{{userId}}", "roles"]},
+            "description": "**Remover roles de usuario (Admin)**\n\nElimina roles específicos del usuario. Si se eliminan todos los roles, se asigna automáticamente el rol PARTICIPANTE.\n\n**Campos requeridos:**\n- `roles`: Array de roles a remover\n\n**Respuesta:**\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"user_123\",\n    \"roles\": [\"PARTICIPANTE\"],\n    \"primary_role\": \"PARTICIPANTE\",\n    \"updated_at\": \"2024-01-15T14:30:00Z\"\n  },\n  \"message\": \"Roles removidos exitosamente\"\n}\n```"
+          },
+          "response": [
+            {
+              "name": "Éxito - Roles removidos",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [
+                  {"key": "Content-Type", "value": "application/json"},
+                  {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"roles\": [\"JURADO\"]\n}"
+                },
+                "url": {"raw": "{{baseUrl}}/admin/usuarios/user_123/roles", "host": ["{{baseUrl}}"], "path": ["admin", "usuarios", "user_123", "roles"]}
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"user_123\",\n    \"roles\": [\"PARTICIPANTE\"],\n    \"primary_role\": \"PARTICIPANTE\",\n    \"updated_at\": \"2024-01-15T14:30:00Z\"\n  },\n  \"message\": \"Roles removidos exitosamente\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Eliminar Usuario",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "url": {"raw": "{{baseUrl}}/admin/usuarios/{{userId}}", "host": ["{{baseUrl}}"], "path": ["admin", "usuarios", "{{userId}}"]},
+            "description": "**Eliminar usuario (Admin)**\n\n⚠️ **ACCIÓN IRREVERSIBLE**\n\nElimina permanentemente el usuario y todos sus datos asociados.\n\n**Respuesta:**\n```json\n{\n  \"success\": true,\n  \"message\": \"Usuario eliminado exitosamente\"\n}\n```\n\n**Nota:** Esta acción eliminará:\n- Perfil del usuario\n- Medios subidos\n- Inscripciones a concursos\n- Calificaciones realizadas (si es jurado)\n- Relaciones de seguimiento"
+          },
+          "response": [
+            {
+              "name": "Éxito - Usuario eliminado",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+                "url": {"raw": "{{baseUrl}}/admin/usuarios/user_123", "host": ["{{baseUrl}}"], "path": ["admin", "usuarios", "user_123"]}
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Usuario eliminado exitosamente\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Estadísticas de Usuarios",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "url": {"raw": "{{baseUrl}}/admin/usuarios/estadisticas", "host": ["{{baseUrl}}"], "path": ["admin", "usuarios", "estadisticas"]},
+            "description": "**Estadísticas de usuarios (Admin)**\n\nContadores por rol, estado y actividad.\n\n**Respuesta:**\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"totalUsuarios\": 150,\n    \"usuariosActivos\": 142,\n    \"usuariosInactivos\": 8,\n    \"usuariosPorRol\": {\n      \"PARTICIPANTE\": 120,\n      \"JURADO\": 25,\n      \"ADMIN\": 3,\n      \"CONTENT_ADMIN\": 2\n    }\n  },\n  \"message\": \"Estadísticas de usuarios obtenidas exitosamente\"\n}\n```"
+          },
+          "response": [
+            {
+              "name": "Éxito - Estadísticas obtenidas",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+                "url": {"raw": "{{baseUrl}}/admin/usuarios/estadisticas", "host": ["{{baseUrl}}"], "path": ["admin", "usuarios", "estadisticas"]}
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"totalUsuarios\": 150,\n    \"usuariosActivos\": 142,\n    \"usuariosInactivos\": 8,\n    \"usuariosPorRol\": {\n      \"PARTICIPANTE\": 120,\n      \"JURADO\": 25,\n      \"ADMIN\": 3,\n      \"CONTENT_ADMIN\": 2\n    }\n  },\n  \"message\": \"Estadísticas de usuarios obtenidas exitosamente\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Exportar Usuarios",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/usuarios/exportar?formato=csv&role=&estado=",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "usuarios", "exportar"],
+              "query": [
+                {"key": "formato", "value": "csv", "description": "Formato: csv, xlsx"},
+                {"key": "role", "value": "", "description": "Filtrar por rol: ADMIN, JURADO, PARTICIPANTE, CONTENT_ADMIN"},
+                {"key": "estado", "value": "", "description": "Filtrar por estado: activo, inactivo, suspendido"}
+              ]
+            },
+            "description": "**Exportar lista de usuarios (Admin)**\n\nDescarga archivo con datos de usuarios filtrados.\n\n**Parámetros:**\n- `formato`: Formato del archivo (csv, xlsx)\n- `role`: Filtrar por rol específico (opcional)\n- `estado`: Filtrar por estado específico (opcional)\n\n**Respuesta:**\nArchivo binario con los datos de usuarios en el formato especificado.\n\n**Campos incluidos en la exportación:**\n- ID del usuario\n- Nombre completo\n- Email\n- Roles asignados\n- Estado (Activo/Inactivo)\n- Fecha de creación"
+          },
+          "response": [
+            {
+              "name": "Éxito - Archivo CSV generado",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/usuarios/exportar?formato=csv",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "usuarios", "exportar"],
+                  "query": [{"key": "formato", "value": "csv"}]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "text",
+              "header": [
+                {"key": "Content-Type", "value": "text/csv"},
+                {"key": "Content-Disposition", "value": "attachment; filename=\"usuarios_2024-01-15.csv\""}
+              ],
+              "cookie": [],
+              "body": "ID,Nombre,Email,Roles,Estado,Fecha Creación\n\"user_123\",\"Juan Pérez\",\"juan@ejemplo.com\",\"PARTICIPANTE\",\"Activo\",\"2024-01-15T10:30:00Z\"\n\"user_456\",\"María García\",\"maria@ejemplo.com\",\"JURADO;PARTICIPANTE\",\"Activo\",\"2024-01-10T15:20:00Z\""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Administración de Jurados",
+      "item": [
+        {
+          "name": "Listar Todos los Jurados",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/jurados?page=1&limit=20&especializacion=&estado=&experiencia=&search=",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "jurados"],
+              "query": [
+                {"key": "page", "value": "1", "description": "Número de página"},
+                {"key": "limit", "value": "20", "description": "Elementos por página"},
+                {"key": "especializacion", "value": "", "description": "Filtrar por especialización: fotografia, video, audio, corto_cine"},
+                {"key": "estado", "value": "", "description": "Filtrar por estado: activo, inactivo"},
+                {"key": "experiencia", "value": "", "description": "Filtrar por años de experiencia mínima"},
+                {"key": "search", "value": "", "description": "Buscar por nombre o especialización"}
+              ]
+            },
+            "description": "**Listar todos los jurados (Admin)**\n\nObtiene lista completa de jurados con sus especializaciones y estadísticas.\n\n**Respuesta:**\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"data\": [\n      {\n        \"id\": \"user_456\",\n        \"email\": \"jurado@ejemplo.com\",\n        \"nombre\": \"María García\",\n        \"roles\": [\"JURADO\"],\n        \"primary_role\": \"JURADO\",\n        \"activo\": true,\n        \"especializacion\": {\n          \"especializaciones\": [\"fotografia\", \"video\"],\n          \"experiencia_años\": 8,\n          \"certificaciones\": [\"Adobe Certified Expert\"]\n        },\n        \"_count\": {\n          \"asignaciones_jurado\": 5\n        }\n      }\n    ],\n    \"total\": 25,\n    \"page\": 1,\n    \"totalPages\": 2\n  },\n  \"message\": \"Jurados obtenidos exitosamente\"\n}\n```"
+          },
+          "response": [
+            {
+              "name": "Éxito - Lista de jurados",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/jurados?page=1&limit=20",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "jurados"],
+                  "query": [{"key": "page", "value": "1"}, {"key": "limit", "value": "20"}]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"data\": [\n      {\n        \"id\": \"user_456\",\n        \"email\": \"maria.garcia@ejemplo.com\",\n        \"nombre\": \"María García\",\n        \"roles\": [\"JURADO\"],\n        \"primary_role\": \"JURADO\",\n        \"activo\": true,\n        \"especializacion\": {\n          \"especializaciones\": [\"fotografia\", \"video\"],\n          \"experiencia_años\": 8,\n          \"certificaciones\": [\"Adobe Certified Expert\", \"Final Cut Pro Certified\"]\n        },\n        \"_count\": {\n          \"asignaciones_jurado\": 5\n        }\n      },\n      {\n        \"id\": \"user_789\",\n        \"email\": \"carlos.lopez@ejemplo.com\",\n        \"nombre\": \"Carlos López\",\n        \"roles\": [\"JURADO\"],\n        \"primary_role\": \"JURADO\",\n        \"activo\": true,\n        \"especializacion\": {\n          \"especializaciones\": [\"corto_cine\"],\n          \"experiencia_años\": 12,\n          \"certificaciones\": [\"Certificado de Dirección Cinematográfica\"]\n        },\n        \"_count\": {\n          \"asignaciones_jurado\": 8\n        }\n      }\n    ],\n    \"total\": 25,\n    \"page\": 1,\n    \"totalPages\": 2\n  },\n  \"message\": \"Jurados obtenidos exitosamente\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Obtener Perfil Completo de Jurado",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "url": {"raw": "{{baseUrl}}/admin/jurados/{{juradoId}}", "host": ["{{baseUrl}}"], "path": ["admin", "jurados", "{{juradoId}}"]},
+            "description": "**Obtener perfil completo de jurado (Admin)**\n\nInformación detallada incluyendo especializaciones, asignaciones, estadísticas de evaluación.\n\n**Respuesta:**\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"user\": {\n      \"id\": \"user_456\",\n      \"nombre\": \"María García\",\n      \"email\": \"maria@ejemplo.com\",\n      \"roles\": [\"JURADO\"],\n      \"activo\": true,\n      \"especializacion\": {\n        \"especializaciones\": [\"fotografia\", \"video\"],\n        \"experiencia_años\": 8,\n        \"certificaciones\": [\"Adobe Certified Expert\"]\n      },\n      \"asignaciones_jurado\": [\n        {\n          \"id\": 1,\n          \"categoria\": {\n            \"nombre\": \"Fotografía Profesional\",\n            \"concurso\": {\n              \"nombre\": \"Festival 2024\"\n            }\n          }\n        }\n      ]\n    },\n    \"especializaciones\": [\"fotografia\", \"video\"],\n    \"asignaciones\": [...],\n    \"estadisticas\": {\n      \"evaluaciones_realizadas\": 25,\n      \"asignaciones_actuales\": 3\n    }\n  },\n  \"message\": \"Perfil del jurado obtenido exitosamente\"\n}\n```"
+          },
+          "response": [
+            {
+              "name": "Éxito - Perfil completo del jurado",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+                "url": {"raw": "{{baseUrl}}/admin/jurados/user_456", "host": ["{{baseUrl}}"], "path": ["admin", "jurados", "user_456"]}
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"user\": {\n      \"id\": \"user_456\",\n      \"nombre\": \"María García\",\n      \"email\": \"maria@ejemplo.com\",\n      \"roles\": [\"JURADO\"],\n      \"activo\": true,\n      \"especializacion\": {\n        \"especializaciones\": [\"fotografia\", \"video\"],\n        \"experiencia_años\": 8,\n        \"certificaciones\": [\"Adobe Certified Expert\", \"Final Cut Pro Certified\"]\n      },\n      \"asignaciones_jurado\": [\n        {\n          \"id\": 1,\n          \"categoria\": {\n            \"nombre\": \"Fotografía Profesional\",\n            \"concurso\": {\n              \"nombre\": \"Festival 2024\"\n            }\n          }\n        }\n      ]\n    },\n    \"especializaciones\": [\"fotografia\", \"video\"],\n    \"asignaciones\": [],\n    \"estadisticas\": {\n      \"evaluaciones_realizadas\": 25,\n      \"asignaciones_actuales\": 3\n    }\n  },\n  \"message\": \"Perfil del jurado obtenido exitosamente\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Actualizar Perfil de Jurado",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"especializaciones\": [\"fotografia\", \"video\"],\n  \"experiencia_años\": 8,\n  \"certificaciones\": [\"Certificado Adobe Photoshop\", \"Certificado Final Cut Pro\"],\n  \"portfolio_url\": \"https://portfolio-jurado.com\",\n  \"bio_profesional\": \"Fotógrafo profesional con 8 años de experiencia\",\n  \"disponibilidad\": \"tiempo_completo\",\n  \"nivel_experiencia\": \"experto\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/admin/jurados/{{juradoId}}", "host": ["{{baseUrl}}"], "path": ["admin", "jurados", "{{juradoId}}"]},
+            "description": "**Actualizar perfil de jurado (Admin)**\n\nModifica especializaciones, experiencia y datos profesionales.\n\n**Campos opcionales:**\n- `especializaciones`: Array de especializaciones (fotografia, video, audio, corto_cine)\n- `experiencia_años`: Años de experiencia profesional\n- `certificaciones`: Array de certificaciones obtenidas\n- `portfolio_url`: URL del portafolio profesional\n- `bio_profesional`: Biografía profesional\n- `disponibilidad`: Disponibilidad del jurado\n- `nivel_experiencia`: Nivel de experiencia\n\n**Respuesta:**\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"user_456\",\n    \"bio\": \"Fotógrafo profesional con 8 años de experiencia\",\n    \"updated_at\": \"2024-01-15T14:30:00Z\"\n  },\n  \"message\": \"Perfil del jurado actualizado exitosamente\"\n}\n```"
+          },
+          "response": [
+            {
+              "name": "Éxito - Perfil actualizado",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {"key": "Content-Type", "value": "application/json"},
+                  {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"especializaciones\": [\"fotografia\", \"video\"],\n  \"experiencia_años\": 10,\n  \"bio_profesional\": \"Fotógrafo y videomaker con 10 años de experiencia\"\n}"
+                },
+                "url": {"raw": "{{baseUrl}}/admin/jurados/user_456", "host": ["{{baseUrl}}"], "path": ["admin", "jurados", "user_456"]}
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"user_456\",\n    \"bio\": \"Fotógrafo y videomaker con 10 años de experiencia\",\n    \"updated_at\": \"2024-01-15T14:30:00Z\"\n  },\n  \"message\": \"Perfil del jurado actualizado exitosamente\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Cambiar Estado de Jurado",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"inactivo\",\n  \"motivo\": \"Jurado temporalmente no disponible\",\n  \"fecha_reactivacion\": \"2024-06-01\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/admin/jurados/{{juradoId}}/estado", "host": ["{{baseUrl}}"], "path": ["admin", "jurados", "{{juradoId}}", "estado"]},
+            "description": "**Cambiar estado de jurado (Admin)**\n\nActiva o desactiva jurados para asignaciones.\n\n**Estados disponibles:**\n- `activo`: Jurado disponible para asignaciones\n- `inactivo`: Jurado temporalmente no disponible\n- `suspendido`: Jurado suspendido\n\n**Campos requeridos:**\n- `estado`: Nuevo estado del jurado\n\n**Campos opcionales:**\n- `motivo`: Razón del cambio de estado\n- `fecha_reactivacion`: Fecha programada para reactivación (solo para inactivo)\n\n**Respuesta:**\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"user_456\",\n    \"activo\": false,\n    \"updated_at\": \"2024-01-15T14:30:00Z\"\n  },\n  \"message\": \"Estado del jurado actualizado exitosamente\"\n}\n```"
+          },
+          "response": [
+            {
+              "name": "Éxito - Estado cambiado",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {"key": "Content-Type", "value": "application/json"},
+                  {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"estado\": \"inactivo\",\n  \"motivo\": \"Vacaciones programadas\"\n}"
+                },
+                "url": {"raw": "{{baseUrl}}/admin/jurados/user_456/estado", "host": ["{{baseUrl}}"], "path": ["admin", "jurados", "user_456", "estado"]}
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"user_456\",\n    \"activo\": false,\n    \"updated_at\": \"2024-01-15T14:30:00Z\"\n  },\n  \"message\": \"Estado del jurado actualizado exitosamente\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Validar Certificaciones",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"certificacion_id\": \"cert_123\",\n  \"validada\": true,\n  \"comentarios\": \"Certificación verificada correctamente\",\n  \"fecha_validacion\": \"2024-01-15\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/admin/jurados/{{juradoId}}/certificaciones/validar", "host": ["{{baseUrl}}"], "path": ["admin", "jurados", "{{juradoId}}", "certificaciones", "validar"]},
+            "description": "**Validar certificaciones de jurado (Admin)**\n\nAprueba o rechaza certificaciones presentadas por jurados.\n\n**Campos requeridos:**\n- `certificacion_id`: ID de la certificación a validar\n- `validada`: true para aprobar, false para rechazar\n- `fecha_validacion`: Fecha de la validación\n\n**Campos opcionales:**\n- `comentarios`: Comentarios sobre la validación\n\n**Respuesta:**\n```json\n{\n  \"success\": true,\n  \"message\": \"Certificación validada exitosamente\"\n}\n```\n\n**Nota:** Esta funcionalidad requiere implementación adicional en la base de datos para el manejo completo de certificaciones."
+          },
+          "response": [
+            {
+              "name": "Éxito - Certificación validada",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {"key": "Content-Type", "value": "application/json"},
+                  {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"certificacion_id\": \"cert_123\",\n  \"validada\": true,\n  \"comentarios\": \"Certificación Adobe verificada\",\n  \"fecha_validacion\": \"2024-01-15\"\n}"
+                },
+                "url": {"raw": "{{baseUrl}}/admin/jurados/user_456/certificaciones/validar", "host": ["{{baseUrl}}"], "path": ["admin", "jurados", "user_456", "certificaciones", "validar"]}
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Certificación validada exitosamente\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Asignar Especialización Adicional",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"especializacion\": \"corto_cine\",\n  \"nivel_competencia\": \"intermedio\",\n  \"certificaciones_requeridas\": [\"Certificado de Dirección\"],\n  \"aprobado_por_admin\": true\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/admin/jurados/{{juradoId}}/especializaciones", "host": ["{{baseUrl}}"], "path": ["admin", "jurados", "{{juradoId}}", "especializaciones"]},
+            "description": "**Asignar especialización adicional (Admin)**\n\nPermite a administradores agregar nuevas especializaciones a jurados calificados.\n\n**Campos requeridos:**\n- `especializacion`: Nueva especialización (fotografia, video, audio, corto_cine)\n- `nivel_competencia`: Nivel de competencia en la especialización\n- `aprobado_por_admin`: Confirmación de aprobación por administrador\n\n**Campos opcionales:**\n- `certificaciones_requeridas`: Array de certificaciones necesarias\n\n**Respuesta:**\n```json\n{\n  \"success\": true,\n  \"message\": \"Especialización asignada exitosamente\"\n}\n```"
+          },
+          "response": [
+            {
+              "name": "Éxito - Especialización asignada",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {"key": "Content-Type", "value": "application/json"},
+                  {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"especializacion\": \"audio\",\n  \"nivel_competencia\": \"avanzado\",\n  \"aprobado_por_admin\": true\n}"
+                },
+                "url": {"raw": "{{baseUrl}}/admin/jurados/user_456/especializaciones", "host": ["{{baseUrl}}"], "path": ["admin", "jurados", "user_456", "especializaciones"]}
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Especialización asignada exitosamente\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Remover Especialización",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "url": {"raw": "{{baseUrl}}/admin/jurados/{{juradoId}}/especializaciones/{{especializacion}}", "host": ["{{baseUrl}}"], "path": ["admin", "jurados", "{{juradoId}}", "especializaciones", "{{especializacion}}"]},
+            "description": "**Remover especialización (Admin)**\n\nElimina una especialización específica del perfil del jurado.\n\n**Parámetros de ruta:**\n- `juradoId`: ID del jurado\n- `especializacion`: Especialización a remover (fotografia, video, audio, corto_cine)\n\n**Respuesta:**\n```json\n{\n  \"success\": true,\n  \"message\": \"Especialización removida exitosamente\"\n}\n```\n\n**Nota:** No se puede remover la última especialización de un jurado."
+          },
+          "response": [
+            {
+              "name": "Éxito - Especialización removida",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+                "url": {"raw": "{{baseUrl}}/admin/jurados/user_456/especializaciones/audio", "host": ["{{baseUrl}}"], "path": ["admin", "jurados", "user_456", "especializaciones", "audio"]}
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Especialización removida exitosamente\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Estadísticas de Rendimiento",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/jurados/{{juradoId}}/estadisticas?periodo=6m",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "jurados", "{{juradoId}}", "estadisticas"],
+              "query": [
+                {"key": "periodo", "value": "6m", "description": "Período: 1m, 3m, 6m, 1y, all"}
+              ]
+            },
+            "description": "**Estadísticas de rendimiento de jurado (Admin)**\n\nMétricas detalladas: evaluaciones realizadas, tiempo promedio, consistencia, etc.\n\n**Parámetros:**\n- `periodo`: Período de análisis (1m, 3m, 6m, 1y, all)\n\n**Respuesta:**\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"evaluaciones_realizadas\": 25,\n    \"tiempo_promedio_evaluacion\": 0,\n    \"consistencia_puntuacion\": 0,\n    \"categorias_evaluadas\": [],\n    \"concursos_participados\": 5\n  },\n  \"message\": \"Estadísticas del jurado obtenidas exitosamente\"\n}\n```\n\n**Nota:** Algunas métricas requieren implementación adicional para cálculos estadísticos complejos."
+          },
+          "response": [
+            {
+              "name": "Éxito - Estadísticas obtenidas",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/jurados/user_456/estadisticas?periodo=6m",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "jurados", "user_456", "estadisticas"],
+                  "query": [{"key": "periodo", "value": "6m"}]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"evaluaciones_realizadas\": 25,\n    \"tiempo_promedio_evaluacion\": 0,\n    \"consistencia_puntuacion\": 0,\n    \"categorias_evaluadas\": [],\n    \"concursos_participados\": 5\n  },\n  \"message\": \"Estadísticas del jurado obtenidas exitosamente\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Historial de Asignaciones",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/jurados/{{juradoId}}/asignaciones?page=1&limit=20&estado=",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "jurados", "{{juradoId}}", "asignaciones"],
+              "query": [
+                {"key": "page", "value": "1", "description": "Número de página"},
+                {"key": "limit", "value": "20", "description": "Elementos por página"},
+                {"key": "estado", "value": "", "description": "Filtrar por estado: activa, completada, cancelada"}
+              ]
+            },
+            "description": "**Historial de asignaciones de jurado (Admin)**\n\nTodas las asignaciones pasadas y actuales del jurado con detalles de rendimiento.\n\n**Respuesta:**\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"data\": [\n      {\n        \"id\": 1,\n        \"usuario_id\": \"user_456\",\n        \"categoria\": {\n          \"id\": 1,\n          \"nombre\": \"Fotografía Profesional\",\n          \"concurso\": {\n            \"id\": 1,\n            \"nombre\": \"Festival 2024\"\n          }\n        },\n        \"usuario\": {\n          \"id\": \"user_456\",\n          \"nombre\": \"María García\",\n          \"email\": \"maria@ejemplo.com\"\n        },\n        \"created_at\": \"2024-01-10T00:00:00Z\"\n      }\n    ],\n    \"total\": 5,\n    \"page\": 1,\n    \"totalPages\": 1\n  },\n  \"message\": \"Asignaciones del jurado obtenidas exitosamente\"\n}\n```"
+          },
+          "response": [
+            {
+              "name": "Éxito - Historial obtenido",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/jurados/user_456/asignaciones?page=1&limit=20",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "jurados", "user_456", "asignaciones"],
+                  "query": [{"key": "page", "value": "1"}, {"key": "limit", "value": "20"}]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{"key": "Content-Type", "value": "application/json"}],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"data\": [\n      {\n        \"id\": 1,\n        \"usuario_id\": \"user_456\",\n        \"categoria\": {\n          \"id\": 1,\n          \"nombre\": \"Fotografía Profesional\",\n          \"concurso\": {\n            \"id\": 1,\n            \"nombre\": \"Festival 2024\"\n          }\n        },\n        \"usuario\": {\n          \"id\": \"user_456\",\n          \"nombre\": \"María García\",\n          \"email\": \"maria@ejemplo.com\"\n        },\n        \"created_at\": \"2024-01-10T00:00:00Z\"\n      }\n    ],\n    \"total\": 5,\n    \"page\": 1,\n    \"totalPages\": 1\n  },\n  \"message\": \"Asignaciones del jurado obtenidas exitosamente\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Exportar Datos de Jurados",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/jurados/exportar?formato=xlsx&especializacion=&incluir_estadisticas=true&incluir_asignaciones=",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "jurados", "exportar"],
+              "query": [
+                {"key": "formato", "value": "xlsx", "description": "Formato: csv, xlsx"},
+                {"key": "especializacion", "value": "", "description": "Filtrar por especialización: fotografia, video, audio, corto_cine"},
+                {"key": "incluir_estadisticas", "value": "true", "description": "Incluir métricas de rendimiento"},
+                {"key": "incluir_asignaciones", "value": "", "description": "Incluir historial de asignaciones"}
+              ]
+            },
+            "description": "**Exportar datos de jurados (Admin)**\n\nDescarga completa de perfiles de jurados con estadísticas y asignaciones.\n\n**Parámetros:**\n- `formato`: Formato del archivo (csv, xlsx)\n- `especializacion`: Filtrar por especialización específica (opcional)\n- `incluir_estadisticas`: Incluir métricas de rendimiento (boolean)\n- `incluir_asignaciones`: Incluir historial de asignaciones (boolean)\n\n**Respuesta:**\nArchivo binario con los datos de jurados en el formato especificado.\n\n**Campos incluidos en la exportación:**\n- ID del jurado\n- Nombre completo\n- Email\n- Especializaciones\n- Años de experiencia\n- Número de asignaciones\n- Estado (Activo/Inactivo)\n- Estadísticas de rendimiento (si se incluyen)"
+          },
+          "response": [
+            {
+              "name": "Éxito - Archivo XLSX generado",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+                "url": {
+                  "raw": "{{baseUrl}}/admin/jurados/exportar?formato=xlsx&incluir_estadisticas=true",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["admin", "jurados", "exportar"],
+                  "query": [
+                    {"key": "formato", "value": "xlsx"},
+                    {"key": "incluir_estadisticas", "value": "true"}
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "text",
+              "header": [
+                {"key": "Content-Type", "value": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"},
+                {"key": "Content-Disposition", "value": "attachment; filename=\"jurados_2024-01-15.xlsx\""}
+              ],
+              "cookie": [],
+              "body": "[Binary Excel file content]"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
