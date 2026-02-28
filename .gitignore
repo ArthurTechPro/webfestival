@@ -11,6 +11,9 @@ out/
 build/
 dist/
 
+# Dejar de rastrearlas (pero mantener los archivos localmente):
+# git rm -r --cached webfestival-api/
+# git rm -r --cached webfestival-app/
 # Proyectos webfestival (cada uno tiene su propio repositorio Git)
 webfestival-api/
 webfestival-app/
