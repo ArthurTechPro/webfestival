@@ -115,6 +115,7 @@ Thumbs.db
 
 # Docker
 docker-compose.override.yml
+webfestival-db/.env
 
 # Immich specific
 immich-data/

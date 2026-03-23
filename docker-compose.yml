@@ -1,0 +1,284 @@
+# ============================================================
+# Docker Compose - WebFestival Platform (PRODUCCIÓN)
+# Servidor: evolucion-col — /opt/webfestival/
+#
+# Traefik y Portainer corren en /opt/traefik/ (infraestructura
+# compartida del servidor). Levantar primero:
+#   docker compose -f /opt/traefik/docker-compose.yml up -d
+#
+# Desarrollo local → usar webfestival-db/docker-compose.yml
+#
+# Datos persistentes en el host (bind mounts):
+#   /opt/data/webfestival/postgres/   ← PostgreSQL principal
+#   /opt/data/webfestival/redis/      ← Redis principal
+#   /opt/data/immich/postgres/        ← PostgreSQL de Immich
+#   /opt/data/immich/upload/          ← Fotos y videos
+#   /opt/data/immich/model-cache/     ← Modelos ML
+#   /opt/data/mailserver/mail/        ← Correos
+#   /opt/data/mailserver/mail-state/  ← Estado del servidor de correo
+#   /opt/data/mailserver/logs/        ← Logs de correo
+#   /opt/data/mailserver/config/      ← Configuración del servidor de correo
+#
+# Crear directorios antes de levantar:
+#   mkdir -p /opt/data/webfestival/{postgres,redis}
+#   mkdir -p /opt/data/immich/{postgres,upload,model-cache}
+#   mkdir -p /opt/data/mailserver/{mail,mail-state,logs,config}
+# ============================================================
+
+services:
+
+  # ──────────────────────────────────────────────
+  # POSTGRESQL — Base de datos principal
+  # ──────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: wf-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - /opt/data/webfestival/postgres:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - wf-internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ──────────────────────────────────────────────
+  # REDIS — Cache y sesiones
+  # ──────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: wf-redis
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD} --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - /opt/data/webfestival/redis:/data
+    networks:
+      - wf-internal
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ──────────────────────────────────────────────
+  # API — Node.js / Express
+  # ──────────────────────────────────────────────
+  api:
+    build:
+      context: ./webfestival-api
+      dockerfile: Dockerfile
+    image: webfestival-api:latest
+    container_name: wf-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-30d}
+      API_BASE_URL: https://api.webfestival.art
+      FRONTEND_URL: https://app.webfestival.art
+      IMMICH_SERVER_URL: http://wf-immich-server:3001
+      IMMICH_API_KEY: ${IMMICH_API_KEY}
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+      SENDGRID_API_KEY: ${SENDGRID_API_KEY}
+      SENDGRID_FROM_EMAIL: ${SENDGRID_FROM_EMAIL:-noreply@webfestival.art}
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      RATE_LIMIT_WINDOW_MS: ${RATE_LIMIT_WINDOW_MS:-900000}
+      RATE_LIMIT_MAX_REQUESTS: ${RATE_LIMIT_MAX_REQUESTS:-100}
+    networks:
+      - wf-internal
+      - traefik-proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wf-api.rule=Host(`api.webfestival.art`)"
+      - "traefik.http.routers.wf-api.entrypoints=websecure"
+      - "traefik.http.routers.wf-api.tls.certresolver=letsencrypt"
+      - "traefik.http.services.wf-api.loadbalancer.server.port=3000"
+      - "traefik.http.routers.wf-api.middlewares=wf-api-headers"
+      - "traefik.http.middlewares.wf-api-headers.headers.customResponseHeaders.X-Frame-Options=DENY"
+      - "traefik.http.middlewares.wf-api-headers.headers.customResponseHeaders.X-Content-Type-Options=nosniff"
+
+  # ──────────────────────────────────────────────
+  # APP — React (Nginx sirviendo archivos estáticos)
+  # ──────────────────────────────────────────────
+  app:
+    build:
+      context: ./webfestival-app
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: https://api.webfestival.art/api/v1
+        VITE_IMMICH_URL: https://medios.webfestival.art
+        VITE_APP_ENV: production
+    image: webfestival-app:latest
+    container_name: wf-app
+    restart: unless-stopped
+    networks:
+      - traefik-proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wf-app.rule=Host(`app.webfestival.art`) || Host(`webfestival.art`) || Host(`www.webfestival.art`)"
+      - "traefik.http.routers.wf-app.entrypoints=websecure"
+      - "traefik.http.routers.wf-app.tls.certresolver=letsencrypt"
+      - "traefik.http.services.wf-app.loadbalancer.server.port=80"
+
+  # ──────────────────────────────────────────────
+  # IMMICH — Gestión de fotos y videos
+  # ──────────────────────────────────────────────
+  immich-server:
+    image: ghcr.io/immich-app/immich-server:release
+    container_name: wf-immich-server
+    restart: unless-stopped
+    depends_on:
+      immich-postgres:
+        condition: service_healthy
+      immich-redis:
+        condition: service_healthy
+    environment:
+      DB_HOSTNAME: wf-immich-postgres
+      DB_USERNAME: ${IMMICH_DB_USER}
+      DB_PASSWORD: ${IMMICH_DB_PASSWORD}
+      DB_DATABASE_NAME: ${IMMICH_DB_NAME}
+      REDIS_HOSTNAME: wf-immich-redis
+      UPLOAD_LOCATION: /usr/src/app/upload
+      TZ: ${TZ:-America/Bogota}
+    volumes:
+      - /opt/data/immich/upload:/usr/src/app/upload
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - wf-internal
+      - traefik-proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wf-immich.rule=Host(`medios.webfestival.art`)"
+      - "traefik.http.routers.wf-immich.entrypoints=websecure"
+      - "traefik.http.routers.wf-immich.tls.certresolver=letsencrypt"
+      - "traefik.http.services.wf-immich.loadbalancer.server.port=3001"
+      - "traefik.http.middlewares.wf-immich-upload.buffering.maxRequestBodyBytes=53687091200"
+      - "traefik.http.routers.wf-immich.middlewares=wf-immich-upload"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3001/api/server/ping || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  immich-machine-learning:
+    image: ghcr.io/immich-app/immich-machine-learning:release
+    container_name: wf-immich-ml
+    restart: unless-stopped
+    volumes:
+      - /opt/data/immich/model-cache:/cache
+    networks:
+      - wf-internal
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c \"import urllib.request; urllib.request.urlopen('http://localhost:3003/ping')\" || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+
+  immich-postgres:
+    image: tensorchord/pgvecto-rs:pg16-v0.2.0
+    container_name: wf-immich-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${IMMICH_DB_USER}
+      POSTGRES_PASSWORD: ${IMMICH_DB_PASSWORD}
+      POSTGRES_DB: ${IMMICH_DB_NAME}
+      POSTGRES_INITDB_ARGS: "--data-checksums"
+    volumes:
+      - /opt/data/immich/postgres:/var/lib/postgresql/data
+    networks:
+      - wf-internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${IMMICH_DB_USER} -d ${IMMICH_DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  immich-redis:
+    image: redis:7-alpine
+    container_name: wf-immich-redis
+    restart: unless-stopped
+    networks:
+      - wf-internal
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ──────────────────────────────────────────────
+  # MAILSERVER — Servidor de correo propio
+  # ──────────────────────────────────────────────
+  mailserver:
+    image: ghcr.io/docker-mailserver/docker-mailserver:latest
+    container_name: wf-mailserver
+    hostname: mail.webfestival.art
+    restart: unless-stopped
+    ports:
+      - "25:25"
+      - "465:465"
+      - "587:587"
+      - "993:993"
+    environment:
+      ENABLE_RSPAMD: 1
+      ENABLE_CLAMAV: 0
+      ENABLE_FAIL2BAN: 1
+      ENABLE_SPAMASSASSIN: 0
+      SSL_TYPE: letsencrypt
+      PERMIT_DOCKER: none
+      POSTFIX_INET_PROTOCOLS: ipv4
+      LOG_LEVEL: warn
+      TZ: ${TZ:-America/Bogota}
+    volumes:
+      - /opt/data/mailserver/mail:/var/mail
+      - /opt/data/mailserver/mail-state:/var/mail-state
+      - /opt/data/mailserver/logs:/var/log/mail
+      - /opt/data/mailserver/config:/tmp/docker-mailserver
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    networks:
+      - traefik-proxy
+    cap_add:
+      - NET_ADMIN
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    healthcheck:
+      test: ["CMD-SHELL", "ss -lntp | grep -q ':25 ' || exit 1"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+
+# ──────────────────────────────────────────────
+# REDES
+# ──────────────────────────────────────────────
+networks:
+  traefik-proxy:
+    external: true      # red compartida del servidor, creada en /opt/traefik
+  wf-internal:
+    name: wf-internal
+    driver: bridge
+    internal: true      # sin acceso a internet directo

@@ -1,0 +1,90 @@
+# ============================================================
+# Docker Compose - Infraestructura del Servidor evolucion-col
+# Ubicación en VPS: /opt/traefik/
+#
+# Servicios compartidos por TODAS las apps del servidor:
+#   - Traefik  → traefik.evolucion-col.com  (proxy + SSL)
+#   - Portainer → portainer.evolucion-col.com (gestión de contenedores)
+#
+# Levantar PRIMERO antes que cualquier otra app:
+#   docker compose up -d
+# ============================================================
+
+services:
+
+  # ──────────────────────────────────────────────
+  # TRAEFIK — Proxy inverso + SSL automático
+  # Gestiona TODOS los dominios del servidor
+  # ──────────────────────────────────────────────
+  traefik:
+    image: traefik:v3.2
+    container_name: traefik
+    restart: unless-stopped
+    command:
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=traefik-proxy"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+      - "--log.level=INFO"
+      - "--accesslog=true"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - letsencrypt:/letsencrypt
+    networks:
+      - traefik-proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik.evolucion-col.com`)"
+      - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
+      - "traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.traefik-dashboard.service=api@internal"
+      - "traefik.http.routers.traefik-dashboard.middlewares=traefik-auth"
+      - "traefik.http.middlewares.traefik-auth.basicauth.users=${TRAEFIK_DASHBOARD_AUTH}"
+
+  # ──────────────────────────────────────────────
+  # PORTAINER — Gestión visual de contenedores
+  # Administra todos los contenedores del servidor
+  # ──────────────────────────────────────────────
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - portainer-data:/data
+    networks:
+      - traefik-proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.portainer.rule=Host(`portainer.evolucion-col.com`)"
+      - "traefik.http.routers.portainer.entrypoints=websecure"
+      - "traefik.http.routers.portainer.tls.certresolver=letsencrypt"
+      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
+
+# ──────────────────────────────────────────────
+# RED COMPARTIDA DEL SERVIDOR
+# Todas las apps se conectan a esta red
+# ──────────────────────────────────────────────
+networks:
+  traefik-proxy:
+    name: traefik-proxy
+    driver: bridge
+
+# ──────────────────────────────────────────────
+# VOLÚMENES
+# ──────────────────────────────────────────────
+volumes:
+  letsencrypt:
+    name: traefik-letsencrypt
+  portainer-data:
+    name: traefik-portainer-data
