@@ -102,6 +102,9 @@ services:
       RESEND_API_KEY: ${RESEND_API_KEY}
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
       STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      PAYPAL_CLIENT_ID: ${PAYPAL_CLIENT_ID}
+      PAYPAL_CLIENT_SECRET: ${PAYPAL_CLIENT_SECRET}
+      PAYPAL_MODE: ${PAYPAL_MODE:-sandbox}
       RATE_LIMIT_WINDOW_MS: ${RATE_LIMIT_WINDOW_MS:-900000}
       RATE_LIMIT_MAX_REQUESTS: ${RATE_LIMIT_MAX_REQUESTS:-100}
     networks:
@@ -175,7 +178,7 @@ services:
       - "traefik.http.middlewares.wf-immich-upload.buffering.maxRequestBodyBytes=53687091200"
       - "traefik.http.routers.wf-immich.middlewares=wf-immich-upload"
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:3001/api/server/ping || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://localhost:3001/api/server/ping || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
