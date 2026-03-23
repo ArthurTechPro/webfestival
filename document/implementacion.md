@@ -295,8 +295,8 @@ nano /opt/traefik/.env
 
 ```env
 ACME_EMAIL=admin@evolucion-col.com
-# Generar con: htpasswd -nb admin TU_PASSWORD
-TRAEFIK_DASHBOARD_AUTH=admin:$apr1$AiohlOUI$bL1AvqYnycTXngtNI3jKV0
+# Generar con: htpasswd -nb admin %WaSi3355/Su%
+TRAEFIK_DASHBOARD_AUTH=admin:$apr1$T2RJMJ4J$zrW9TbM5R7.d4/wW/PgnM/
 ```
 
 ### 4.4 Levantar Traefik
@@ -305,6 +305,8 @@ TRAEFIK_DASHBOARD_AUTH=admin:$apr1$AiohlOUI$bL1AvqYnycTXngtNI3jKV0
 docker compose -f /opt/traefik/docker-compose.yml up -d
 docker ps | grep traefik
 ```
+
+
 
 > Traefik debe estar corriendo antes de levantar cualquier otra app.
 
@@ -333,10 +335,12 @@ chmod 600 ~/.ssh/config
 # Probar conexión
 ssh -T git@github.com
 
+# Unir repositorio [Nuevo]
+git remote add origin git@github.com:ArthurTechPro/webfestival.git
+
 # Clonar en /opt/webfestival
 git clone git@github.com:ArthurTechPro/Festival-WEB.git /opt/webfestival
 ```
-
 ---
 
 ## 6. Configurar Variables de Entorno
@@ -357,6 +361,10 @@ POSTGRES_USER=postgres
 POSTGRES_PASSWORD=%WaSi3355/Su%
 POSTGRES_DB=webfestival
 
+# ── Traefik Dashboard ─────────────────────────────────────
+# Generar con: htpasswd -nb admin TU_PASSWORD
+TRAEFIK_DASHBOARD_AUTH=admin:$apr1$T2RJMJ4J$zrW9TbM5R7.d4/wW/PgnM/
+
 # Redis
 REDIS_PASSWORD=%WaSi3355/Su%
 
@@ -365,9 +373,9 @@ JWT_SECRET=049402cabdf3689aa4a0cd73ab38e78eaa84c6dc9fc08cc20d22733469db7e4b
 JWT_REFRESH_SECRET=5b658fa494cc80b910def4b65d4dbf0cecf6e05affbe4d47dcf88ebdd66a05cf
 
 # Immich
-IMMICH_DB_USER=immich_user
-IMMICH_DB_PASSWORD=IMMICH_DB_PASSWORD_AQUI
-IMMICH_DB_NAME=immich
+IMMICH_DB_USER=immich
+IMMICH_DB_PASSWORD=%WaSi3355/Su%
+IMMICH_DB_NAME=immich_db
 IMMICH_API_KEY=OBTENER_DESDE_PANEL_IMMICH_DESPUES
 
 # Email
@@ -384,7 +392,7 @@ STRIPE_WEBHOOK_SECRET=whsec_XXXXXXXX
 ```bash
 openssl rand -hex 32   # JWT_SECRET
 openssl rand -hex 32   # JWT_REFRESH_SECRET
-htpasswd -nb admin TU_PASSWORD   # para Traefik si se gestiona desde aquí
+htpasswd -nb admin %WaSi3355/Su%   # para Traefik si se gestiona desde aquí
 ```
 
 ---

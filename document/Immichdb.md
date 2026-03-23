@@ -1,4 +1,10 @@
-Instalación nativa de Immich en Ubuntu 22.04
+> **Referencia alternativa** — Este documento describe la instalación **nativa** de Immich (sin Docker, usando systemd directamente en el SO).
+> El proyecto WebFestival usa Immich **en Docker** (ver `docker-compose.yml` y `document/implementacion.md` sección 9).
+> Este documento se conserva como referencia en caso de necesitar migrar a una instalación nativa en el futuro.
+
+---
+
+# Instalación nativa de Immich en Ubuntu 22.04
 
 Estas instrucciones usan el repositorio arter97/immich‑native que prepara scripts y servicios systemd para correr Immich sin contenedores. 
 
