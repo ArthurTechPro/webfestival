@@ -140,7 +140,7 @@ services:
       - traefik-proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.wf-app.rule=Host(`app.webfestival.art`) || Host(`webfestival.art`) || Host(`www.webfestival.art`)"
+      - "traefik.http.routers.wf-app.rule=Host(`app.webfestival.art`)"
       - "traefik.http.routers.wf-app.entrypoints=websecure"
       - "traefik.http.routers.wf-app.tls.certresolver=letsencrypt"
       - "traefik.http.services.wf-app.loadbalancer.server.port=80"
