@@ -83,14 +83,16 @@ services:
 # ──────────────────────────────────────────────
 networks:
   traefik-proxy:
+    external: true
     name: traefik-proxy
-    driver: bridge
 
 # ──────────────────────────────────────────────
 # VOLÚMENES
 # ──────────────────────────────────────────────
 volumes:
   letsencrypt:
+    external: true
     name: traefik-letsencrypt
   portainer-data:
+    external: true
     name: traefik-portainer-data
