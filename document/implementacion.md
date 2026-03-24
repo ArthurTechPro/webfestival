@@ -366,7 +366,9 @@ POSTGRES_DB=webfestival
 TRAEFIK_DASHBOARD_AUTH=admin:$apr1$T2RJMJ4J$zrW9TbM5R7.d4/wW/PgnM/
 
 # Redis
-REDIS_PASSWORD=%WaSi3355/Su%
+REDIS_PASSWORD=WaSi3355Su
+%WaSi3355/Su%
+
 
 # JWT (generar con: openssl rand -hex 32)
 JWT_SECRET=049402cabdf3689aa4a0cd73ab38e78eaa84c6dc9fc08cc20d22733469db7e4b

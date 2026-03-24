@@ -3,12 +3,14 @@
 # Ubicación en VPS: /opt/traefik/
 #
 # Servicios compartidos por TODAS las apps del servidor:
-#   - Traefik  → traefik.evolucion-col.com  (proxy + SSL)
-#   - Portainer → portainer.evolucion-col.com (gestión de contenedores)
+#   - Traefik   → traefik.evolucioncol.com  (proxy + SSL)
+#   - Portainer → portainer.evolucioncol.com (gestión de contenedores)
 #
 # Levantar PRIMERO antes que cualquier otra app:
 #   docker compose up -d
 # ============================================================
+
+name: evolucioncol
 
 services:
 
