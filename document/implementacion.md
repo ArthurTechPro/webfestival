@@ -358,7 +358,7 @@ ACME_EMAIL=admin@webfestival.art
 
 # PostgreSQL
 POSTGRES_USER=postgres
-POSTGRES_PASSWORD=%WaSi3355/Su%
+POSTGRES_PASSWORD=WaSi3355Su
 POSTGRES_DB=webfestival
 
 # ── Traefik Dashboard ─────────────────────────────────────
@@ -465,8 +465,8 @@ docker compose -f /opt/webfestival/docker-compose.yml restart api
 ### 10.1 Crear cuentas
 
 ```bash
-docker compose -f /opt/webfestival/docker-compose.yml exec mailserver setup email add admin@webfestival.art TU_PASSWORD
-docker compose -f /opt/webfestival/docker-compose.yml exec mailserver setup email add noreply@webfestival.art TU_PASSWORD
+docker compose -f /opt/webfestival/docker-compose.yml exec mailserver setup email add admin@webfestival.art wasi3355
+docker compose -f /opt/webfestival/docker-compose.yml exec mailserver setup email add noreply@webfestival.art wasi3355
 ```
 
 ### 10.2 Generar clave DKIM
