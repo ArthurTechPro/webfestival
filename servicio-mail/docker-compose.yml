@@ -1,0 +1,35 @@
+# ============================================================
+# Docker Compose - Servicio de Correo (Mailcow)
+# Ubicación en VPS: /opt/servicio-mail/
+#
+# Mailcow gestiona múltiples dominios de correo
+# Panel admin: https://mail.webfestival.art
+#
+# Requisitos previos en el servidor:
+#   - Clonar mailcow: git clone https://github.com/mailcow/mailcow-dockerized /opt/servicio-mail
+#   - Generar config: ./generate_config.sh
+#   - Levantar: docker compose up -d
+#
+# DNS requerido por dominio:
+#   mail.DOMINIO.com  A     → IP del servidor
+#   @                 MX    → mail.DOMINIO.com (priority 10)
+#   @                 TXT   → v=spf1 mx ~all
+#   autodiscover      CNAME → mail.DOMINIO.com
+#   autoconfig        CNAME → mail.DOMINIO.com
+#   _dmarc            TXT   → v=DMARC1; p=quarantine; rua=mailto:admin@DOMINIO.com
+# ============================================================
+#
+# NOTA: Mailcow genera su propio docker-compose.yml al correr generate_config.sh
+# Este archivo es solo de referencia y documentación.
+# El archivo real estará en /opt/servicio-mail/docker-compose.yml generado por mailcow.
+#
+# Configuración del hostname principal:
+#   MAILCOW_HOSTNAME=mail.webfestival.art
+#
+# Para conectar webfestival-api al mailcow:
+#   SMTP_HOST=mail.webfestival.art
+#   SMTP_PORT=587
+#   SMTP_USER=noreply@webfestival.art
+#   SMTP_PASSWORD=TU_PASSWORD
+#   SMTP_SECURE=false
+# ============================================================

@@ -242,52 +242,9 @@ services:
       retries: 5
 
   # ──────────────────────────────────────────────
-  # MAILSERVER — Servidor de correo propio
+  # MAILSERVER — movido a stack independiente /opt/servicio-mail
+  # Usar mailcow en mail.webfestival.art
   # ──────────────────────────────────────────────
-  mailserver:
-    image: ghcr.io/docker-mailserver/docker-mailserver:latest
-    container_name: wf-mailserver
-    hostname: mail.webfestival.art
-    restart: unless-stopped
-    ports:
-      - "25:25"
-      - "465:465"
-      - "587:587"
-      - "993:993"
-    environment:
-      ENABLE_RSPAMD: 0
-      ENABLE_CLAMAV: 0
-      ENABLE_FAIL2BAN: 0
-      ENABLE_SPAMASSASSIN: 0
-      ENABLE_OPENDKIM: 0
-      ENABLE_OPENDMARC: 0
-      ENABLE_POLICYD_SPF: 0
-      SSL_TYPE: letsencrypt
-      PERMIT_DOCKER: network
-      POSTFIX_INET_PROTOCOLS: ipv4
-      LOG_LEVEL: warn
-      TZ: ${TZ:-America/Bogota}
-    volumes:
-      - /opt/data/mailserver/mail:/var/mail
-      - /opt/data/mailserver/mail-state:/var/mail-state
-      - /opt/data/mailserver/logs:/var/log/mail
-      - /opt/data/mailserver/config:/tmp/docker-mailserver
-      - /etc/letsencrypt:/etc/letsencrypt:ro
-    networks:
-      - wf-internal
-      - traefik-proxy
-    cap_add:
-      - NET_ADMIN
-    ulimits:
-      nofile:
-        soft: 65536
-        hard: 65536
-    healthcheck:
-      test: ["CMD-SHELL", "ss -lntp | grep -q ':25 ' || exit 1"]
-      interval: 60s
-      timeout: 10s
-      retries: 3
-      start_period: 120s
 
 # ──────────────────────────────────────────────
 # REDES
