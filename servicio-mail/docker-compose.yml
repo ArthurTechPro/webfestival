@@ -30,6 +30,7 @@
 #   SMTP_HOST=mail.webfestival.art
 #   SMTP_PORT=587
 #   SMTP_USER=noreply@webfestival.art
-#   SMTP_PASSWORD=WaSi3355Su
+#   SMTP_PASSWORD=TU_PASSWORD   
 #   SMTP_SECURE=false
 # ============================================================
+# NUEVA CONFIGURACION..
