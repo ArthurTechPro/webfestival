@@ -139,6 +139,40 @@
       "name": "Seguridad",
       "item": [
         {
+          "name": "Recuperar Contraseña (Solicitar)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"usuario@ejemplo.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/forgot-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "forgot-password"]
+            },
+            "description": "**Solicitar reset de contraseña**\n\nEnvía email con enlace para restablecer contraseña.\n\n**Nota:** Siempre responde 200 aunque el email no exista (seguridad)."
+          }
+        },
+        {
+          "name": "Restablecer Contraseña",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"TOKEN_DEL_EMAIL\",\n  \"newPassword\": \"NuevaPassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/reset-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "reset-password"]
+            },
+            "description": "**Restablecer contraseña con token**\n\nUsa el token recibido por email para establecer nueva contraseña.\n\n**Token expira en:** 1 hora"
+          }
+        },
+        {
           "name": "Cambiar Contraseña",
           "request": {
             "method": "PUT",
