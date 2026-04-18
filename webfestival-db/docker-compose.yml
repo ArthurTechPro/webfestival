@@ -9,7 +9,7 @@
 #   docker compose up -d
 #
 # Conexión desde la API local (npm run dev):
-#   DATABASE_URL=postgresql://wf_user:password@localhost:5432/webfestival
+#   DATABASE_URL=postgresql://postgres:postgres@localhost:5432/webfestival
 #   REDIS_URL=redis://:password@localhost:6379
 # ============================================================
 
@@ -23,8 +23,8 @@ services:
     container_name: wf-postgres-dev
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-wf_user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-wf_password}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       POSTGRES_DB: ${POSTGRES_DB:-webfestival}
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
@@ -33,7 +33,7 @@ services:
       - postgres-data:/var/lib/postgresql/data
       - ./init:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-wf_user} -d ${POSTGRES_DB:-webfestival}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-webfestival}"]
       interval: 10s
       timeout: 5s
       retries: 5
