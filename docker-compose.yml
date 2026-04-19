@@ -12,7 +12,7 @@
 #   /opt/data/webfestival/postgres/   ← PostgreSQL principal
 #   /opt/data/webfestival/redis/      ← Redis principal
 #   /opt/data/immich/postgres/        ← PostgreSQL de Immich
-#   /opt/data/immich/upload/          ← Fotos y videos
+#   /opt/immich/images/               ← Fotos y videos (sincronizado con Google Drive)
 #   /opt/data/immich/model-cache/     ← Modelos ML
 #   /opt/data/mailserver/mail/        ← Correos
 #   /opt/data/mailserver/mail-state/  ← Estado del servidor de correo
@@ -175,7 +175,7 @@ services:
       UPLOAD_LOCATION: /usr/src/app/upload
       TZ: ${TZ:-America/Bogota}
     volumes:
-      - /opt/data/immich/upload:/usr/src/app/upload
+      - /opt/immich/images:/usr/src/app/upload
       - /etc/localtime:/etc/localtime:ro
     networks:
       - wf-internal
