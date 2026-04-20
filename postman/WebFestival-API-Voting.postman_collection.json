@@ -173,7 +173,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["voting", "contests", "{{contestId}}", "media"]
             },
-            "description": "Obtiene todos los medios de un concurso disponibles para votación. Excluye los medios del usuario logueado. Requiere autenticación."
+            "description": "Obtiene medios disponibles para votación. IMPORTANTE: Solo funciona cuando el concurso está en estado VOTACION. Retorna 404 si el concurso no está en etapa de votación. La respuesta incluye tipo_votacion y permite_votos del concurso."
           }
         }
       ],
@@ -232,7 +232,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["voting", "vote"]
             },
-            "description": "Registra un voto para un medio específico. Cada voto vale 1 punto. Requiere autenticación y roles: PARTICIPANTE, JURADO, ADMIN."
+            "description": "Registra un voto. IMPORTANTE: Solo permitido cuando el concurso está en estado VOTACION. Si el concurso está en ACTIVO retorna: 'El concurso aún está en etapa de recepción de envíos'. Si está en EVALUACION retorna: 'El concurso ya pasó a etapa de evaluación del jurado'."
           }
         },
         {
@@ -275,7 +275,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["voting", "vote", "{{mediaId}}"]
             },
-            "description": "Elimina un voto previamente registrado. Solo se puede retirar mientras el concurso esté activo. Requiere autenticación y roles: PARTICIPANTE, JURADO, ADMIN."
+            "description": "Retira un voto. Solo permitido mientras el concurso esté en estado VOTACION."
           }
         }
       ],
@@ -340,7 +340,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["voting", "contests", "{{contestId}}", "results"]
             },
-            "description": "Obtiene el ranking y estadísticas de un concurso. Muestra los medios ordenados por número de votos. No requiere autenticación."
+            "description": "Obtiene ranking y estadísticas. Accesible cuando: concurso en VOTACION con permite_votos=true, concurso en EVALUACION, o concurso FINALIZADO. Retorna 403 si los resultados no están disponibles."
           }
         }
       ],
@@ -554,9 +554,264 @@
             },
             "description": "Intenta votar dos veces por el mismo medio. Debe retornar error 400. Ejecutar después de 'Registrar Voto'."
           }
+        },
+        {
+          "name": "Votar en Concurso No en Votación",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Returns 400 when contest not in VOTACION state', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test('Error message describes current state', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.be.false;",
+                  "    pm.expect(jsonData.message).to.be.a('string');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"medio_id\": {{mediaId}},\n  \"comentario\": \"Test\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/voting/vote",
+              "host": ["{{baseUrl}}"],
+              "path": ["voting", "vote"]
+            },
+            "description": "Intenta votar cuando el concurso no está en estado VOTACION. Retorna 400 con mensaje descriptivo según el estado actual (ACTIVO, EVALUACION, etc.)"
+          }
         }
       ],
       "description": "Casos de prueba para validar el manejo de errores"
+    },
+    {
+      "name": "Flujo Completo por Rol",
+      "description": "## Flujo de estados del concurso\n\nBORRADOR → ACTIVO → VOTACION → EVALUACION → FINALIZADO\n\n### Admin:\n1. Crear concurso (BORRADOR)\n2. Activar concurso (ACTIVO) - participantes se inscriben y suben medios\n3. Cambiar a VOTACION + configurar tipo_votacion - público vota\n4. Cambiar a EVALUACION - jurado califica\n5. Cambiar a FINALIZADO - resultados publicados\n\n### Participante:\n- Solo puede inscribirse y subir medios en estado ACTIVO\n- Puede ver votos si permite_votos=true en VOTACION\n\n### Jurado:\n- Solo puede calificar en estado EVALUACION\n- Puede ver resultados de votación en EVALUACION y FINALIZADO",
+      "item": [
+        {
+          "name": "[Admin] Activar Concurso",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"ACTIVO\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/concursos/{{concursoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["concursos", "{{concursoId}}"]
+            },
+            "description": "Activa el concurso. Los participantes pueden inscribirse y subir medios."
+          }
+        },
+        {
+          "name": "[Admin] Iniciar Votación",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"VOTACION\",\n  \"tipo_votacion\": \"ESTRELLAS\",\n  \"permite_votos\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/concursos/{{concursoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["concursos", "{{concursoId}}"]
+            },
+            "description": "Inicia la etapa de votación pública. Configura el mecanismo de votación y visibilidad de resultados."
+          }
+        },
+        {
+          "name": "[Admin] Iniciar Evaluación Jurado",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"EVALUACION\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/concursos/{{concursoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["concursos", "{{concursoId}}"]
+            },
+            "description": "Cierra la votación pública e inicia la etapa de evaluación del jurado."
+          }
+        },
+        {
+          "name": "[Admin] Finalizar Concurso",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"FINALIZADO\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/concursos/{{concursoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["concursos", "{{concursoId}}"]
+            },
+            "description": "Finaliza el concurso y publica los resultados."
+          }
+        },
+        {
+          "name": "[Participante] Ver Medios para Votar",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{accessToken}}", "type": "string"}]
+            },
+            "method": "GET",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/voting/contests/{{concursoId}}/media",
+              "host": ["{{baseUrl}}"],
+              "path": ["voting", "contests", "{{concursoId}}", "media"]
+            },
+            "description": "Obtiene los medios disponibles para votar. Solo funciona en estado VOTACION."
+          }
+        },
+        {
+          "name": "[Participante] Votar",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{accessToken}}", "type": "string"}]
+            },
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"medio_id\": {{mediaId}},\n  \"comentario\": \"Excelente trabajo\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/voting/vote",
+              "host": ["{{baseUrl}}"],
+              "path": ["voting", "vote"]
+            },
+            "description": "Registra un voto. Solo permitido en estado VOTACION."
+          }
+        },
+        {
+          "name": "[Jurado] Ver Mis Asignaciones",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{accessToken}}", "type": "string"}]
+            },
+            "method": "GET",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/calificaciones/mis-asignaciones",
+              "host": ["{{baseUrl}}"],
+              "path": ["calificaciones", "mis-asignaciones"]
+            },
+            "description": "Obtiene los medios asignados al jurado para evaluar."
+          }
+        },
+        {
+          "name": "[Jurado] Calificar Medio",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{accessToken}}", "type": "string"}]
+            },
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"medio_id\": \"{{medioId}}\",\n  \"comentarios\": \"Excelente trabajo\",\n  \"criterios\": [\n    {\"criterio_id\": 1, \"puntuacion\": 8},\n    {\"criterio_id\": 2, \"puntuacion\": 9}\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/calificaciones",
+              "host": ["{{baseUrl}}"],
+              "path": ["calificaciones"]
+            },
+            "description": "Crea una calificación para un medio. Solo funciona en estado EVALUACION."
+          }
+        },
+        {
+          "name": "[Admin/Jurado] Ver Resultados Votación",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/voting/contests/{{concursoId}}/results",
+              "host": ["{{baseUrl}}"],
+              "path": ["voting", "contests", "{{concursoId}}", "results"]
+            },
+            "description": "Obtiene el ranking de votación. Accesible en VOTACION (con permite_votos=true), EVALUACION y FINALIZADO."
+          }
+        },
+        {
+          "name": "[Admin] Ver Resultados Evaluación",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{accessToken}}", "type": "string"}]
+            },
+            "method": "GET",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/calificaciones/resultados/{{concursoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["calificaciones", "resultados", "{{concursoId}}"]
+            },
+            "description": "Obtiene los resultados de evaluación del jurado para el concurso."
+          }
+        }
+      ]
     }
   ]
 }

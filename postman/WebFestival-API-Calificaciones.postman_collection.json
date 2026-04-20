@@ -192,10 +192,10 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"medio_id\": {{medioId}},\n  \"calificaciones_criterios\": [\n    {\n      \"criterio_id\": 1,\n      \"puntuacion\": 8.5,\n      \"comentario\": \"Excelente composición\"\n    },\n    {\n      \"criterio_id\": 2,\n      \"puntuacion\": 9.0,\n      \"comentario\": \"Muy creativo\"\n    }\n  ],\n  \"comentario_general\": \"Trabajo excepcional\"\n}"
+              "raw": "{\n  \"medio_id\": \"{{medioId}}\",\n  \"comentarios\": \"Excelente composición y uso de la luz natural\",\n  \"criterios\": [\n    {\n      \"criterio_id\": 1,\n      \"puntuacion\": 8\n    },\n    {\n      \"criterio_id\": 2,\n      \"puntuacion\": 9\n    }\n  ]\n}"
             },
             "url": {"raw": "{{baseUrl}}/calificaciones", "host": ["{{baseUrl}}"], "path": ["calificaciones"]},
-            "description": "**Crear calificación (Jurado)**\n\nCalifica un medio asignado.\n\n**Validaciones:**\n- Medio asignado al jurado\n- No calificado previamente\n- Puntuaciones 0-10"
+            "description": "Crea una calificación para un medio. IMPORTANTE: Solo funciona cuando el concurso está en estado EVALUACION. En otros estados retorna error 400 con mensaje descriptivo del estado actual."
           }
         },
         {
@@ -208,10 +208,19 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"calificaciones_criterios\": [\n    {\n      \"criterio_id\": 1,\n      \"puntuacion\": 9.0,\n      \"comentario\": \"Actualizado\"\n    }\n  ],\n  \"comentario_general\": \"Comentario actualizado\"\n}"
+              "raw": "{\n  \"comentarios\": \"Comentario actualizado tras revisión\",\n  \"criterios\": [\n    {\n      \"criterio_id\": 1,\n      \"puntuacion\": 9\n    }\n  ]\n}"
             },
             "url": {"raw": "{{baseUrl}}/calificaciones/{{calificacionId}}", "host": ["{{baseUrl}}"], "path": ["calificaciones", "{{calificacionId}}"]},
-            "description": "**Actualizar calificación (Jurado)**\n\nModifica una calificación existente."
+            "description": "Actualiza una calificación existente. Solo permitido mientras el concurso esté en estado EVALUACION."
+          }
+        },
+        {
+          "name": "Progreso del Jurado (Personal)",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
+            "url": {"raw": "{{baseUrl}}/calificaciones/jurado/progreso", "host": ["{{baseUrl}}"], "path": ["calificaciones", "jurado", "progreso"]},
+            "description": "Obtiene el progreso personal del jurado autenticado: total de medios asignados, evaluados, pendientes y porcentaje completado por categoría."
           }
         },
         {

@@ -267,10 +267,15 @@
               "query": [
                 {"key": "page", "value": "1"},
                 {"key": "limit", "value": "10"},
-                {"key": "status", "value": "", "disabled": true}
+                {"key": "status", "value": "BORRADOR", "disabled": true},
+                {"key": "status", "value": "ACTIVO", "disabled": true},
+                {"key": "status", "value": "VOTACION", "disabled": true},
+                {"key": "status", "value": "EVALUACION", "disabled": true},
+                {"key": "status", "value": "FINALIZADO", "disabled": true},
+                {"key": "status", "value": "CANCELADO", "disabled": true}
               ]
             },
-            "description": "**Listar todos los concursos (Admin)**\n\nCon paginación y filtros."
+            "description": "**Listar todos los concursos (Admin)**\n\nCon paginación y filtros.\n\n**Estados disponibles:** BORRADOR → ACTIVO → VOTACION → EVALUACION → FINALIZADO (o CANCELADO)"
           }
         },
         {
@@ -381,10 +386,74 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"titulo\": \"Concurso Actualizado\",\n  \"status\": \"Activo\"\n}"
+              "raw": "{\n  \"titulo\": \"Concurso Actualizado\",\n  \"status\": \"ACTIVO\",\n  \"tipo_votacion\": \"ESTRELLAS\",\n  \"permite_votos\": true\n}"
             },
             "url": {"raw": "{{baseUrl}}/concursos/{{concursoId}}", "host": ["{{baseUrl}}"], "path": ["concursos", "{{concursoId}}"]},
-            "description": "**Actualizar concurso (Admin)**\n\nModifica datos del concurso."
+            "description": "**Actualizar concurso (Admin)**\n\nModifica datos del concurso.\n\n**Estados disponibles:** BORRADOR → ACTIVO → VOTACION → EVALUACION → FINALIZADO (o CANCELADO)\n\n**Campos de votación:**\n- `tipo_votacion`: ESTRELLAS, LIKES, PARES, MEJOR_MEDIO, INSTAGRAM, FACEBOOK, PLATAFORMA_PROPIA\n- `permite_votos`: true hace los resultados visibles al público"
+          }
+        },
+        {
+          "name": "Cambiar Estado a VOTACION",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"VOTACION\",\n  \"tipo_votacion\": \"ESTRELLAS\",\n  \"permite_votos\": true\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/concursos/{{concursoId}}", "host": ["{{baseUrl}}"], "path": ["concursos", "{{concursoId}}"]},
+            "description": "Cambia el concurso a etapa de Votación Pública. En esta etapa los participantes y público pueden votar. tipo_votacion define el mecanismo: ESTRELLAS, LIKES, PARES, MEJOR_MEDIO, INSTAGRAM, FACEBOOK, PLATAFORMA_PROPIA. permite_votos=true hace los resultados visibles al público."
+          }
+        },
+        {
+          "name": "Cambiar Estado a EVALUACION",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"EVALUACION\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/concursos/{{concursoId}}", "host": ["{{baseUrl}}"], "path": ["concursos", "{{concursoId}}"]},
+            "description": "Cambia el concurso a etapa de Evaluación del Jurado. Solo en este estado los jurados pueden crear y editar calificaciones. La votación pública ya cerró."
+          }
+        },
+        {
+          "name": "Cambiar Estado a FINALIZADO",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"FINALIZADO\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/concursos/{{concursoId}}", "host": ["{{baseUrl}}"], "path": ["concursos", "{{concursoId}}"]},
+            "description": "Cambia el concurso al estado FINALIZADO. Los resultados quedan publicados."
+          }
+        },
+        {
+          "name": "Cambiar Estado a CANCELADO",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"CANCELADO\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/concursos/{{concursoId}}", "host": ["{{baseUrl}}"], "path": ["concursos", "{{concursoId}}"]},
+            "description": "Cancela el concurso. Puede aplicarse desde cualquier estado activo."
           }
         },
         {
