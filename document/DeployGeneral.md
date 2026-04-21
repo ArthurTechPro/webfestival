@@ -14,3 +14,7 @@ docker compose up -d --build api
 
 # 4. Si también tienes el frontend en el mismo repo, reconstruirlo
 docker compose up -d --build app
+
+# 5. los dos proyectos al tiempo.
+cd /opt/webfestival
+docker compose up -d --build api app
