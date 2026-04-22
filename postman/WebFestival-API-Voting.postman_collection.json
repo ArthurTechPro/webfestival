@@ -173,7 +173,35 @@
               "host": ["{{baseUrl}}"],
               "path": ["voting", "contests", "{{contestId}}", "media"]
             },
-            "description": "Obtiene medios disponibles para votación. IMPORTANTE: Solo funciona cuando el concurso está en estado VOTACION. Retorna 404 si el concurso no está en etapa de votación. La respuesta incluye tipo_votacion y permite_votos del concurso."
+            "description": "Obtiene medios disponibles para votación. Solo funciona en estado VOTACION.\n\n**Respuesta incluye:**\n- `instrucciones_votacion`: texto explicativo según el tipo\n- `voto_unico_emitido`: para MEJOR_MEDIO/PARES, indica si ya votó y en qué medio\n- `es_mi_voto_unico`: en cada medio, si es el elegido como favorito\n- `puntuacion_promedio`: promedio actual del medio\n- `tipo_votacion` y `permite_votos` del concurso"
+          }
+        },
+        {
+          "name": "Verificar Voto Único del Concurso",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/voting/contests/{{contestId}}/media",
+              "host": ["{{baseUrl}}"],
+              "path": ["voting", "contests", "{{contestId}}", "media"]
+            },
+            "description": "Para MEJOR_MEDIO y PARES, la respuesta incluye `voto_unico_emitido` con el `medio_id` ya elegido. Si es null, el usuario aún no ha votado en este concurso."
           }
         }
       ],
@@ -225,14 +253,14 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"medio_id\": {{mediaId}},\n  \"comentario\": \"¡Excelente trabajo! Me encanta la composición.\"\n}"
+              "raw": "{\n  \"medio_id\": \"{{mediaId}}\",\n  \"puntuacion\": 4,\n  \"comentario\": \"Excelente composición\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/voting/vote",
               "host": ["{{baseUrl}}"],
               "path": ["voting", "vote"]
             },
-            "description": "Registra un voto. IMPORTANTE: Solo permitido cuando el concurso está en estado VOTACION. Si el concurso está en ACTIVO retorna: 'El concurso aún está en etapa de recepción de envíos'. Si está en EVALUACION retorna: 'El concurso ya pasó a etapa de evaluación del jurado'."
+            "description": "Registra un voto según el tipo de votación del concurso.\n\n**Por tipo:**\n- **ESTRELLAS**: `puntuacion` requerido (1-5). Puede votar en todos los medios.\n- **LIKES**: `puntuacion` ignorado (siempre 1). Puede votar en varios medios.\n- **MEJOR_MEDIO**: Solo UN voto por concurso. Si ya votó retorna 400 con `medio_id_votado`.\n- **PARES**: Solo UN voto por concurso. Igual que MEJOR_MEDIO.\n\n**Respuesta incluye:** `tipo_votacion`, `puntuacion`, `puntuacion_promedio`"
           }
         },
         {
@@ -276,6 +304,70 @@
               "path": ["voting", "vote", "{{mediaId}}"]
             },
             "description": "Retira un voto. Solo permitido mientras el concurso esté en estado VOTACION."
+          }
+        },
+        {
+          "name": "Votar con Estrellas (ESTRELLAS)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"medio_id\": \"{{mediaId}}\",\n  \"puntuacion\": 4,\n  \"comentario\": \"Muy buena fotografía\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/voting/vote",
+              "host": ["{{baseUrl}}"],
+              "path": ["voting", "vote"]
+            },
+            "description": "Voto con puntuación de estrellas (1-5). Solo para concursos con tipo_votacion=ESTRELLAS. El usuario puede calificar todos los medios que desee."
+          }
+        },
+        {
+          "name": "Votar Mejor Medio (MEJOR_MEDIO/PARES)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"medio_id\": \"{{mediaId}}\",\n  \"comentario\": \"Este es mi favorito\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/voting/vote",
+              "host": ["{{baseUrl}}"],
+              "path": ["voting", "vote"]
+            },
+            "description": "Voto único por concurso. Solo para MEJOR_MEDIO y PARES. Si ya votó retorna 400 con el medio_id_votado. Para cambiar el voto, primero retirar con DELETE /voting/vote/:medioId."
           }
         }
       ],
@@ -340,7 +432,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["voting", "contests", "{{contestId}}", "results"]
             },
-            "description": "Obtiene ranking y estadísticas. Accesible cuando: concurso en VOTACION con permite_votos=true, concurso en EVALUACION, o concurso FINALIZADO. Retorna 403 si los resultados no están disponibles."
+            "description": "Obtiene ranking y estadísticas.\n\n**Ordenamiento según tipo:**\n- ESTRELLAS: ordenado por `puntuacion_promedio` desc\n- Otros tipos: ordenado por `total_votos` desc\n\n**Estadísticas incluyen:** `total_votos`, `total_puntos`, `promedio_general`, `total_votantes`, `total_medios`"
           }
         }
       ],
@@ -605,13 +697,63 @@
             },
             "description": "Intenta votar cuando el concurso no está en estado VOTACION. Retorna 400 con mensaje descriptivo según el estado actual (ACTIVO, EVALUACION, etc.)"
           }
+        },
+        {
+          "name": "Segundo Voto en Concurso MEJOR_MEDIO",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Returns 400 for second vote in MEJOR_MEDIO contest', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test('Response includes medio_id_votado', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data).to.have.property('medio_id_votado');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"medio_id\": {{mediaId}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/voting/vote",
+              "host": ["{{baseUrl}}"],
+              "path": ["voting", "vote"]
+            },
+            "description": "Intenta votar dos veces en un concurso MEJOR_MEDIO o PARES. Retorna 400 con `data.medio_id_votado` indicando el medio ya elegido."
+          }
         }
       ],
       "description": "Casos de prueba para validar el manejo de errores"
     },
     {
       "name": "Flujo Completo por Rol",
-      "description": "## Flujo de estados del concurso\n\nBORRADOR → ACTIVO → VOTACION → EVALUACION → FINALIZADO\n\n### Admin:\n1. Crear concurso (BORRADOR)\n2. Activar concurso (ACTIVO) - participantes se inscriben y suben medios\n3. Cambiar a VOTACION + configurar tipo_votacion - público vota\n4. Cambiar a EVALUACION - jurado califica\n5. Cambiar a FINALIZADO - resultados publicados\n\n### Participante:\n- Solo puede inscribirse y subir medios en estado ACTIVO\n- Puede ver votos si permite_votos=true en VOTACION\n\n### Jurado:\n- Solo puede calificar en estado EVALUACION\n- Puede ver resultados de votación en EVALUACION y FINALIZADO",
+      "description": "## Flujo de estados del concurso\n\nBORRADOR → ACTIVO → VOTACION → EVALUACION → FINALIZADO\n\n### Admin:\n1. Crear concurso (BORRADOR)\n2. Activar concurso (ACTIVO) - participantes se inscriben y suben medios\n3. Cambiar a VOTACION + configurar tipo_votacion - público vota\n4. Cambiar a EVALUACION - jurado califica\n5. Cambiar a FINALIZADO - resultados publicados\n\n### Participante:\n- Solo puede inscribirse y subir medios en estado ACTIVO\n- Puede ver votos si permite_votos=true en VOTACION\n\n### Jurado:\n- Solo puede calificar en estado EVALUACION\n- Puede ver resultados de votación en EVALUACION y FINALIZADO\n\n## Tipos de votación\n\n| Tipo | Límite por medio | Límite por concurso | Puntuación |\n|---|---|---|---|\n| ESTRELLAS | 1 voto | Sin límite | 1-5 |\n| LIKES | 1 voto | Sin límite | 1 fijo |\n| MEJOR_MEDIO | 1 voto | **1 solo** | 1 fijo |\n| PARES | 1 voto | **1 solo** | 1 fijo |",
       "item": [
         {
           "name": "[Admin] Activar Concurso",

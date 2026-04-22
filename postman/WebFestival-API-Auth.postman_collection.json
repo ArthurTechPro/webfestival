@@ -35,7 +35,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["auth", "register"]
             },
-            "description": "**Registrar nuevo usuario**\n\nCrea cuenta con rol PARTICIPANTE.\n\n**Campos:**\n- email (requerido)\n- password (requerido, min 6 caracteres)\n- nombre (requerido)\n- bio (opcional)\n\n**Respuesta:** Usuario + tokens JWT"
+            "description": "**Registrar nuevo usuario**\n\nCrea cuenta con rol PARTICIPANTE.\n\n**Campos:**\n- email (requerido)\n- password (requerido, mínimo 6 caracteres, al menos una mayúscula, una minúscula y un número)\n- nombre (requerido)\n- bio (opcional)\n\n**Respuesta:** Usuario + tokens JWT"
           }
         },
         {
@@ -169,7 +169,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["auth", "reset-password"]
             },
-            "description": "**Restablecer contraseña con token**\n\nUsa el token recibido por email para establecer nueva contraseña.\n\n**Token expira en:** 1 hora"
+            "description": "**Restablecer contraseña con token**\n\nUsa el token recibido por email para establecer nueva contraseña.\n\n**Requisitos de la nueva contraseña:**\n- Mínimo 6 caracteres\n- Al menos una mayúscula\n- Al menos una minúscula\n- Al menos un número\n\n**Token expira en:** 1 hora"
           }
         },
         {
@@ -189,7 +189,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["auth", "change-password"]
             },
-            "description": "**Cambiar contraseña**\n\nRequiere contraseña actual para validación."
+            "description": "**Cambiar contraseña**\n\nRequiere contraseña actual para validación.\n\n**Requisitos de la nueva contraseña:**\n- Mínimo 6 caracteres\n- Al menos una mayúscula\n- Al menos una minúscula\n- Al menos un número"
           }
         },
         {
