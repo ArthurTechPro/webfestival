@@ -1,177 +1,718 @@
 {
   "info": {
-    "name": "WebFestival-API - Flujo Completo Subida",
-    "description": "# 🎬 Flujo Completo: Subir Medio a Concurso\n\nGuía paso a paso para subir un medio (foto, video, audio o cortometraje) a un concurso.\n\n## 🆕 Método Actual: Subida Segura en Un Solo Paso (v2.1.0)\n\n**Pasos del flujo:**\n1. **Autenticación** - Login o registro\n2. **Explorar Concursos** - Ver concursos activos (URLs de imágenes incluidas)\n3. **Inscripción** - Inscribirse al concurso\n4. **Subida Segura** - Subir archivo directamente (¡un solo paso!)\n5. **Consultar Imágenes** - Ver medios a través del proxy\n\n✅ **Ventajas:**\n- No expone credenciales de Immich al cliente\n- Un solo endpoint para todo el proceso de subida\n- Rollback automático en caso de error\n- Manejo robusto de errores con reintentos\n- Organización automática en álbumes de Immich\n- URLs construidas dinámicamente desde `immich_asset_id`\n- **URLs de imágenes de concursos incluidas automáticamente**\n\n## 📸 URLs de Imágenes de Concursos (v2.1.0)\n\n**✨ Novedad:** Las URLs de las imágenes/posters de concursos ya vienen incluidas en las respuestas de los endpoints de consulta.\n\n**No necesitas hacer llamadas adicionales al proxy.** Las URLs se construyen dinámicamente en el backend.\n\n**Endpoints que incluyen URLs:**\n- GET /concursos/activos\n- GET /concursos/:id\n- GET /concursos/finalizados\n- GET /concursos (admin)\n\n**Campos incluidos (si el concurso tiene imagen):**\n- `imagen_asset_id` - ID del asset en Immich\n- `imagen_url` - URL original\n- `imagen_thumbnail` - Miniatura 400x225\n- `imagen_preview` - Preview 1280x720\n\n## 📁 Organización Automática en Immich\n\n### Medios de Participantes\nFormato: **\"{Título del Concurso} - {Nombre del Usuario}\"**\n\nEjemplo:\n- Fotografía de Naturaleza 2025 - Juan Pérez\n- Festival de Cortometrajes 2025 - María García\n\n### Imágenes del Sistema\nÁlbum: **\"Sistema - Administrador\"**\n\nContiene:\n- Posters de concursos (tipo_medio='poster')\n- Banners del sistema\n- Imágenes administrativas\n\n## 🔗 URLs Dinámicas\n\nTodas las URLs se construyen en tiempo real desde `immich_asset_id`:\n- Original: `/api/v1/proxy/media/{assetId}`\n- Thumbnail: `/api/v1/proxy/media/{assetId}?size=400x225`\n- Preview: `/api/v1/proxy/media/{assetId}?size=1280x720`\n\n**Ventajas:**\n- Cambiar dominio solo requiere actualizar `API_BASE_URL`\n- No se guardan URLs en la base de datos\n- Proxy sin autenticación (acceso público)\n\n## ⚙️ Configuración\n\n1. Selecciona environment (Local o Producción)\n2. Ejecuta los pasos en orden\n3. Las variables se guardan automáticamente\n4. Revisa la consola para ver logs detallados\n\n## 📝 Variables Usadas\n\n- `accessToken` - Token JWT\n- `userId` - ID del usuario\n- `concursoId` - ID del concurso\n- `categoriaId` - ID de la categoría\n- `medioId` - ID del medio subido\n- `immichAssetId` - ID del asset en Immich\n- `concursoImagenAssetId` - ID de la imagen del concurso (opcional)\n\n## 💡 Tips\n\n- Los tests automáticos muestran información útil en la consola\n- Las URLs de imágenes se guardan automáticamente en variables\n- La sección 2.5 (Consultar Imagen del Concurso) es opcional\n- Usa `imagen_thumbnail` para listados y `imagen_preview` para detalles",
+    "name": "WebFestival-API - Flujo Completo",
+    "description": "Flujo completo del ciclo de vida de un concurso en WebFestival.\n\nEstados del concurso: BORRADOR -> ACTIVO -> VOTACION -> EVALUACION -> FINALIZADO\n\nRoles:\n- PARTICIPANTE: se inscribe, sube medios, vota\n- JURADO: evalua medios asignados en etapa EVALUACION\n- ADMIN: gestiona concursos (no puede cambiar fechas/tipo_votacion si el concurso esta activo)\n- SUPERADMIN: administracion total de la plataforma\n\nVariables necesarias: accessToken, concursoId, categoriaId, medioId, immichAssetId, mediaId, calificacionId, usuarioId",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
-      "name": "1️⃣ Autenticación",
+      "name": "1. Autenticación",
       "item": [
         {
           "name": "Login",
-          "event": [{"listen": "test", "script": {"exec": ["if (pm.response.code === 200) {", "    const res = pm.response.json();", "    pm.environment.set('accessToken', res.data.accessToken);", "    pm.environment.set('refreshToken', res.data.refreshToken);", "    pm.environment.set('userId', res.data.user.id);", "    console.log('✅ Paso 1 completado: Autenticado');", "}"]}}],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const res = pm.response.json();",
+                  "    pm.environment.set('accessToken', res.data.accessToken);",
+                  "    pm.environment.set('refreshToken', res.data.refreshToken);",
+                  "    pm.environment.set('userId', res.data.user.id);",
+                  "    console.log('Login exitoso. accessToken, refreshToken y userId guardados.');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
-            "header": [{"key": "Content-Type", "value": "application/json"}],
-            "body": {"mode": "raw", "raw": "{\n  \"email\": \"participante@ejemplo.com\",\n  \"password\": \"Password123!\"\n}"},
-            "url": {"raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"]},
-            "description": "**Paso 1: Iniciar sesión**\n\nAutentícate para obtener acceso a la API."
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"participante@ejemplo.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Autentícate para obtener acceso. Requisito para todos los pasos siguientes."
           }
         }
       ]
     },
     {
-      "name": "2️⃣ Explorar Concursos",
+      "name": "2. Explorar Concursos",
       "item": [
         {
           "name": "Ver Concursos Activos",
-          "event": [{"listen": "test", "script": {"exec": ["if (pm.response.code === 200) {", "    const res = pm.response.json();", "    if (res.data && res.data.length > 0) {", "        pm.environment.set('concursoId', res.data[0].id);", "        console.log('✅ Paso 2 completado: Concurso seleccionado');", "        console.log('📋 Concursos disponibles:', res.data.length);", "        ", "        // Mostrar información de inscripción del primer concurso", "        const concurso = res.data[0];", "        console.log('');", "        console.log('� Información de inscripción:');", "        if (concurso.inscrito !== undefined) {", "            console.log('   Inscrito:', concurso.inscrito ? '✅ SÍ' : '❌ NO');", "            if (concurso.inscrito) {", "                console.log('   Fecha inscripción:', concurso.fecha_inscripcion);", "                console.log('   Mis envíos:', concurso.mis_envios, '/', concurso.max_envios);", "            }", "        } else {", "      ℹ      console.log('   ℹ️ No autenticado - info de inscripción no disponible');", "        }", "        ", "        // Verificar si el primer concurso tiene imagen", "        console.log('');", "        if (concurso.imagen_asset_id) {", "            pm.environment.set('concursoImagenAssetId', concurso.imagen_asset_id);", "            console.log('📸 Imagen del concurso disponible:');", "            console.log('   Asset ID:', concurso.imagen_asset_id);", "            console.log('   Original:', concurso.imagen_url);", "            console.log('   Thumbnail:', concurso.imagen_thumbnail);", "            console.log('   Preview:', concurso.imagen_preview);", "        } else {", "            console.log('ℹ️ Este concurso no tiene imagen');", "        }", "    }", "}"]}}],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const res = pm.response.json();",
+                  "    if (res.data && res.data.length > 0) {",
+                  "        pm.environment.set('concursoId', res.data[0].id);",
+                  "        console.log('concursoId guardado:', res.data[0].id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [],
-            "url": {"raw": "{{baseUrl}}/concursos/activos", "host": ["{{baseUrl}}"], "path": ["concursos", "activos"]},
-            "description": "**Paso 2: Ver concursos disponibles**\n\nSelecciona un concurso activo.\n\n**✨ Información de Inscripción (v2.1.1):**\n\nSi estás autenticado, la respuesta incluye automáticamente información sobre tu inscripción:\n\n```json\n{\n  \"success\": true,\n  \"data\": [\n    {\n      \"id\": 1,\n      \"titulo\": \"Concurso de Fotografía 2025\",\n      \"descripcion\": \"...\",\n      \"fecha_inicio\": \"2025-03-01T00:00:00Z\",\n      \"fecha_final\": \"2025-03-31T23:59:59Z\",\n      \n      // ⭐ NUEVO: Información de inscripción (solo si estás autenticado)\n      \"inscrito\": true,\n      \"fecha_inscripcion\": \"2025-02-15T10:30:00Z\",\n      \"mis_envios\": 2,\n      \"max_envios\": 3,\n      \n      // URLs de imagen (construidas dinámicamente)\n      \"imagen_asset_id\": \"abc-123-def\",\n      \"imagen_url\": \"https://api.webfestival.art/api/v1/proxy/media/abc-123-def\",\n      \"imagen_thumbnail\": \"https://api.webfestival.art/api/v1/proxy/media/abc-123-def?size=400x225\",\n      \"imagen_preview\": \"https://api.webfestival.art/api/v1/proxy/media/abc-123-def?size=1280x720\",\n      \n      \"categorias\": [...]\n    }\n  ]\n}\n```\n\n**Campos de inscripción:**\n- `inscrito` (boolean): Indica si ya estás inscrito en el concurso\n- `fecha_inscripcion` (string|null): Fecha en que te inscribiste\n- `mis_envios` (number): Cantidad de medios que has subido\n- `max_envios` (number): Máximo de medios permitidos\n\n**Nota:** Si no estás autenticado, estos campos no aparecen en la respuesta.\n\n**Uso en Frontend:**\n```javascript\n// Verificar si el usuario está inscrito\nif (concurso.inscrito) {\n  // Mostrar botón \"Subir Medio\"\n  // Mostrar progreso: \"Has subido 2 de 3 medios\"\n} else {\n  // Mostrar botón \"Inscribirse\"\n}\n\n// Verificar si puede subir más medios\nif (concurso.inscrito && concurso.mis_envios < concurso.max_envios) {\n  // Permitir subir más medios\n} else if (concurso.inscrito && concurso.mis_envios >= concurso.max_envios) {\n  // Mostrar mensaje: \"Has alcanzado el límite de envíos\"\n}\n```"
+            "url": {
+              "raw": "{{baseUrl}}/concursos/activos",
+              "host": ["{{baseUrl}}"],
+              "path": ["concursos", "activos"]
+            },
+            "description": "Retorna concursos en estados ACTIVO, VOTACION y EVALUACION. Incluye tipo_votacion y permite_votos."
           }
         },
         {
-          "name": "Detalles del Concurso",
-          "event": [{"listen": "test", "script": {"exec": ["if (pm.response.code === 200) {", "    const res = pm.response.json();", "    ", "    // Guardar categoría", "    if (res.data && res.data.categorias && res.data.categorias.length > 0) {", "        pm.environment.set('categoriaId', res.data.categorias[0].id);", "        console.log('✅ Paso 3 completado: Detalles obtenidos');", "        console.log('📋 Categorías disponibles:', res.data.categorias.length);", "        res.data.categorias.forEach((cat, idx) => {", "            console.log(`   ${idx + 1}. ${cat.nombre} (ID: ${cat.id})`);", "        });", "    }", "    ", "    // Verificar y guardar imagen del concurso", "    if (res.data && res.data.imagen_asset_id) {", "        pm.environment.set('concursoImagenAssetId', res.data.imagen_asset_id);", "        console.log('');", "        console.log('📸 Imagen del concurso:');", "        console.log('   Asset ID:', res.data.imagen_asset_id);", "        console.log('   Original:', res.data.imagen_url);", "        console.log('   Thumbnail:', res.data.imagen_thumbnail);", "        console.log('   Preview:', res.data.imagen_preview);", "        console.log('');", "        console.log('💡 Puedes acceder a estas URLs directamente (sin autenticación)');", "    } else {", "        console.log('');", "        console.log('ℹ️ Este concurso no tiene imagen/poster');", "    }", "    ", "    // ⭐ NUEVO: Verificar medios con URLs", "    if (res.data && res.data.medios && res.data.medios.length > 0) {", "        console.log('');", "        console.log('🎨 Medios del concurso encontrados:', res.data.medios.length);", "        res.data.medios.slice(0, 3).forEach((medio, idx) => {", "            console.log(`   ${idx + 1}. ${medio.titulo} (${medio.usuario.nombre})`);", "            if (medio.imagen_url) {", "                console.log(`      Original: ${medio.imagen_url}`);", "                console.log(`      Thumbnail: ${medio.imagen_thumbnail}`);", "                console.log(`      Preview: ${medio.imagen_preview}`);", "            }", "        });", "        if (res.data.medios.length > 3) {", "            console.log(`   ... y ${res.data.medios.length - 3} medios más`);", "        }", "        console.log('');", "        console.log('✨ NUEVO: Cada medio incluye URLs completas automáticamente');", "    }", "}"]}}],
+          "name": "Detalle del Concurso",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const res = pm.response.json();",
+                  "    if (res.data && res.data.categorias && res.data.categorias.length > 0) {",
+                  "        pm.environment.set('categoriaId', res.data.categorias[0].id);",
+                  "        console.log('categoriaId guardado:', res.data.categorias[0].id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [],
-            "url": {"raw": "{{baseUrl}}/concursos/{{concursoId}}", "host": ["{{baseUrl}}"], "path": ["concursos", "{{concursoId}}"]},
-            "description": "**Paso 3: Ver detalles y categorías**\n\nObtén información completa del concurso incluyendo categorías, URLs de imagen y medios participantes.\n\n**✨ URLs de Imágenes Incluidas Automáticamente:**\n\nLa respuesta incluye las URLs del poster/imagen del concurso (si existe):\n\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"id\": 1,\n    \"titulo\": \"Concurso de Fotografía 2025\",\n    \"descripcion\": \"Concurso anual de fotografía profesional\",\n    \"reglas\": \"1. Solo fotografías originales...\",\n    \"fecha_inicio\": \"2025-03-01T00:00:00Z\",\n    \"fecha_final\": \"2025-03-31T23:59:59Z\",\n    \"status\": \"ACTIVO\",\n    \"max_envios\": 3,\n    \"tamano_max_mb\": 10,\n    \n    // URLs de imagen del concurso (construidas dinámicamente)\n    \"poster_id\": 42,\n    \"imagen_asset_id\": \"abc-123-def-456\",\n    \"imagen_url\": \"https://api.webfestival.art/api/v1/proxy/media/abc-123-def-456\",\n    \"imagen_thumbnail\": \"https://api.webfestival.art/api/v1/proxy/media/abc-123-def-456?size=400x225\",\n    \"imagen_preview\": \"https://api.webfestival.art/api/v1/proxy/media/abc-123-def-456?size=1280x720\",\n    \n    \"categorias\": [\n      {\"id\": 1, \"nombre\": \"Paisajes\"},\n      {\"id\": 2, \"nombre\": \"Fauna Silvestre\"},\n      {\"id\": 3, \"nombre\": \"Flora y Macro\"}\n    ],\n    \n    // ⭐ NUEVO: Medios con URLs completas\n    \"medios\": [{\n      \"id\": 12,\n      \"titulo\": \"Mi Primera Fotografía\",\n      \"immich_asset_id\": \"def-456-ghi-789\",\n      \"imagen_url\": \"https://api.webfestival.art/api/v1/proxy/media/def-456-ghi-789\",\n      \"imagen_thumbnail\": \"https://api.webfestival.art/api/v1/proxy/media/def-456-ghi-789?size=400x225\",\n      \"imagen_preview\": \"https://api.webfestival.art/api/v1/proxy/media/def-456-ghi-789?size=1280x720\",\n      \"usuario\": {\"nombre\": \"Carlos Hernandez\"},\n      \"categoria\": {\"nombre\": \"Paisajes\"}\n    }],\n    \n    \"_count\": {\n      \"inscripciones\": 45,\n      \"medios\": 120\n    }\n  }\n}\n```\n\n**✨ Novedades v2.1.1:**\n- ✅ **URLs del concurso:** Construidas dinámicamente desde `imagen_asset_id`\n- ✅ **URLs de medios:** Cada medio incluye sus propias URLs completas\n- ✅ **Proxy sin autenticación:** Acceso público a todas las imágenes\n- ✅ **Tres tamaños:** original, thumbnail (400x225), preview (1280x720)\n- ✅ **Automático:** No necesitas hacer llamadas adicionales\n\n**Uso en Frontend:**\n```javascript\n// React/Next.js\nconst { data: concurso } = await fetch(`/api/v1/concursos/${id}`).then(r => r.json());\n\n// Poster del concurso\n{concurso.imagen_thumbnail && (\n  <img src={concurso.imagen_thumbnail} alt={concurso.titulo} />\n)}\n\n// Galería de medios participantes\n{concurso.medios.map(medio => (\n  <img \n    key={medio.id}\n    src={medio.imagen_thumbnail} \n    alt={medio.titulo}\n    loading=\"lazy\"\n  />\n))}\n```"
+            "url": {
+              "raw": "{{baseUrl}}/concursos/{{concursoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["concursos", "{{concursoId}}"]
+            },
+            "description": "Obtiene categorías, medios y estadísticas del concurso."
           }
         }
       ]
     },
     {
-      "name": "2.5️⃣ Consultar Imagen del Concurso (Opcional)",
-      "item": [
-        {
-          "name": "Ver Imagen del Concurso (Original)",
-          "event": [{"listen": "test", "script": {"exec": ["pm.test('Status code is 200', function () {", "    pm.response.to.have.status(200);", "});", "", "pm.test('Content-Type is image', function () {", "    pm.expect(pm.response.headers.get('Content-Type')).to.include('image');", "});", "", "console.log('✅ Imagen del concurso obtenida');", "console.log('📦 Content-Type:', pm.response.headers.get('Content-Type'));", "console.log('📏 Tamaño:', pm.response.headers.get('Content-Length'), 'bytes');"]}}],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {"raw": "{{baseUrl}}/api/v1/proxy/media/{{concursoImagenAssetId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "proxy", "media", "{{concursoImagenAssetId}}"]},
-            "description": "**Ver poster/imagen del concurso (tamaño original)**\n\n**ℹ️ Nota Importante:**\nEste paso es **OPCIONAL**. Las URLs de las imágenes ya vienen incluidas en las respuestas de los endpoints de concursos (pasos 2 y 2.1).\n\nEste endpoint es útil para:\n- Verificar que la imagen existe\n- Descargar la imagen\n- Probar el proxy directamente\n\n**Características:**\n- ✅ No requiere autenticación\n- ✅ Acceso público\n- ✅ Retorna imagen binaria\n- ✅ Mismo proxy que medios de participantes\n\n**Uso en Frontend:**\n```html\n<!-- Usar directamente la URL de la respuesta del concurso -->\n<img src=\"{{concurso.imagen_url}}\" alt=\"{{concurso.titulo}}\" />\n\n<!-- O construir manualmente desde imagen_asset_id -->\n<img src=\"/api/v1/proxy/media/{{concurso.imagen_asset_id}}\" alt=\"{{concurso.titulo}}\" />\n```"
-          }
-        },
-        {
-          "name": "Ver Thumbnail del Concurso",
-          "event": [{"listen": "test", "script": {"exec": ["pm.test('Status code is 200', function () {", "    pm.response.to.have.status(200);", "});", "", "console.log('✅ Thumbnail del concurso obtenido');", "console.log('📏 Tamaño:', pm.response.headers.get('Content-Length'), 'bytes');"]}}],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {"raw": "{{baseUrl}}/api/v1/proxy/media/{{concursoImagenAssetId}}?size=400x225", "host": ["{{baseUrl}}"], "path": ["api", "v1", "proxy", "media", "{{concursoImagenAssetId}}"], "query": [{"key": "size", "value": "400x225", "description": "Tamaño del thumbnail"}]},
-            "description": "**Ver miniatura del poster del concurso (400x225)**\n\n**Ideal para:**\n- Listados de concursos\n- Cards de concursos\n- Galerías\n- Carga rápida\n\n**Uso en Frontend:**\n```html\n<!-- Usar directamente la URL de la respuesta del concurso -->\n<img src=\"{{concurso.imagen_thumbnail}}\" alt=\"{{concurso.titulo}}\" loading=\"lazy\" />\n\n<!-- O construir manualmente -->\n<img src=\"/api/v1/proxy/media/{{concurso.imagen_asset_id}}?size=400x225\" alt=\"{{concurso.titulo}}\" loading=\"lazy\" />\n```"
-          }
-        },
-        {
-          "name": "Ver Preview del Concurso",
-          "event": [{"listen": "test", "script": {"exec": ["pm.test('Status code is 200', function () {", "    pm.response.to.have.status(200);", "});", "", "console.log('✅ Preview del concurso obtenido');", "console.log('📏 Tamaño:', pm.response.headers.get('Content-Length'), 'bytes');"]}}],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {"raw": "{{baseUrl}}/api/v1/proxy/media/{{concursoImagenAssetId}}?size=1280x720", "host": ["{{baseUrl}}"], "path": ["api", "v1", "proxy", "media", "{{concursoImagenAssetId}}"], "query": [{"key": "size", "value": "1280x720", "description": "Tamaño del preview"}]},
-            "description": "**Ver preview del poster del concurso (1280x720)**\n\n**Ideal para:**\n- Página de detalles del concurso\n- Modales\n- Hero sections\n- Buena calidad con tamaño optimizado\n\n**Uso en Frontend:**\n```html\n<!-- Usar directamente la URL de la respuesta del concurso -->\n<img src=\"{{concurso.imagen_preview}}\" alt=\"{{concurso.titulo}}\" />\n\n<!-- O construir manualmente -->\n<img src=\"/api/v1/proxy/media/{{concurso.imagen_asset_id}}?size=1280x720\" alt=\"{{concurso.titulo}}\" />\n```"
-          }
-        }
-      ],
-      "description": "📸 **Consultar Imágenes de Concursos (Opcional)**\n\n**ℹ️ Importante:**\nEsta sección es **OPCIONAL**. Las URLs de las imágenes ya vienen incluidas automáticamente en las respuestas de:\n- GET /concursos/activos\n- GET /concursos/:id\n- GET /concursos/finalizados\n- GET /concursos (admin)\n\n**¿Cuándo usar estos endpoints?**\n- Para verificar que la imagen existe\n- Para descargar la imagen directamente\n- Para probar el proxy\n- Para debugging\n\n**En producción:**\nUsa directamente los campos `imagen_url`, `imagen_thumbnail` o `imagen_preview` que vienen en la respuesta del concurso.\n\n**Almacenamiento:**\n- Álbum en Immich: \"Sistema - Administrador\"\n- Tabla BD: `medios` con `tipo_medio='poster'` y `categoria_id=0`\n- Solo se guarda `immich_asset_id`, las URLs se construyen dinámicamente"
-    },
-    {
-      "name": "3️⃣ Inscripción",
+      "name": "3. Inscripción",
       "item": [
         {
           "name": "Inscribirse al Concurso",
-          "event": [{"listen": "test", "script": {"exec": ["if (pm.response.code === 201) {", "    console.log('✅ Paso 3 completado: Inscrito al concurso');", "}"]}}],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Inscripción exitosa', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
-            "header": [{"key": "Content-Type", "value": "application/json"}, {"key": "Authorization", "value": "Bearer {{accessToken}}"}],
-            "body": {"mode": "raw", "raw": "{\n  \"concursoId\": {{concursoId}}\n}"},
-            "url": {"raw": "{{baseUrl}}/concursos/inscripcion", "host": ["{{baseUrl}}"], "path": ["concursos", "inscripcion"]},
-            "description": "**Paso 4: Inscribirse**\n\n⚠️ Requisito obligatorio para subir medios."
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"concurso_id\": {{concursoId}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/concursos/inscripcion",
+              "host": ["{{baseUrl}}"],
+              "path": ["concursos", "inscripcion"]
+            },
+            "description": "Requisito obligatorio para poder subir medios. Solo disponible cuando el concurso está en estado ACTIVO."
+          }
+        },
+        {
+          "name": "Verificar Inscripción",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/concursos/{{concursoId}}/verificar-inscripcion",
+              "host": ["{{baseUrl}}"],
+              "path": ["concursos", "{{concursoId}}", "verificar-inscripcion"]
+            },
+            "description": "Confirma si el usuario está inscrito."
+          }
+        },
+        {
+          "name": "Mis Inscripciones",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/concursos/mis-inscripciones",
+              "host": ["{{baseUrl}}"],
+              "path": ["concursos", "mis-inscripciones"]
+            },
+            "description": "Lista todos los concursos donde el usuario está inscrito."
           }
         }
       ]
     },
     {
-      "name": "4️⃣ Subida Segura (Nuevo Método)",
+      "name": "4. Subir Medio",
       "item": [
         {
-          "name": "Upload Media Seguro",
-          "event": [{"listen": "test", "script": {"exec": ["if (pm.response.code === 201) {", "    const res = pm.response.json();", "    pm.environment.set('medioId', res.data.id);", "    pm.environment.set('immichAssetId', res.data.immichAssetId);", "    console.log('✅ Medio subido exitosamente');", "    console.log('📝 Medio ID:', res.data.id);", "    console.log('📝 Immich Asset ID:', res.data.immichAssetId);", "    console.log('🖼️ Media URL:', res.data.mediaUrl);", "    console.log('🎉 FLUJO COMPLETADO CON MÉTODO SEGURO');", "}"]}}],
+          "name": "Upload Medio",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const res = pm.response.json();",
+                  "    pm.environment.set('medioId', res.data.id);",
+                  "    pm.environment.set('immichAssetId', res.data.immichAssetId);",
+                  "    console.log('medioId guardado:', res.data.id);",
+                  "    console.log('immichAssetId guardado:', res.data.immichAssetId);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
-            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}", "type": "text"}],
-            "body": {"mode": "formdata", "formdata": [{"key": "file", "type": "file", "src": "", "description": "⚠️ SELECCIONA UN ARCHIVO AQUÍ (.jpg, .png, .mp4, etc.)"}, {"key": "titulo", "value": "Mi Fotografía Ganadora", "type": "text", "description": "Título descriptivo del medio"}, {"key": "tipoMedio", "value": "fotografia", "type": "text", "description": "Tipo: fotografia, video, audio, corto_cine"}, {"key": "concursoId", "value": "{{concursoId}}", "type": "text", "description": "ID del concurso"}, {"key": "categoriaId", "value": "{{categoriaId}}", "type": "text", "description": "ID de la categoría"}]},
-            "url": {"raw": "{{baseUrl}}/api/v1/media/upload", "host": ["{{baseUrl}}"], "path": ["api", "v1", "media", "upload"]},
-            "description": "**🆕 NUEVO MÉTODO: Subida Segura en Un Solo Paso**\n\nEste endpoint simplifica el proceso de subida:\n\n✅ **Ventajas:**\n- Un solo paso (no necesitas generar URL ni confirmar)\n- No expone credenciales de Immich al cliente\n- Manejo automático de errores y rollback\n- Organización automática en álbumes de Immich\n\n**Campos requeridos:**\n- file: Archivo multimedia\n- titulo: Título descriptivo\n- tipoMedio: fotografia, video, audio, corto_cine\n- concursoId: ID del concurso\n- categoriaId: ID de la categoría\n\n**Límites:**\n- Imágenes: 50MB\n- Videos: 500MB\n\n**Formatos soportados:**\n- Imágenes: JPEG, PNG, HEIC, WebP\n- Videos: MP4, MOV, AVI\n\n**Respuesta exitosa (201):**\n```json\n{\n  \"success\": true,\n  \"message\": \"Medio subido exitosamente\",\n  \"data\": {\n    \"id\": 123,\n    \"immichAssetId\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"mediaUrl\": \"https://immich.example.com/api/assets/.../original\",\n    \"thumbnailUrl\": \"https://immich.example.com/api/assets/.../thumbnail\",\n    \"metadata\": {\n      \"filename\": \"photo.jpg\",\n      \"mimeType\": \"image/jpeg\",\n      \"size\": 2048576,\n      \"uploadedAt\": \"2024-01-15T10:30:00Z\"\n    }\n  }\n}\n```\n\n**Códigos de error:**\n- 400: Archivo inválido o campos faltantes\n- 401: No autenticado\n- 413: Archivo muy grande\n- 500: Error interno\n- 502: Error comunicándose con Immich\n- 503: Servicio de medios no disponible"
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "",
+                  "description": "Archivo a subir (.jpg, .png, .heic, .webp, .mp4, .mov)"
+                },
+                {
+                  "key": "titulo",
+                  "value": "Mi Fotografía",
+                  "type": "text"
+                },
+                {
+                  "key": "tipoMedio",
+                  "value": "fotografia",
+                  "type": "text"
+                },
+                {
+                  "key": "concursoId",
+                  "value": "{{concursoId}}",
+                  "type": "text"
+                },
+                {
+                  "key": "categoriaId",
+                  "value": "{{categoriaId}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/media/upload",
+              "host": ["{{baseUrl}}"],
+              "path": ["media", "upload"]
+            },
+            "description": "Sube el archivo directamente a Immich. Formatos: JPEG, PNG, HEIC, WebP, MP4, MOV. Límite: 50MB imágenes, 500MB videos. El archivo se organiza automáticamente en el álbum del concurso."
           }
         },
         {
-          "name": "Ver Medio Subido",
+          "name": "Mis Medios en Concurso",
           "request": {
             "method": "GET",
-            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
-            "url": {"raw": "{{baseUrl}}/api/v1/media/{{medioId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "media", "{{medioId}}"]},
-            "description": "**Verificar medio subido**\n\nObtiene información completa del medio incluyendo URLs y metadata."
-          }
-        },
-        {
-          "name": "Listar Mis Medios",
-          "request": {
-            "method": "GET",
-            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
-            "url": {"raw": "{{baseUrl}}/api/v1/media/user/{{userId}}?page=1&limit=20&tipoMedio=fotografia", "host": ["{{baseUrl}}"], "path": ["api", "v1", "media", "user", "{{userId}}"], "query": [{"key": "page", "value": "1"}, {"key": "limit", "value": "20"}, {"key": "tipoMedio", "value": "fotografia"}]},
-            "description": "**Listar todos mis medios**\n\nRetorna lista paginada con filtros opcionales."
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/concursos/{{concursoId}}/mis-medios",
+              "host": ["{{baseUrl}}"],
+              "path": ["concursos", "{{concursoId}}", "mis-medios"]
+            },
+            "description": "Lista los medios enviados por el usuario en este concurso con estadísticas de envíos."
           }
         }
-      ],
-      "description": "🆕 **Método Simplificado de Subida Segura**\n\nEste es el nuevo método recomendado que:\n- Sube el archivo directamente sin exponer credenciales\n- Maneja todo el proceso en un solo paso\n- Incluye rollback automático en caso de error\n- Organiza automáticamente en álbumes de Immich"
+      ]
     },
-
     {
-      "name": "9️⃣ Consultar Imágenes (Frontend)",
+      "name": "5. Etapa de Votación (cuando status=VOTACION)",
       "item": [
         {
-          "name": "Ver Imagen Original (Proxy)",
+          "name": "Ver Medios para Votar",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const res = pm.response.json();",
+                  "    if (res.data && res.data.length > 0) {",
+                  "        pm.environment.set('mediaId', res.data[0].id);",
+                  "        console.log('mediaId guardado:', res.data[0].id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
-            "header": [],
-            "url": {"raw": "{{baseUrl}}/api/v1/proxy/media/{{immichAssetId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "proxy", "media", "{{immichAssetId}}"]},
-            "description": "**Ver imagen original sin autenticación**\n\n✅ Esta URL funciona directamente en el navegador\n✅ No requiere API key\n✅ El servidor actúa como proxy\n\n**Uso en Frontend:**\n```html\n<img src=\"http://localhost:3000/api/v1/proxy/media/{{immichAssetId}}\" />\n```"
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/voting/contests/{{concursoId}}/media",
+              "host": ["{{baseUrl}}"],
+              "path": ["voting", "contests", "{{concursoId}}", "media"]
+            },
+            "description": "Solo disponible cuando el concurso está en estado VOTACION. Excluye los medios propios del usuario. Incluye tipo_votacion e instrucciones_votacion."
           }
         },
         {
-          "name": "Ver Thumbnail (Proxy)",
+          "name": "Registrar Voto (LIKES/MEJOR_MEDIO/PARES)",
           "request": {
-            "method": "GET",
-            "header": [],
-            "url": {"raw": "{{baseUrl}}/api/v1/proxy/media/{{immichAssetId}}?size=400x225", "host": ["{{baseUrl}}"], "path": ["api", "v1", "proxy", "media", "{{immichAssetId}}"], "query": [{"key": "size", "value": "400x225"}]},
-            "description": "**Ver miniatura sin autenticación**\n\n✅ Tamaño: 400x225 (16:9)\n✅ Ideal para listados y galerías\n\n**Uso en Frontend:**\n```html\n<img src=\"http://localhost:3000/api/v1/proxy/media/{{immichAssetId}}?size=400x225\" />\n```"
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"medio_id\": {{mediaId}},\n  \"comentario\": \"Excelente trabajo\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/voting/vote",
+              "host": ["{{baseUrl}}"],
+              "path": ["voting", "vote"]
+            },
+            "description": "Para LIKES: puede votar en varios medios. Para MEJOR_MEDIO y PARES: solo UN voto por concurso."
           }
         },
         {
-          "name": "Ver Preview (Proxy)",
+          "name": "Registrar Voto con Estrellas (ESTRELLAS)",
           "request": {
-            "method": "GET",
-            "header": [],
-            "url": {"raw": "{{baseUrl}}/api/v1/proxy/media/{{immichAssetId}}?size=1280x720", "host": ["{{baseUrl}}"], "path": ["api", "v1", "proxy", "media", "{{immichAssetId}}"], "query": [{"key": "size", "value": "1280x720"}]},
-            "description": "**Ver preview sin autenticación**\n\n✅ Tamaño: 1280x720 (HD)\n✅ Ideal para vista detallada\n\n**Uso en Frontend:**\n```html\n<img src=\"http://localhost:3000/api/v1/proxy/media/{{immichAssetId}}?size=1280x720\" />\n```"
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"medio_id\": {{mediaId}},\n  \"puntuacion\": 4,\n  \"comentario\": \"Muy buena fotografía\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/voting/vote",
+              "host": ["{{baseUrl}}"],
+              "path": ["voting", "vote"]
+            },
+            "description": "Solo para tipo_votacion=ESTRELLAS. puntuacion requerida entre 1 y 5. Puede calificar todos los medios."
           }
         },
         {
-          "name": "Listar Medios con URLs",
-          "event": [{"listen": "test", "script": {"exec": ["if (pm.response.code === 200) {", "    const res = pm.response.json();", "    console.log('📸 Medios encontrados:', res.data.data.length);", "    if (res.data.data.length > 0) {", "        const medio = res.data.data[0];", "        console.log('🖼️ URLs del primer medio:');", "        console.log('  Original:', medio.medio_url);", "        console.log('  Thumbnail:', medio.thumbnail_url);", "        console.log('  Preview:', medio.preview_url);", "    }", "}"]}}],
+          "name": "Retirar Voto",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/voting/vote/{{mediaId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["voting", "vote", "{{mediaId}}"]
+            },
+            "description": "Retira un voto. Solo disponible mientras el concurso esté en VOTACION."
+          }
+        },
+        {
+          "name": "Mis Votos",
           "request": {
             "method": "GET",
-            "header": [{"key": "Authorization", "value": "Bearer {{accessToken}}"}],
-            "url": {"raw": "{{baseUrl}}/media/user/{{userId}}", "host": ["{{baseUrl}}"], "path": ["media", "user", "{{userId}}"]},
-            "description": "**Obtener lista de medios con URLs**\n\nCada medio incluye:\n- `medio_url`: URL original (proxy)\n- `thumbnail_url`: URL miniatura (proxy)\n- `preview_url`: URL preview (proxy)\n\n**Ejemplo de respuesta:**\n```json\n{\n  \"medio_url\": \"http://localhost:3000/api/v1/proxy/media/abc123\",\n  \"thumbnail_url\": \"http://localhost:3000/api/v1/proxy/media/abc123?size=400x225\",\n  \"preview_url\": \"http://localhost:3000/api/v1/proxy/media/abc123?size=1280x720\"\n}\n```\n\n**Uso en React/Vue:**\n```jsx\n<img src={medio.thumbnail_url} alt={medio.titulo} />\n```"
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/voting/my-votes",
+              "host": ["{{baseUrl}}"],
+              "path": ["voting", "my-votes"]
+            },
+            "description": "Historial de votos del usuario con tipo_voto y puntuacion."
+          }
+        },
+        {
+          "name": "Ver Resultados de Votación",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/voting/contests/{{concursoId}}/results",
+              "host": ["{{baseUrl}}"],
+              "path": ["voting", "contests", "{{concursoId}}", "results"]
+            },
+            "description": "Accesible cuando: VOTACION con permite_votos=true, EVALUACION, o FINALIZADO. Ordenado por puntuacion_promedio para ESTRELLAS, por total_votos para otros tipos."
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Etapa de Evaluación del Jurado (cuando status=EVALUACION)",
+      "item": [
+        {
+          "name": "Mis Asignaciones (Jurado)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/calificaciones/mis-asignaciones",
+              "host": ["{{baseUrl}}"],
+              "path": ["calificaciones", "mis-asignaciones"]
+            },
+            "description": "Lista los medios asignados al jurado para evaluar. Solo disponible con rol JURADO."
+          }
+        },
+        {
+          "name": "Crear Calificación",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const res = pm.response.json();",
+                  "    pm.environment.set('calificacionId', res.data.id);",
+                  "    console.log('calificacionId guardado:', res.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"medio_id\": \"{{medioId}}\",\n  \"comentarios\": \"Excelente composición\",\n  \"criterios\": [\n    {\"criterio_id\": 1, \"puntuacion\": 8},\n    {\"criterio_id\": 2, \"puntuacion\": 9}\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/calificaciones",
+              "host": ["{{baseUrl}}"],
+              "path": ["calificaciones"]
+            },
+            "description": "Solo disponible cuando el concurso está en estado EVALUACION. Puntuaciones de 1 a 10 por criterio."
+          }
+        },
+        {
+          "name": "Progreso del Jurado",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/calificaciones/jurado/progreso",
+              "host": ["{{baseUrl}}"],
+              "path": ["calificaciones", "jurado", "progreso"]
+            },
+            "description": "Muestra el avance de evaluaciones: total asignados, evaluados, pendientes y porcentaje."
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Consultar Medios (Proxy)",
+      "item": [
+        {
+          "name": "Ver Medio Original",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/proxy/media/{{immichAssetId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["proxy", "media", "{{immichAssetId}}"]
+            },
+            "description": "Acceso público sin autenticación. Retorna el archivo original desde Immich."
+          }
+        },
+        {
+          "name": "Ver Thumbnail",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/proxy/media/{{immichAssetId}}?size=400x225",
+              "host": ["{{baseUrl}}"],
+              "path": ["proxy", "media", "{{immichAssetId}}"],
+              "query": [
+                {
+                  "key": "size",
+                  "value": "400x225"
+                }
+              ]
+            },
+            "description": "Miniatura 400x225. Ideal para listados y tarjetas."
+          }
+        },
+        {
+          "name": "Ver Preview",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/proxy/media/{{immichAssetId}}?size=1280x720",
+              "host": ["{{baseUrl}}"],
+              "path": ["proxy", "media", "{{immichAssetId}}"],
+              "query": [
+                {
+                  "key": "size",
+                  "value": "1280x720"
+                }
+              ]
+            },
+            "description": "Preview 1280x720. Ideal para vista de detalle."
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Administración (Admin/SuperAdmin)",
+      "item": [
+        {
+          "name": "Listar Todos los Concursos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/concursos?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["concursos"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Lista todos los concursos con filtros. Requiere rol ADMIN o SUPERADMIN."
+          }
+        },
+        {
+          "name": "Cambiar Estado a VOTACION",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"VOTACION\",\n  \"tipo_votacion\": \"ESTRELLAS\",\n  \"permite_votos\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/concursos/{{concursoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["concursos", "{{concursoId}}"]
+            },
+            "description": "Inicia la etapa de votación pública. tipo_votacion: ESTRELLAS, LIKES, PARES, MEJOR_MEDIO, INSTAGRAM, FACEBOOK, PLATAFORMA_PROPIA."
+          }
+        },
+        {
+          "name": "Cambiar Estado a EVALUACION",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"EVALUACION\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/concursos/{{concursoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["concursos", "{{concursoId}}"]
+            },
+            "description": "Cierra la votación pública e inicia la evaluación del jurado."
+          }
+        },
+        {
+          "name": "Cambiar Estado a FINALIZADO",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"FINALIZADO\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/concursos/{{concursoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["concursos", "{{concursoId}}"]
+            },
+            "description": "Finaliza el concurso y publica los resultados."
+          }
+        },
+        {
+          "name": "Resultados Finales del Jurado",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/calificaciones/resultados/{{concursoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["calificaciones", "resultados", "{{concursoId}}"]
+            },
+            "description": "Rankings y ganadores por categoría con puntuaciones ponderadas. Solo ADMIN/SUPERADMIN."
+          }
+        },
+        {
+          "name": "Asignar Jurado a Categoría",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario_id\": \"{{usuarioId}}\",\n  \"categoria_id\": {{categoriaId}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/jurado-asignaciones",
+              "host": ["{{baseUrl}}"],
+              "path": ["jurado-asignaciones"]
+            },
+            "description": "Asigna un jurado a una categoría. El jurado no puede estar participando en el mismo concurso."
           }
         }
       ]
