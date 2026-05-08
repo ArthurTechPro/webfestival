@@ -69,6 +69,12 @@
 									"description": "Título descriptivo del medio"
 								},
 								{
+									"key": "descripcion",
+									"value": "Descripción explicativa de la obra: técnica, inspiración, contexto...",
+									"type": "text",
+									"description": "(Opcional) Descripción del medio visible para el jurado durante la evaluación. Máximo 500 caracteres."
+								},
+								{
 									"key": "tipoMedio",
 									"value": "fotografia",
 									"type": "text",
@@ -100,7 +106,7 @@
 								"upload"
 							]
 						},
-						"description": "Sube un archivo multimedia (fotografía) a Immich de forma segura.\n\n**Campos requeridos:**\n- file: Archivo multimedia\n- titulo: Título descriptivo\n- tipoMedio: fotografia, video, audio, corto_cine\n- concursoId: ID del concurso\n- categoriaId: ID de la categoría\n\n**Límites:**\n- Imágenes: 50MB\n- Videos: 500MB\n\n**Formatos soportados:**\n- Imágenes: JPEG, PNG, HEIC, WebP\n- Videos: MP4, MOV, AVI"
+						"description": "Sube un archivo multimedia (fotografía) a Immich de forma segura.\n\n**Campos requeridos:**\n- file: Archivo multimedia\n- titulo: Título descriptivo\n- tipoMedio: fotografia, video, audio, corto_cine\n- concursoId: ID del concurso\n- categoriaId: ID de la categoría\n\n**Campos opcionales:**\n- descripcion: Descripción explicativa del medio (máx 500 chars). Visible para el jurado durante la evaluación.\n\n**Restricciones:**\n- Solo se pueden subir medios a concursos en estado ACTIVO\n- El usuario debe estar inscrito en el concurso\n\n**Límites:**\n- Imágenes: 50MB\n- Videos: 500MB\n\n**Formatos soportados:**\n- Imágenes: JPEG, PNG, HEIC, WebP\n- Videos: MP4, MOV, AVI"
 					},
 					"response": []
 				},
@@ -154,6 +160,12 @@
 									"value": "Mi video del festival",
 									"type": "text",
 									"description": "Título descriptivo del medio"
+								},
+								{
+									"key": "descripcion",
+									"value": "Descripción del video: técnica, inspiración, contexto...",
+									"type": "text",
+									"description": "(Opcional) Descripción del medio visible para el jurado. Máximo 500 caracteres."
 								},
 								{
 									"key": "tipoMedio",
