@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "WebFestival-API - Categorías",
-    "description": "# 📂 Gestión de Categorías de Concursos\n\nSistema de gestión de categorías para concursos.\n\n## Funcionalidades\n- Consulta de categorías por concurso\n- CRUD completo de categorías (Admin)\n- Validación de nombres únicos por concurso\n\n## Roles\n- **Público:** Ver categorías\n- **ADMIN:** Gestión completa",
+    "description": "# 📂 Gestión de Categorías de Concursos\n\nSistema de gestión de categorías para concursos.\n\n## Funcionalidades\n- Consulta de categorías por concurso (público)\n- CRUD completo de categorías (Admin/SuperAdmin)\n- Gestión de imágenes GIF por categoría (almacenadas en Immich)\n- Validación de nombres únicos por concurso\n- Filtrado por permisos: ADMIN solo gestiona categorías de sus concursos\n\n## Roles\n- **Público:** Ver categorías (incluye gif_url si existe)\n- **ADMIN:** Gestión de categorías de concursos propios + subir/eliminar GIF\n- **SUPERADMIN:** Gestión completa de todas las categorías\n\n## Campos de GIF en respuestas\n- `gif_asset_id`: ID del asset en Immich\n- `gif_url`: URL de la imagen original\n- `gif_thumbnail`: URL del thumbnail (400x225)\n- `gif_preview`: URL del preview (1280x720)",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -49,7 +49,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["categorias", "concurso", "{{concursoId}}"]
             },
-            "description": "**Obtener todas las categorías de un concurso**\n\nRetorna la lista de categorías disponibles para un concurso específico.\n\n**Parámetros:**\n- `concursoId`: ID del concurso\n\n**Respuesta incluye:**\n- ID de la categoría\n- Nombre\n- Información del concurso\n- Contadores de medios y jurados asignados"
+            "description": "**Obtener todas las categorías de un concurso**\n\nRetorna la lista de categorías disponibles para un concurso específico.\n\n**Parámetros:**\n- `concursoId`: ID del concurso\n\n**Respuesta incluye:**\n- ID de la categoría\n- Nombre\n- gif_asset_id, gif_url, gif_thumbnail, gif_preview (si tiene GIF asignado)\n- Información del concurso\n- Contadores de medios y jurados asignados"
           },
           "response": []
         },
@@ -149,7 +149,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["categorias"]
             },
-            "description": "**Crear nueva categoría (Solo ADMIN)**\n\nCrea una nueva categoría para un concurso.\n\n**⚠️ IMPORTANTE:** Reemplaza el valor `1` con el ID de un concurso existente.\n\n**Requiere:**\n- Token JWT de ADMIN\n- Nombre único dentro del concurso\n- ID de concurso válido (debe existir en la base de datos)\n\n**Body:**\n```json\n{\n  \"nombre\": \"Fotografía de Paisaje\",\n  \"concursoId\": 1\n}\n```\n\n**Nota:** También puedes usar `concurso_id` en lugar de `concursoId`:\n```json\n{\n  \"nombre\": \"Fotografía de Paisaje\",\n  \"concurso_id\": 1\n}\n```\n\n**Validaciones:**\n- Nombre: 3-100 caracteres\n- Concurso debe existir\n- Nombre único por concurso\n\n**Pasos recomendados:**\n1. Ejecuta \"Listar Concursos\" para obtener IDs válidos\n2. Copia un ID de concurso\n3. Reemplaza el `1` en el body con ese ID\n4. Ejecuta este request"
+            "description": "**Crear nueva categoría (ADMIN/SUPERADMIN)**\n\nCrea una nueva categoría para un concurso.\n\n**⚠️ IMPORTANTE:** Reemplaza el valor `1` con el ID de un concurso existente.\n\n**Requiere:**\n- Token JWT de ADMIN o SUPERADMIN\n- ADMIN solo puede crear categorías en concursos que él creó\n- SUPERADMIN puede crear en cualquier concurso\n- Nombre único dentro del concurso\n- ID de concurso válido (debe existir en la base de datos)\n\n**Body:**\n```json\n{\n  \"nombre\": \"Fotografía de Paisaje\",\n  \"concursoId\": 1\n}\n```\n\n**Nota:** También puedes usar `concurso_id` en lugar de `concursoId`:\n```json\n{\n  \"nombre\": \"Fotografía de Paisaje\",\n  \"concurso_id\": 1\n}\n```\n\n**Validaciones:**\n- Nombre: 3-100 caracteres\n- Concurso debe existir\n- Nombre único por concurso\n- ADMIN debe ser el creador del concurso\n\n**Pasos recomendados:**\n1. Ejecuta \"Listar Concursos\" para obtener IDs válidos\n2. Copia un ID de concurso\n3. Reemplaza el `1` en el body con ese ID\n4. Ejecuta este request"
           },
           "response": []
         },
@@ -193,7 +193,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["categorias", "{{categoriaId}}"]
             },
-            "description": "**Actualizar categoría (Solo ADMIN)**\n\nActualiza el nombre de una categoría existente.\n\n**Requiere:**\n- Token JWT de ADMIN\n- Nombre único dentro del concurso\n\n**Body:**\n```json\n{\n  \"nombre\": \"Fotografía de Naturaleza\"\n}\n```\n\n**Validaciones:**\n- Nombre: 3-100 caracteres\n- Nombre único por concurso"
+            "description": "**Actualizar categoría (ADMIN/SUPERADMIN)**\n\nActualiza el nombre de una categoría existente.\n\n**Requiere:**\n- Token JWT de ADMIN o SUPERADMIN\n- ADMIN solo puede actualizar categorías de concursos que él creó\n- SUPERADMIN puede actualizar cualquier categoría\n- Nombre único dentro del concurso\n\n**Body:**\n```json\n{\n  \"nombre\": \"Fotografía de Naturaleza\"\n}\n```\n\n**Validaciones:**\n- Nombre: 3-100 caracteres\n- Nombre único por concurso"
           },
           "response": []
         },
@@ -233,11 +233,240 @@
               "host": ["{{baseUrl}}"],
               "path": ["categorias", "{{nuevaCategoriaId}}"]
             },
-            "description": "**Eliminar categoría (Solo ADMIN)**\n\nElimina una categoría del sistema.\n\n**Requiere:**\n- Token JWT de ADMIN\n\n**Restricciones:**\n- No se puede eliminar si tiene medios enviados\n- No se puede eliminar si tiene jurados asignados\n\n**Parámetros:**\n- `categoriaId`: ID de la categoría a eliminar"
+            "description": "**Eliminar categoría (ADMIN/SUPERADMIN)**\n\nElimina una categoría del sistema.\n\n**Requiere:**\n- Token JWT de ADMIN o SUPERADMIN\n- ADMIN solo puede eliminar categorías de concursos que él creó\n- SUPERADMIN puede eliminar cualquier categoría\n\n**Restricciones:**\n- No se puede eliminar si tiene medios enviados\n- No se puede eliminar si tiene jurados asignados\n\n**Parámetros:**\n- `categoriaId`: ID de la categoría a eliminar"
           },
           "response": []
         }
       ]
+    },
+    {
+      "name": "Gestión de GIF",
+      "item": [
+        {
+          "name": "Subir GIF de Categoría",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has success true', function () {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res.success).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('Response has gif data', function () {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res.data).to.have.property('gif_asset_id');",
+                  "    pm.expect(res.data).to.have.property('gif_url');",
+                  "    pm.expect(res.data).to.have.property('gif_thumbnail');",
+                  "    pm.expect(res.data).to.have.property('gif_preview');",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200) {",
+                  "    const res = pm.response.json();",
+                  "    pm.environment.set('gifAssetId', res.data.gif_asset_id);",
+                  "    console.log('✅ GIF subido. Asset ID:', res.data.gif_asset_id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{authToken}}", "type": "string"}]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "gif",
+                  "type": "file",
+                  "src": "",
+                  "description": "Archivo de imagen GIF/JPG/PNG/WebP (máximo 10MB)"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/categorias/{{categoriaId}}/gif",
+              "host": ["{{baseUrl}}"],
+              "path": ["categorias", "{{categoriaId}}", "gif"]
+            },
+            "description": "**Subir imagen GIF a una categoría (Solo ADMIN/SUPERADMIN)**\n\nSube una imagen (GIF, JPG, PNG, WebP) para representar visualmente la categoría.\nLa imagen se almacena en Immich en el álbum del concurso al que pertenece la categoría.\n\n**Requiere:**\n- Token JWT de ADMIN o SUPERADMIN\n- ADMIN solo puede subir GIF a categorías de concursos que él creó\n- SUPERADMIN puede subir GIF a cualquier categoría\n\n**Body (form-data):**\n- `gif`: Archivo de imagen (GIF, JPEG, PNG, WebP)\n\n**Restricciones:**\n- Tamaño máximo: 10MB\n- Formatos permitidos: image/gif, image/jpeg, image/png, image/webp\n- Si la categoría ya tiene un GIF, el anterior se reemplaza\n\n**Respuesta:**\n```json\n{\n  \"success\": true,\n  \"message\": \"GIF de categoría actualizado exitosamente\",\n  \"data\": {\n    \"gif_asset_id\": \"uuid-del-asset\",\n    \"gif_url\": \"https://api.../proxy/media/uuid\",\n    \"gif_thumbnail\": \"https://api.../proxy/media/uuid?size=400x225\",\n    \"gif_preview\": \"https://api.../proxy/media/uuid?size=1280x720\"\n  }\n}\n```\n\n**Uso:**\n- El GIF se muestra al participante cuando selecciona esta categoría para subir medios\n- Se muestra en el detalle del concurso junto a las categorías\n- Se administra desde la gestión de categorías del panel admin"
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar GIF de Categoría",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has success true', function () {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res.success).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('Response confirms deletion', function () {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res.message).to.include('eliminado');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{authToken}}", "type": "string"}]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/categorias/{{categoriaId}}/gif",
+              "host": ["{{baseUrl}}"],
+              "path": ["categorias", "{{categoriaId}}", "gif"]
+            },
+            "description": "**Eliminar imagen GIF de una categoría (Solo ADMIN/SUPERADMIN)**\n\nElimina la imagen GIF asociada a una categoría. El asset se elimina de Immich.\n\n**Requiere:**\n- Token JWT de ADMIN o SUPERADMIN\n- ADMIN solo puede eliminar GIF de categorías de concursos que él creó\n- SUPERADMIN puede eliminar GIF de cualquier categoría\n\n**Parámetros:**\n- `categoriaId`: ID de la categoría\n\n**Respuesta:**\n```json\n{\n  \"success\": true,\n  \"message\": \"GIF de categoría eliminado exitosamente\"\n}\n```\n\n**Errores posibles:**\n- 404: Categoría no encontrada\n- 404: La categoría no tiene una imagen GIF asignada\n- 403: No tienes permiso para gestionar categorías de este concurso"
+          },
+          "response": []
+        },
+        {
+          "name": "Subir GIF - Sin Archivo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 400', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test('Response has error message', function () {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res.success).to.be.false;",
+                  "    pm.expect(res.message).to.include('imagen');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{authToken}}", "type": "string"}]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{baseUrl}}/categorias/{{categoriaId}}/gif",
+              "host": ["{{baseUrl}}"],
+              "path": ["categorias", "{{categoriaId}}", "gif"]
+            },
+            "description": "**Test: Subir GIF sin archivo**\n\nIntenta subir un GIF sin proporcionar ningún archivo.\n\n**Resultado esperado:**\n- Status: 400\n- Error: \"No se proporcionó ninguna imagen\""
+          },
+          "response": []
+        },
+        {
+          "name": "Subir GIF - Sin Permiso (Admin otro concurso)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 403', function () {",
+                  "    pm.response.to.have.status(403);",
+                  "});",
+                  "",
+                  "pm.test('Response has permission error', function () {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res.success).to.be.false;",
+                  "    pm.expect(res.message).to.include('permiso');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{authToken}}", "type": "string"}]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "gif",
+                  "type": "file",
+                  "src": "",
+                  "description": "Archivo de imagen"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/categorias/{{categoriaId}}/gif",
+              "host": ["{{baseUrl}}"],
+              "path": ["categorias", "{{categoriaId}}", "gif"]
+            },
+            "description": "**Test: Subir GIF sin permiso**\n\nUn ADMIN intenta subir un GIF a una categoría de un concurso que NO creó.\n\n**Resultado esperado:**\n- Status: 403\n- Error: \"No tienes permiso para gestionar categorías de este concurso\"\n\n**Nota:** Para probar este caso necesitas:\n1. Autenticarte como un ADMIN diferente al creador del concurso\n2. Intentar subir GIF a una categoría de ese concurso"
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar GIF - Categoría Sin GIF",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 404', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "",
+                  "pm.test('Response has error message', function () {",
+                  "    const res = pm.response.json();",
+                  "    pm.expect(res.success).to.be.false;",
+                  "    pm.expect(res.message).to.include('no tiene');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{authToken}}", "type": "string"}]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/categorias/{{categoriaId}}/gif",
+              "host": ["{{baseUrl}}"],
+              "path": ["categorias", "{{categoriaId}}", "gif"]
+            },
+            "description": "**Test: Eliminar GIF de categoría sin GIF**\n\nIntenta eliminar el GIF de una categoría que no tiene uno asignado.\n\n**Resultado esperado:**\n- Status: 404\n- Error: \"La categoría no tiene una imagen GIF asignada\""
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints para gestionar la imagen GIF de las categorías.\n\nEl GIF se almacena en Immich en el álbum del concurso y se muestra:\n- Al participante cuando selecciona la categoría para subir medios\n- En el detalle del concurso junto a las categorías\n- En la gestión admin de categorías"
     },
     {
       "name": "Casos de Error",
