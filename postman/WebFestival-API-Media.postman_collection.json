@@ -78,11 +78,17 @@
                   "value": "{{categoriaId}}",
                   "type": "text",
                   "description": "ID de la categoría"
+                },
+                {
+                  "key": "aceptaCondiciones",
+                  "value": "true",
+                  "type": "text",
+                  "description": "Aceptación de las condiciones de tratamiento de imágenes. Obligatorio (true) SOLO si el concurso tiene requiere_aceptacion_condiciones=true"
                 }
               ]
             },
             "url": {"raw": "{{baseUrl}}/api/v1/media/upload", "host": ["{{baseUrl}}"], "path": ["api", "v1", "media", "upload"]},
-            "description": "**🆕 Subida Segura en Un Solo Paso (RECOMENDADO)**\n\nEste es el método actual y recomendado para subir medios.\n\n✅ **Ventajas:**\n- Un solo paso (no necesitas generar URL ni confirmar)\n- No expone credenciales de Immich al cliente\n- Manejo automático de errores y rollback\n- Organización automática en álbumes de Immich\n\n**Campos requeridos:**\n- file: Archivo multimedia\n- titulo: Título descriptivo\n- tipoMedio: fotografia, video, audio, corto_cine\n- concursoId: ID del concurso\n- categoriaId: ID de la categoría\n\n**Límites:**\n- Imágenes: 50MB\n- Videos: 500MB\n- Audio: 100MB\n\n**Formatos soportados:**\n- Imágenes: JPEG, PNG, HEIC, WebP\n- Videos: MP4, MOV, AVI\n- Audio: MP3, WAV, AAC\n\n**Respuesta exitosa (201):**\n```json\n{\n  \"success\": true,\n  \"message\": \"Medio subido exitosamente\",\n  \"data\": {\n    \"id\": 123,\n    \"immichAssetId\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"mediaUrl\": \"https://api.webfestival.art/api/v1/proxy/media/abc-123\",\n    \"thumbnailUrl\": \"https://api.webfestival.art/api/v1/proxy/media/abc-123?size=400x225\"\n  }\n}\n```"
+            "description": "**🆕 Subida Segura en Un Solo Paso (RECOMENDADO)**\n\nEste es el método actual y recomendado para subir medios.\n\n✅ **Ventajas:**\n- Un solo paso (no necesitas generar URL ni confirmar)\n- No expone credenciales de Immich al cliente\n- Manejo automático de errores y rollback\n- Organización automática en álbumes de Immich\n\n**Campos requeridos:**\n- file: Archivo multimedia\n- titulo: Título descriptivo\n- tipoMedio: fotografia, video, audio, corto_cine\n- concursoId: ID del concurso\n- categoriaId: ID de la categoría\n\n**Campos condicionales:**\n- aceptaCondiciones: `true`/`false`. Es OBLIGATORIO enviarlo en `true` cuando el concurso tiene activado `requiere_aceptacion_condiciones`. Si el concurso lo exige y se envía `false` o se omite, la API responde 400 con código `CONDICIONES_NOT_ACCEPTED`.\n\n**Límites:**\n- Imágenes: 50MB\n- Videos: 500MB\n- Audio: 100MB\n\n**Formatos soportados:**\n- Imágenes: JPEG, PNG, HEIC, WebP\n- Videos: MP4, MOV, AVI\n- Audio: MP3, WAV, AAC\n\n**Respuesta exitosa (201):**\n```json\n{\n  \"success\": true,\n  \"message\": \"Medio subido exitosamente\",\n  \"data\": {\n    \"id\": 123,\n    \"immichAssetId\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"mediaUrl\": \"https://api.webfestival.art/api/v1/proxy/media/abc-123\",\n    \"thumbnailUrl\": \"https://api.webfestival.art/api/v1/proxy/media/abc-123?size=400x225\"\n  }\n}\n```"
           }
         }
       ]

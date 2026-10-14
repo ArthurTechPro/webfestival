@@ -27,10 +27,10 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Nombre Actualizado\",\n  \"bio\": \"Nueva biografía\",\n  \"picture_url\": \"https://ejemplo.com/foto.jpg\"\n}"
+              "raw": "{\n  \"nombre\": \"Nombre Actualizado\",\n  \"bio\": \"Nueva biografía\",\n  \"picture_url\": \"https://ejemplo.com/foto.jpg\",\n  \"telefono\": \"+57 300 123 4567\",\n  \"fecha_nacimiento\": \"1995-06-15\",\n  \"ubicacion\": \"Bogotá, Colombia\",\n  \"website\": \"https://mi-sitio.com\"\n}"
             },
             "url": {"raw": "{{baseUrl}}/users/profile", "host": ["{{baseUrl}}"], "path": ["users", "profile"]},
-            "description": "**Actualizar perfil propio**\n\nModifica nombre, bio y foto."
+            "description": "**Actualizar perfil propio**\n\nModifica los datos del usuario autenticado. Todos los campos son opcionales; solo se actualizan los que se envían.\n\n**Campos:**\n- `nombre`\n- `bio`\n- `picture_url`\n- `telefono`\n- `fecha_nacimiento` (formato AAAA-MM-DD)\n- `telefono_tutor` (teléfono celular del tutor del menor)\n- `ubicacion`\n- `website`\n\n**Menor de edad:** si se envía una `fecha_nacimiento` de un menor de 18 años, `telefono_tutor` pasa a ser obligatorio; de lo contrario la API responde 400. Sirve para que los usuarios ya inscritos completen estos datos.\n\n**Ejemplo menor de edad:**\n```json\n{\n  \"fecha_nacimiento\": \"2012-03-10\",\n  \"telefono_tutor\": \"+57 310 555 1122\"\n}\n```"
           }
         },
         {

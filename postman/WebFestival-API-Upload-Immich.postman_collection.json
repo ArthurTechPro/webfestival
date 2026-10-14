@@ -91,6 +91,12 @@
 									"value": "5",
 									"type": "text",
 									"description": "ID de la categoría"
+								},
+								{
+									"key": "aceptaCondiciones",
+									"value": "true",
+									"type": "text",
+									"description": "Aceptación de condiciones de tratamiento de imágenes. Obligatorio (true) SOLO si el concurso tiene requiere_aceptacion_condiciones=true"
 								}
 							]
 						},
@@ -106,7 +112,7 @@
 								"upload"
 							]
 						},
-						"description": "Sube un archivo multimedia (fotografía) a Immich de forma segura.\n\n**Campos requeridos:**\n- file: Archivo multimedia\n- titulo: Título descriptivo\n- tipoMedio: fotografia, video, audio, corto_cine\n- concursoId: ID del concurso\n- categoriaId: ID de la categoría\n\n**Campos opcionales:**\n- descripcion: Descripción explicativa del medio (máx 500 chars). Visible para el jurado durante la evaluación.\n\n**Restricciones:**\n- Solo se pueden subir medios a concursos en estado ACTIVO\n- El usuario debe estar inscrito en el concurso\n\n**Límites:**\n- Imágenes: 50MB\n- Videos: 500MB\n\n**Formatos soportados:**\n- Imágenes: JPEG, PNG, HEIC, WebP\n- Videos: MP4, MOV, AVI"
+						"description": "Sube un archivo multimedia (fotografía) a Immich de forma segura.\n\n**Campos requeridos:**\n- file: Archivo multimedia\n- titulo: Título descriptivo\n- tipoMedio: fotografia, video, audio, corto_cine\n- concursoId: ID del concurso\n- categoriaId: ID de la categoría\n\n**Campos opcionales:**\n- descripcion: Descripción explicativa del medio (máx 500 chars). Visible para el jurado durante la evaluación.\n\n**Campos condicionales:**\n- aceptaCondiciones: `true`/`false`. OBLIGATORIO en `true` si el concurso tiene `requiere_aceptacion_condiciones=true`. Si el concurso lo exige y se omite o es `false`, la API responde 400 (`CONDICIONES_NOT_ACCEPTED`).\n\n**Restricciones:**\n- Solo se pueden subir medios a concursos en estado ACTIVO\n- El usuario debe estar inscrito en el concurso\n\n**Límites:**\n- Imágenes: 50MB\n- Videos: 500MB\n\n**Formatos soportados:**\n- Imágenes: JPEG, PNG, HEIC, WebP\n- Videos: MP4, MOV, AVI"
 					},
 					"response": []
 				},
@@ -184,6 +190,12 @@
 									"value": "5",
 									"type": "text",
 									"description": "ID de la categoría"
+								},
+								{
+									"key": "aceptaCondiciones",
+									"value": "true",
+									"type": "text",
+									"description": "Aceptación de condiciones de tratamiento de imágenes. Obligatorio (true) SOLO si el concurso tiene requiere_aceptacion_condiciones=true"
 								}
 							]
 						},
@@ -199,7 +211,7 @@
 								"upload"
 							]
 						},
-						"description": "Sube un archivo de video a Immich de forma segura.\n\n**Límite:** 500MB\n**Formatos:** MP4, MOV, AVI"
+						"description": "Sube un archivo de video a Immich de forma segura.\n\n**Límite:** 500MB\n**Formatos:** MP4, MOV, AVI\n\n**Campos condicionales:** `aceptaCondiciones` (true/false) — obligatorio en `true` si el concurso tiene `requiere_aceptacion_condiciones=true`."
 					},
 					"response": []
 				},

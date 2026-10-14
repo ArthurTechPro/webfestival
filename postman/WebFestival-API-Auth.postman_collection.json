@@ -28,14 +28,14 @@
             "header": [{"key": "Content-Type", "value": "application/json"}],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"nuevo@ejemplo.com\",\n  \"password\": \"Password123!\",\n  \"nombre\": \"Usuario Nuevo\",\n  \"bio\": \"Descripción opcional\"\n}"
+              "raw": "{\n  \"email\": \"nuevo@ejemplo.com\",\n  \"password\": \"Password123!\",\n  \"nombre\": \"Usuario Nuevo\",\n  \"bio\": \"Descripción opcional\",\n  \"telefono\": \"+57 300 123 4567\",\n  \"fecha_nacimiento\": \"1995-06-15\",\n  \"acepta_terminos\": true\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/auth/register",
               "host": ["{{baseUrl}}"],
               "path": ["auth", "register"]
             },
-            "description": "**Registrar nuevo usuario**\n\nCrea cuenta con rol PARTICIPANTE.\n\n**Campos:**\n- email (requerido)\n- password (requerido, mínimo 6 caracteres, al menos una mayúscula, una minúscula y un número)\n- nombre (requerido)\n- bio (opcional)\n\n**Respuesta:** Usuario + tokens JWT"
+            "description": "**Registrar nuevo usuario**\n\nCrea cuenta con rol PARTICIPANTE.\n\n**Campos:**\n- `email` (requerido)\n- `password` (requerido, mínimo 6 caracteres, al menos una mayúscula, una minúscula y un número)\n- `nombre` (requerido)\n- `bio` (opcional)\n- `telefono` (opcional)\n- `fecha_nacimiento` (opcional, formato AAAA-MM-DD)\n- `telefono_tutor` (obligatorio SOLO si `fecha_nacimiento` corresponde a un menor de 18 años)\n- `acepta_terminos` (requerido, debe ser `true` — el registro se rechaza si es `false` o falta)\n\n**Menor de edad:** si la `fecha_nacimiento` es de un menor de 18 años, se debe enviar `telefono_tutor` (teléfono celular del tutor del menor); de lo contrario la API responde 400.\n\n**Ejemplo menor de edad:**\n```json\n{\n  \"email\": \"menor@ejemplo.com\",\n  \"password\": \"Password123!\",\n  \"nombre\": \"Participante Menor\",\n  \"fecha_nacimiento\": \"2012-03-10\",\n  \"telefono_tutor\": \"+57 310 555 1122\",\n  \"acepta_terminos\": true\n}\n```\n\n**Respuesta:** Usuario + tokens JWT"
           }
         },
         {

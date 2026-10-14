@@ -302,10 +302,10 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"titulo\": \"Concurso de Fotografía 2025\",\n  \"descripcion\": \"Concurso anual de fotografía profesional\",\n  \"reglas\": \"1. Solo fotografías originales\\n2. Máximo 3 envíos por participante\\n3. Formato JPEG o PNG\",\n  \"fecha_inicio\": \"2025-03-01T00:00:00Z\",\n  \"fecha_final\": \"2025-03-31T23:59:59Z\",\n  \"max_envios\": 3,\n  \"tamano_max_mb\": 10\n}"
+              "raw": "{\n  \"titulo\": \"Concurso de Fotografía 2025\",\n  \"descripcion\": \"Concurso anual de fotografía profesional\",\n  \"reglas\": \"1. Solo fotografías originales\\n2. Máximo 3 envíos por participante\\n3. Formato JPEG o PNG\",\n  \"fecha_inicio\": \"2025-03-01T00:00:00Z\",\n  \"fecha_final\": \"2025-03-31T23:59:59Z\",\n  \"max_envios\": 3,\n  \"tamano_max_mb\": 10,\n  \"requiere_aceptacion_condiciones\": false\n}"
             },
             "url": {"raw": "{{baseUrl}}/concursos", "host": ["{{baseUrl}}"], "path": ["concursos"]},
-            "description": "**Crear nuevo concurso sin categorías (Admin)**\n\nCrea un concurso básico. Las categorías se pueden agregar después."
+            "description": "**Crear nuevo concurso sin categorías (Admin)**\n\nCrea un concurso básico. Las categorías se pueden agregar después.\n\n**Campo opcional:**\n- `requiere_aceptacion_condiciones` (boolean, default `false`): si es `true`, al subir medios a este concurso el participante deberá enviar `aceptaCondiciones=true` (check de aceptación de condiciones de tratamiento de imágenes)."
           }
         },
         {
@@ -340,7 +340,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"titulo\": \"Concurso de Fotografía de Naturaleza 2025\",\n  \"descripcion\": \"Concurso anual enfocado en fotografía de naturaleza y vida silvestre\",\n  \"reglas\": \"1. Solo fotografías originales\\n2. Máximo 3 envíos por participante\\n3. Formato JPEG o PNG\\n4. Resolución mínima 1920x1080\",\n  \"fecha_inicio\": \"2025-03-01T00:00:00Z\",\n  \"fecha_final\": \"2025-03-31T23:59:59Z\",\n  \"max_envios\": 3,\n  \"tamano_max_mb\": 10,\n  \"categorias\": [\n    {\n      \"nombre\": \"Paisajes\"\n    },\n    {\n      \"nombre\": \"Fauna Silvestre\"\n    },\n    {\n      \"nombre\": \"Flora y Macro\"\n    }\n  ]\n}"
+              "raw": "{\n  \"titulo\": \"Concurso de Fotografía de Naturaleza 2025\",\n  \"descripcion\": \"Concurso anual enfocado en fotografía de naturaleza y vida silvestre\",\n  \"reglas\": \"1. Solo fotografías originales\\n2. Máximo 3 envíos por participante\\n3. Formato JPEG o PNG\\n4. Resolución mínima 1920x1080\",\n  \"fecha_inicio\": \"2025-03-01T00:00:00Z\",\n  \"fecha_final\": \"2025-03-31T23:59:59Z\",\n  \"max_envios\": 3,\n  \"tamano_max_mb\": 10,\n  \"requiere_aceptacion_condiciones\": true,\n  \"categorias\": [\n    {\n      \"nombre\": \"Paisajes\"\n    },\n    {\n      \"nombre\": \"Fauna Silvestre\"\n    },\n    {\n      \"nombre\": \"Flora y Macro\"\n    }\n  ]\n}"
             },
             "url": {"raw": "{{baseUrl}}/concursos", "host": ["{{baseUrl}}"], "path": ["concursos"]},
             "description": "**Crear concurso con categorías (Admin)**\n\nCrea un concurso y sus categorías en una sola operación.\n\n**Ventajas:**\n- Crea concurso y categorías en una transacción\n- Más eficiente que crear por separado\n- Garantiza consistencia de datos\n\n**Campos de categoría:**\n- `nombre` (requerido): Nombre de la categoría (máx 100 caracteres)\n\n**Ejemplo de respuesta:**\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"id\": 1,\n    \"titulo\": \"Concurso de Fotografía de Naturaleza 2025\",\n    \"categorias\": [\n      {\"id\": 1, \"nombre\": \"Paisajes\"},\n      {\"id\": 2, \"nombre\": \"Fauna Silvestre\"},\n      {\"id\": 3, \"nombre\": \"Flora y Macro\"}\n    ]\n  }\n}\n```"
@@ -370,7 +370,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"titulo\": \"Festival de Cortometrajes 2025\",\n  \"descripcion\": \"Festival internacional de cortometrajes y cine independiente\",\n  \"reglas\": \"1. Duración máxima 15 minutos\\n2. Producciones originales\\n3. Formato MP4 o MOV\\n4. Subtítulos en español o inglés\",\n  \"fecha_inicio\": \"2025-06-01T00:00:00Z\",\n  \"fecha_final\": \"2025-08-31T23:59:59Z\",\n  \"max_envios\": 2,\n  \"tamano_max_mb\": 500,\n  \"categorias\": [\n    {\n      \"nombre\": \"Ficción\"\n    },\n    {\n      \"nombre\": \"Documental\"\n    },\n    {\n      \"nombre\": \"Animación\"\n    },\n    {\n      \"nombre\": \"Experimental\"\n    }\n  ]\n}"
+              "raw": "{\n  \"titulo\": \"Festival de Cortometrajes 2025\",\n  \"descripcion\": \"Festival internacional de cortometrajes y cine independiente\",\n  \"reglas\": \"1. Duración máxima 15 minutos\\n2. Producciones originales\\n3. Formato MP4 o MOV\\n4. Subtítulos en español o inglés\",\n  \"fecha_inicio\": \"2025-06-01T00:00:00Z\",\n  \"fecha_final\": \"2025-08-31T23:59:59Z\",\n  \"max_envios\": 2,\n  \"tamano_max_mb\": 500,\n  \"requiere_aceptacion_condiciones\": false,\n  \"categorias\": [\n    {\n      \"nombre\": \"Ficción\"\n    },\n    {\n      \"nombre\": \"Documental\"\n    },\n    {\n      \"nombre\": \"Animación\"\n    },\n    {\n      \"nombre\": \"Experimental\"\n    }\n  ]\n}"
             },
             "url": {"raw": "{{baseUrl}}/concursos", "host": ["{{baseUrl}}"], "path": ["concursos"]},
             "description": "**Crear concurso de video/cine con categorías (Admin)**\n\nEjemplo de concurso de video con múltiples categorías especializadas."
@@ -386,10 +386,10 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"titulo\": \"Concurso Actualizado\",\n  \"status\": \"ACTIVO\",\n  \"tipo_votacion\": \"ESTRELLAS\",\n  \"permite_votos\": true\n}"
+              "raw": "{\n  \"titulo\": \"Concurso Actualizado\",\n  \"status\": \"ACTIVO\",\n  \"tipo_votacion\": \"ESTRELLAS\",\n  \"permite_votos\": true,\n  \"requiere_aceptacion_condiciones\": true\n}"
             },
             "url": {"raw": "{{baseUrl}}/concursos/{{concursoId}}", "host": ["{{baseUrl}}"], "path": ["concursos", "{{concursoId}}"]},
-            "description": "**Actualizar concurso (Admin)**\n\nModifica datos del concurso.\n\n**Estados disponibles:** BORRADOR → ACTIVO → VOTACION → EVALUACION → FINALIZADO (o CANCELADO)\n\n**Campos de votación:**\n- `tipo_votacion`: ESTRELLAS, LIKES, PARES, MEJOR_MEDIO, INSTAGRAM, FACEBOOK, PLATAFORMA_PROPIA\n- `permite_votos`: true hace los resultados visibles al público"
+            "description": "**Actualizar concurso (Admin)**\n\nModifica datos del concurso.\n\n**Estados disponibles:** BORRADOR → ACTIVO → VOTACION → EVALUACION → FINALIZADO (o CANCELADO)\n\n**Campos de votación:**\n- `tipo_votacion`: ESTRELLAS, LIKES, PARES, MEJOR_MEDIO, INSTAGRAM, FACEBOOK, PLATAFORMA_PROPIA\n- `permite_votos`: true hace los resultados visibles al público\n\n**Consentimiento de imágenes:**\n- `requiere_aceptacion_condiciones` (boolean): activa/desactiva la exigencia del check de aceptación de condiciones de tratamiento de imágenes al subir medios a este concurso."
           }
         },
         {
