@@ -295,8 +295,8 @@ nano /opt/traefik/.env
 
 ```env
 ACME_EMAIL=admin@evolucion-col.com
-# Generar con: htpasswd -nb admin %WaSi3355/Su%
-TRAEFIK_DASHBOARD_AUTH=admin:$apr1$T2RJMJ4J$zrW9TbM5R7.d4/wW/PgnM/
+# Generar con: htpasswd -nb admin TU_PASSWORD
+TRAEFIK_DASHBOARD_AUTH=admin:HASH_GENERADO_CON_HTPASSWD
 ```
 
 ### 4.4 Levantar Traefik
@@ -352,33 +352,36 @@ nano /opt/webfestival/.env
 
 ### Variables críticas
 
+> ⚠️ **No escribas secretos reales en este documento.** Los valores reales van
+> únicamente en el archivo `.env` del servidor (`/opt/webfestival/.env`), que
+> no se sube a git. Aquí solo se muestran los nombres de variable con
+> placeholders. La plantilla completa está en `.env.example`.
+
 ```env
 TZ=America/Bogota
 ACME_EMAIL=admin@webfestival.art
 
 # PostgreSQL
 POSTGRES_USER=postgres
-POSTGRES_PASSWORD=WaSi3355Su
+POSTGRES_PASSWORD=CAMBIAR_PASSWORD_SEGURO
 POSTGRES_DB=webfestival
 
 # ── Traefik Dashboard ─────────────────────────────────────
 # Generar con: htpasswd -nb admin TU_PASSWORD
-TRAEFIK_DASHBOARD_AUTH=admin:$apr1$T2RJMJ4J$zrW9TbM5R7.d4/wW/PgnM/
+TRAEFIK_DASHBOARD_AUTH=admin:HASH_GENERADO_CON_HTPASSWD
 
 # Redis
-REDIS_PASSWORD=WaSi3355Su
-%WaSi3355/Su%
-
+REDIS_PASSWORD=CAMBIAR_REDIS_PASSWORD
 
 # JWT (generar con: openssl rand -hex 32)
-JWT_SECRET=049402cabdf3689aa4a0cd73ab38e78eaa84c6dc9fc08cc20d22733469db7e4b
-JWT_REFRESH_SECRET=5b658fa494cc80b910def4b65d4dbf0cecf6e05affbe4d47dcf88ebdd66a05cf
+JWT_SECRET=CAMBIAR_JWT_SECRET_64_CHARS_MINIMO
+JWT_REFRESH_SECRET=CAMBIAR_JWT_REFRESH_SECRET_64_CHARS
 
 # Immich
 IMMICH_DB_USER=immich
-IMMICH_DB_PASSWORD=%WaSi3355/Su%
+IMMICH_DB_PASSWORD=CAMBIAR_IMMICH_DB_PASSWORD
 IMMICH_DB_NAME=immich_db
-IMMICH_API_KEY=EK5fl7Zx3Z7EK6LMX39akDMsLqwgfGCV7NvjIrMsfQ
+IMMICH_API_KEY=OBTENER_DESDE_PANEL_IMMICH
 
 # Email
 SENDGRID_API_KEY=SG.XXXXXXXX
@@ -394,8 +397,11 @@ STRIPE_WEBHOOK_SECRET=whsec_XXXXXXXX
 ```bash
 openssl rand -hex 32   # JWT_SECRET
 openssl rand -hex 32   # JWT_REFRESH_SECRET
-htpasswd -nb admin %WaSi3355/Su%   # para Traefik si se gestiona desde aquí
+htpasswd -nb admin TU_PASSWORD   # para Traefik si se gestiona desde aquí
 ```
+
+> Para rotar secretos que ya estuvieron expuestos, consulta
+> `document/RotarSecretos.md`.
 
 ---
 
@@ -465,8 +471,8 @@ docker compose -f /opt/webfestival/docker-compose.yml restart api
 ### 10.1 Crear cuentas
 
 ```bash
-docker compose -f /opt/webfestival/docker-compose.yml exec mailserver setup email add admin@webfestival.art wasi3355
-docker compose -f /opt/webfestival/docker-compose.yml exec mailserver setup email add noreply@webfestival.art wasi3355
+docker compose -f /opt/webfestival/docker-compose.yml exec mailserver setup email add admin@webfestival.art TU_PASSWORD_ADMIN
+docker compose -f /opt/webfestival/docker-compose.yml exec mailserver setup email add noreply@webfestival.art TU_PASSWORD_NOREPLY
 ```
 
 ### 10.2 Generar clave DKIM

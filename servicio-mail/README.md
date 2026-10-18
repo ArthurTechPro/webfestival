@@ -24,7 +24,8 @@ docker compose up -d
 
 - URL: https://mail.webfestival.art
 - Usuario: admin
-- Password: moohoo (cambiar inmediatamente)
+- Password: la contraseña por defecto que trae Mailcow al instalarse. **Cámbiala
+  inmediatamente** tras el primer acceso (Panel → Admin → Editar administrador).
 
 ## Agregar dominio webfestival.art
 
